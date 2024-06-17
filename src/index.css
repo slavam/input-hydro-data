@@ -22,7 +22,7 @@ p {
 
 /* Navbar */
 
-nav {
+/* nav {
   display: flex;
   padding: 0;
   background: var(--redux-color);
@@ -90,7 +90,7 @@ nav a:hover {
 
 .navLinks :first-child {
   margin-left: 0;
-}
+} */
 
 /* Main content */
 

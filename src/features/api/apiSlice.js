@@ -27,6 +27,7 @@ export const apiSlice = createApi({
     }),
     getHydroposts: builder.query({
       query: ()=>'/stations.json',
+      // query: ()=> 'http://10.54.1.11/stations/meteostations?format=json&mode=no-cors',
       providesTags: (result = [], error, arg) => [
         'Hydropost',
         ...result.map(({ id }) => ({ type: 'Hydropost', id })),
@@ -137,7 +138,8 @@ export const apiSlice = createApi({
         let s = ''
         if(hydroData){
           Object.keys(hydroData).forEach(key=>{s+=(`${key}=${hydroData[key]}&`)})
-          return `http://localhost:3001/conservations/save_hydro_data?mode=opaque&${s.slice(0,-1)}`
+          return `http://10.54.1.11/conservations/save_hydro_data?mode=opaque&${s.slice(0,-1)}`
+          // return `http://localhost:3001/conservations/save_hydro_data?mode=opaque&${s.slice(0,-1)}`
         }
       },
     }),

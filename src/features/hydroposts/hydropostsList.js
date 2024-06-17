@@ -32,6 +32,7 @@ export const HydropostsList = () => {
   if (isLoading) {
     content = <Spinner text="Loading..." />
   } else if (isSuccess) {
+    // alert(JSON.stringify(posts))
     const renderedPosts = sortedPosts.map((post) => (
       <Hydropost key={post.sindex} post={post} />
     ))
