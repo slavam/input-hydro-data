@@ -13,7 +13,7 @@ const ipAddon = new Array(5).fill(null)
 const wbChar = new Array(5).fill(null)
 const wbAddon = new Array(5).fill(null)
 
-export const InputHydroTelegram = ()=>{
+export const InputHydroTelegram = ({postCode})=>{
   let showResponse = false
   const [hydroData, setHydroData] = useState(null)
   const {
@@ -21,7 +21,7 @@ export const InputHydroTelegram = ()=>{
     isSuccess,
   } = useSaveHydroDataQuery(hydroData)
   // const saveHydroTelegram = useSaveHydroDataQuery(hydroData)
-  const hydroPostCode = '99999' //process.env.REACT_APP_CODE_83028
+  const hydroPostCode = postCode //'99999' //process.env.REACT_APP_CODE_83028
   
   const [term, setTerm] = useState('08')
   const [contentIndex, setContentIndex] = useState('1')
@@ -414,6 +414,7 @@ export const InputHydroTelegram = ()=>{
 
   const onSubmit = (data) => {
     let hydroData = {
+      telegram,
       hydroPostCode,
       waterLevel,
       waterLevelDeviation
