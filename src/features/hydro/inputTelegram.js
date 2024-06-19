@@ -12,9 +12,10 @@ const ipChar = new Array(5).fill(null)
 const ipAddon = new Array(5).fill(null)
 const wbChar = new Array(5).fill(null)
 const wbAddon = new Array(5).fill(null)
+let showResponse = false
 
 export const InputHydroTelegram = ({postCode})=>{
-  let showResponse = false
+  
   const [hydroData, setHydroData] = useState(null)
   const {
     data: response = {},
@@ -460,10 +461,10 @@ export const InputHydroTelegram = ({postCode})=>{
     setHydroData(hydroData)
     showResponse = true
     
-    if(showResponse && isSuccess){ // && (response.response.failed_count==="0") && (response.response.success_count !== '0')){
-      alert(`Данные сохранены ${JSON.stringify(response.response.response.success_count)}`)
-      showResponse = false
-    }
+    // if(showResponse && isSuccess){ // && (response.response.failed_count==="0") && (response.response.success_count !== '0')){
+    //   alert(`Данные сохранены ${JSON.stringify(response.response.response.success_count)}`)
+    //   showResponse = false
+    // }
   }
   
   let formGroup17
@@ -884,6 +885,10 @@ export const InputHydroTelegram = ({postCode})=>{
     <p>{telegram}</p>
     {myForm}
   </div>
+  if(showResponse && isSuccess && response.response){ // .failed_count==="0") && (response.response.success_count !== '0')){
+    alert(`Данные сохранены ${JSON.stringify(response.response.response.success_count)}`)
+    showResponse = false
+  }
   return (
     <section>
       <h2>Ввод гидротелеграмм</h2>

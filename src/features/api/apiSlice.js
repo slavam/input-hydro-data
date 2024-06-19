@@ -140,9 +140,9 @@ export const apiSlice = createApi({
           let url = window.location.href
           let ipAddress = ((url.indexOf('localhost')>-1) || (url.indexOf('//10.54.')>-1))? '10.54.1.11':'31.133.32.14:8083'
           Object.keys(hydroData).forEach(key=>{s+=(`${key}=${hydroData[key]}&`)})
-          return `http://${ipAddress}/conservations/save_hydro_data?mode=opaque&${s.slice(0,-1)}`
+          // return `http://${ipAddress}/conservations/save_hydro_data?mode=no-cors&${s.slice(0,-1)}`
           // return `http://10.54.1.11/conservations/save_hydro_data?mode=opaque&${s.slice(0,-1)}`
-          // return `http://localhost:3001/conservations/save_hydro_data?mode=opaque&${s.slice(0,-1)}`
+          return `http://localhost:3001/conservations/save_hydro_data?mode=opaque&${s.slice(0,-1)}`
         }
       },
     }),
