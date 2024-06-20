@@ -886,7 +886,10 @@ export const InputHydroTelegram = ({postCode})=>{
     {myForm}
   </div>
   if(showResponse && isSuccess && response.response){ // .failed_count==="0") && (response.response.success_count !== '0')){
-    alert(`Данные сохранены ${JSON.stringify(response.response.response.success_count)}`)
+    let csdnSection1 = response.response.response.failed_count==='0'? 'В ЦСДН сохранены данные.':'Ошибка при сохранении данных.'
+    // let csdnSection6 = !!(response.response.response_water_consumption && (response.response.response_water_consumption.failed_count==='0'))?'В ЦСДН сохранены данные раздела 6':'Ошибка при сохранении данных раздела 6'
+    let localDB = response.response.message ? `${response.response.message}` : ''
+    alert(`${csdnSection1} ${localDB}`)
     showResponse = false
   }
   return (
