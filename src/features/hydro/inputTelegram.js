@@ -7,6 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form'
 import Accordion from 'react-bootstrap/Accordion'
+import { AccordionEventKey } from 'react-bootstrap/AccordionContext'
 
 const ipChar = new Array(5).fill(null)
 const ipAddon = new Array(5).fill(null)
@@ -32,7 +33,7 @@ export const InputHydroTelegram = ({postCode})=>{
   let lastDay = 32 - new Date(currYear, currMonth, 32).getDate()
   let d = today.getUTCDate()
   let currDay = d>9 ? d : ('0'+d)
-  const group03 = `${currDay}${term}${contentIndex}`
+  // const group03 = `${currDay}${term}${contentIndex}`
   
   const [group11, setGroup11] = useState('10000')
   const [waterLevel, setWaterLevel] = useState(0)
@@ -40,7 +41,7 @@ export const InputHydroTelegram = ({postCode})=>{
   const [waterLevelDeviation, setWaterLevelDeviation] = useState(0)
   const [waterTemperature, setWaterTemperature] = useState(0)
   const [airTemperature, setAirTemperature] = useState(null)
-  const [telegram, setTelegram] = useState(`HHZZ ${hydroPostCode} ${group03} ${group11} ${group12}=`) 
+  const [telegram, setTelegram] = useState(`HHZZ ${hydroPostCode} ${currDay}${term}${contentIndex} 10000 20000=`) //useState(`HHZZ ${hydroPostCode} ${group03} ${group11} ${group12}=`) 
   
   const waterLevelChanged = (e)=>{
     let wl = +e.target.value
@@ -279,18 +280,13 @@ export const InputHydroTelegram = ({postCode})=>{
     else 
       return telegram.slice(0,start16)+allG6+telegram.slice(start16+allG6.length+6)
   }
-  // const group0_5 = `HHZZ ${hydroPostCode} ${group03} ${group11} ${group12}${group14}` //${group15}`
   const showGroup16=()=>{
     wbChar[0] = '00'
     wbAddon[0] = '00'
-    // setGroup161(` 60000`)
     setWb1('0000')
     let g162 = wbChar[1]===null?'':` 6${wb2}`
-    // setGroup162(g162)
     let g163 = wbChar[2]===null?'':` 6${wb3}`
-    // setGroup163(g163)
     let g164 = wbChar[3]===null?'':` 6${wb4}`
-    // setGroup164(g164)
     let g165 = wbChar[4]===null?'':` 6${wb5}`
     let g6 = ` 60000${g162}${g163}${g164}${g165}`
     let start16 = (telegram[29]==='4'? 28+6 : 28) + combineG5().length
@@ -328,22 +324,16 @@ export const InputHydroTelegram = ({postCode})=>{
     setWb2(wb2)
     wbChar[1] = wb2.slice(0,2)
     wbAddon[1] = wb2.slice(2)
-    // setGroup162(` 6${wb2}`)
-    // setTelegram(`${group0_5}${group161} 6${wb2}${group163}${group164}${group165}${group17}=`)
     setTelegram(changeG6())
   }
   const showGroup163=()=>{
     wbChar[2]=wbAddon[2] = 0
-    // setGroup163(` 60000`)
     setWb3('0000')
-    // setTelegram(`${group0_5}${group161}${group162} 60000${group164}${group165}${group17}=`)
     setTelegram(changeG6('show'))
   }
   const hideGroup163=()=>{
     wbChar[2]=wbAddon[2] = null
     setWb3('0000')
-    // setGroup163('')
-    // setTelegram(`${group0_5}${group161}${group162}${group164}${group165}${group17}=`)
     setTelegram(changeG6('hide'))
   }
   const wb3Changed = (e)=>{
@@ -352,22 +342,16 @@ export const InputHydroTelegram = ({postCode})=>{
     setWb3(wb3)
     wbChar[2] = wb3.slice(0,2)
     wbAddon[2] = wb3.slice(2)
-    // setGroup163(` 6${wb3}`)
-    // setTelegram(`${group0_5}${group161}${group162} 6${wb3}${group164}${group165}${group17}=`)
     setTelegram(changeG6())
   }
   const showGroup164=()=>{
     wbChar[3]=wbAddon[3]=0
-    // setGroup164(` 60000`)
     setWb4('0000')
-    // setTelegram(`${group0_5}${group161}${group162}${group163} 60000${group165}${group17}=`)
     setTelegram(changeG6('show'))
   }
   const hideGroup164=()=>{
     wbChar[3]=ipAddon[3]= null
     setWb4('0000')
-    // setGroup164('')
-    // setTelegram(`${group0_5}${group161}${group162}${group163}${group165}${group17}=`)
     setTelegram(changeG6('hide'))
   }
   const wb4Changed = (e)=>{
@@ -376,22 +360,16 @@ export const InputHydroTelegram = ({postCode})=>{
     setWb4(wb4)
     wbChar[3] = wb4.slice(0,2)
     wbAddon[3] = wb4.slice(2)
-    // setGroup164(` 6${wb4}`)
-    // setTelegram(`${group0_5}${group161}${group162}${group163} 6${wb4}${group165}${group17}=`)
     setTelegram(changeG6())
   }
   const showGroup165=()=>{
     wbChar[4]=wbAddon[4] = 0
-    // setGroup165(` 60000`)
     setWb5('0000')
-    // setTelegram(`${group0_5}${group161}${group162}${group163}${group164} 60000${group17}=`)
     setTelegram(changeG6('show'))
   }
   const hideGroup165=()=>{
     wbChar[4]=ipAddon[4] = null
     setWb5('0000')
-    // setGroup165('')
-    // setTelegram(`${group0_5}${group161}${group162}${group163}${group164}${group17}=`)
     setTelegram(changeG6('hide'))
   }
   const wb5Changed = (e)=>{
@@ -400,8 +378,6 @@ export const InputHydroTelegram = ({postCode})=>{
     setWb5(wb5)
     wbChar[4] = wb5.slice(0,2)
     wbAddon[4] = wb5.slice(2)
-    // setGroup165(` 6${wb5}`)
-    // setTelegram(`${group0_5}${group161}${group162}${group163}${group164} 6${wb5}${group17}=`)
     setTelegram(changeG6())
   }
 
@@ -412,6 +388,22 @@ export const InputHydroTelegram = ({postCode})=>{
     reset,
     formState: { errors },
   } = useForm({})
+
+  const [activeKeys, setActiveKeys] = useState(["0"]);
+  const handleSelect = (eventKey) => setActiveKeys(eventKey);
+  // const handleToggleClick = () => {
+  //   const index = activeKeys.indexOf("0");
+  //   if (index > -1) {
+  //     activeKeys.splice(index, 1);
+  //     setActiveKeys([...activeKeys]);
+  //   } else {
+  //     setActiveKeys(activeKeys.concat("0"));
+  //   }
+  // }
+  // const handleCollapseClick = () => {
+  //   setActiveKeys([]);
+  // }
+
 
   const onSubmit = (data) => {
     let hydroData = {
@@ -428,8 +420,11 @@ export const InputHydroTelegram = ({postCode})=>{
       for (let i = 0; i < 5; i++) {
         if(ipChar[i]!==null){
           hydroData = {...hydroData,[`ip${i*2}`]:ipChar[i]}
-          if(ipAddon[i]>10 && (ipAddon[i]!==ipChar[i]))
-            hydroData = {...hydroData,[`ip${i*2+1}`]:ipAddon[i]}
+          if(ipAddon[i]>10){ // character
+            if(ipAddon[i]!==ipChar[i])
+              hydroData = {...hydroData,[`ip${i*2+1}`]:ipAddon[i]}
+          }else //intense
+            hydroData = {...hydroData,[`ii${i*2+1}`]:ipAddon[i]}
         }
       }
     }
@@ -437,8 +432,11 @@ export const InputHydroTelegram = ({postCode})=>{
       for (let i = 0; i < 5; i++) {
         if(wbChar[i]!==null){
           hydroData = {...hydroData,[`wb${i*2}`]:wbChar[i]}
-          if(wbAddon[i]>10 && (wbAddon[i]!==wbChar[i]))
-            hydroData = {...hydroData,[`wb${i*2+1}`]:wbAddon[i]}
+          if(wbAddon[i]>10){
+            if(wbAddon[i]!==wbChar[i])
+              hydroData = {...hydroData,[`wb${i*2+1}`]:wbAddon[i]}
+          }else
+            hydroData = {...hydroData,[`wi${i*2+1}`]:wbAddon[i]}
         }
       }
     }
@@ -460,11 +458,9 @@ export const InputHydroTelegram = ({postCode})=>{
     }
     setHydroData(hydroData)
     showResponse = true
+    setActiveKeys([])
+    setTelegram(`HHZZ ${hydroPostCode} ${currDay}${term}${contentIndex} 10000 20000=`)
     
-    // if(showResponse && isSuccess){ // && (response.response.failed_count==="0") && (response.response.success_count !== '0')){
-    //   alert(`Данные сохранены ${JSON.stringify(response.response.response.success_count)}`)
-    //   showResponse = false
-    // }
   }
   
   let formGroup17
@@ -504,8 +500,8 @@ export const InputHydroTelegram = ({postCode})=>{
     setTelegram(newText)
   }
   if(((d+0) % 5 === 0) || (d === lastDay)){
-    formGroup17 = <Accordion flush>
-      <Accordion.Item eventKey="0">
+    formGroup17 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}> {/*</Accordion><Accordion flush>*/}
+      <Accordion.Item eventKey="13">
         <Accordion.Header>Лёд/Снег (Группа 7)</Accordion.Header>
         <Accordion.Body onEnter={showGroup17} onExited={hideGroup17}>
           <Form.Group className="mb-3" controlId="form-ice-thickness">
@@ -656,8 +652,10 @@ export const InputHydroTelegram = ({postCode})=>{
     let newText = telegram.slice(0,l-11)+md.toString().padStart(4,'0')+telegram.slice(l-7)
     setTelegram(newText)
   }
-  const additionSection6 = <Accordion flush>
-    <Accordion.Item eventKey="0">
+
+
+  const additionSection6 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}> {/*</Accordion><Accordion flush>*/}
+    <Accordion.Item eventKey="14">
       <Accordion.Header>Расход воды (Раздел 6)</Accordion.Header>
       <Accordion.Body onEnter={showSection6} onExited={hideSection6}>
         <Form.Group className="mb-3" controlId="form-observed-date">
@@ -721,7 +719,8 @@ export const InputHydroTelegram = ({postCode})=>{
           Изменение уровня воды в сантиметрах
         </Form.Text>
       </Form.Group>
-      <Accordion flush>
+      {/* <Accordion flush> */}
+      <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
         <Accordion.Item eventKey="0">
           <Accordion.Header>Температура воды и воздуха (Группа 4)</Accordion.Header>
           <Accordion.Body onEnter={showGroup14} onExited={hideGroup14}>
@@ -732,8 +731,9 @@ export const InputHydroTelegram = ({postCode})=>{
                 С точностью до десятых
               </Form.Text>
             </Form.Group>
-            <Accordion flush>
-              <Accordion.Item eventKey="2" >
+            {/* <Accordion flush> */}
+            <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+              <Accordion.Item eventKey="1" >
                 <Accordion.Header>Температура воздуха</Accordion.Header>
                 <Accordion.Body onEnter={showAirTemperature} onExited={hideAirTemperature}>
                   <Form.Group className="mb-3" controlId="formAirTemperature">
@@ -746,8 +746,9 @@ export const InputHydroTelegram = ({postCode})=>{
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
-      <Accordion flush>
-        <Accordion.Item eventKey="0">
+      {/* <Accordion flush > */}
+      <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+        <Accordion.Item eventKey="2">
           {/* <Accordion.Toggle ref={accordion152Ref} as={Button} variant="link" eventKey="0">
                   create new group
           </Accordion.Toggle> */}
@@ -757,29 +758,30 @@ export const InputHydroTelegram = ({postCode})=>{
               <Form.Label>Характеристика/интенсивность явления (Введите 4 цифры в формате EEii или EEEE)</Form.Label>
               <Form.Control type="number" value={ip1} onChange={ip1Changed} min="1101" max="7777" pattern="[0-9]{4}" />
             </Form.Group>
-            <Accordion >
-              <Accordion.Item eventKey="1" id="accordion-ip2" >
+            {/* <Accordion > */}
+            <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+              <Accordion.Item eventKey="3" id="accordion-ip2" >
                 <Accordion.Header>Экземпляр 2</Accordion.Header>
                 <Accordion.Body onEnter={showGroup152} onExited={hideGroup152}>
                   <Form.Group className="mb-3" controlId="formIp2">
                     <Form.Control type="number" value={ip2} onChange={e=>ip2Changed(e)} min="1101" max="7777" pattern="[0-9]{4}"/>
                   </Form.Group>
                   <Accordion>
-                    <Accordion.Item eventKey="2">
+                    <Accordion.Item eventKey="4">
                       <Accordion.Header>Экземпляр 3</Accordion.Header>
                       <Accordion.Body onEnter={showGroup153} onExited={hideGroup153}>
                         <Form.Group className="mb-3" controlId="formIp3" >
                           <Form.Control type="number" value={ip3} onChange={ip3Changed} min="1101" max="7777" pattern="[0-9]{4}" />
                         </Form.Group>
                         <Accordion>
-                          <Accordion.Item eventKey="3">
+                          <Accordion.Item eventKey="5">
                             <Accordion.Header>Экземпляр 4</Accordion.Header>
                             <Accordion.Body onEnter={showGroup154} onExited={hideGroup154}>
                               <Form.Group className="mb-3" controlId="formIp4">
                                 <Form.Control type="number" value={ip4} onChange={ip4Changed} min="1101" max="7777" pattern="[0-9]{4}" />
                               </Form.Group>
                               <Accordion>
-                                <Accordion.Item eventKey="4">
+                                <Accordion.Item eventKey="6">
                                   <Accordion.Header>Экземпляр 5</Accordion.Header>
                                   <Accordion.Body onEnter={showGroup155} onExited={hideGroup155}>
                                     <Form.Group className="mb-3" controlId="formIp5">
@@ -800,8 +802,9 @@ export const InputHydroTelegram = ({postCode})=>{
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
-      <Accordion flush>
-        <Accordion.Item eventKey="0">
+      {/* <Accordion flush> */}
+      <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+        <Accordion.Item eventKey="7">
           <Accordion.Header>Состояние водного объекта (Группа 6)</Accordion.Header>
           <Accordion.Body onEnter={showGroup16} onExited={hideGroup16}>
             <Form.Group className="mb-3" controlId="formStateWaterBody">
@@ -809,7 +812,7 @@ export const InputHydroTelegram = ({postCode})=>{
               <Form.Control type="text" value={wb1} onChange={e=>wb1Changed(e)} pattern="[0-9]{4}" min="0000" max="9191" />
             </Form.Group>
             <Accordion>
-              <Accordion.Item eventKey="1">
+              <Accordion.Item eventKey="8">
                 <Accordion.Header>Экземпляр 2</Accordion.Header>
                 <Accordion.Body onEnter={showGroup162} onExited={hideGroup162}>
                   <Form.Group className="mb-3" controlId="form-wb2">
@@ -819,7 +822,7 @@ export const InputHydroTelegram = ({postCode})=>{
               </Accordion.Item>
             </Accordion>
             <Accordion>
-              <Accordion.Item eventKey="2">
+              <Accordion.Item eventKey="9">
                 <Accordion.Header>Экземпляр 3</Accordion.Header>
                 <Accordion.Body onEnter={showGroup163} onExited={hideGroup163}>
                   <Form.Group className="mb-3" controlId="form-wb3">
@@ -829,7 +832,7 @@ export const InputHydroTelegram = ({postCode})=>{
               </Accordion.Item>
             </Accordion>
             <Accordion>
-              <Accordion.Item eventKey="3">
+              <Accordion.Item eventKey="10">
                 <Accordion.Header>Экземпляр 4</Accordion.Header>
                 <Accordion.Body onEnter={showGroup164} onExited={hideGroup164}>
                   <Form.Group className="mb-3" controlId="form-wb4">
@@ -839,7 +842,7 @@ export const InputHydroTelegram = ({postCode})=>{
               </Accordion.Item>
             </Accordion>
             <Accordion>
-              <Accordion.Item eventKey="4">
+              <Accordion.Item eventKey="11">
                 <Accordion.Header>Экземпляр 5</Accordion.Header>
                 <Accordion.Body onEnter={showGroup165} onExited={hideGroup165}>
                   <Form.Group className="mb-3" controlId="form-wb5">
@@ -852,8 +855,9 @@ export const InputHydroTelegram = ({postCode})=>{
         </Accordion.Item>
       </Accordion>
       {formGroup17}
-      <Accordion flush>
-        <Accordion.Item eventKey="0">
+      {/* <Accordion flush> */}
+      <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+        <Accordion.Item eventKey="12">
           <Accordion.Header>Осадки (Группа 0)</Accordion.Header>
           <Accordion.Body onEnter={showGroup10} onExited={hideGroup10}>
             <Form.Group className="mb-3" controlId="form-precipitation">
@@ -878,6 +882,9 @@ export const InputHydroTelegram = ({postCode})=>{
       <Button variant="primary" type="submit">
         Сохранить
       </Button>
+      {/* <br/>
+      <Button onClick={handleToggleClick} >Toggle First</Button>
+      <Button onClick={handleCollapseClick}>Collapse All</Button> */}
     </Form>
 
   let content
