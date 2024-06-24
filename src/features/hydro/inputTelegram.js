@@ -7,7 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form'
 import Accordion from 'react-bootstrap/Accordion'
-import { AccordionEventKey } from 'react-bootstrap/AccordionContext'
+// import { AccordionEventKey } from 'react-bootstrap/AccordionContext'
 
 const ipChar = new Array(5).fill(null)
 const ipAddon = new Array(5).fill(null)
@@ -403,7 +403,12 @@ export const InputHydroTelegram = ({postCode})=>{
   // const handleCollapseClick = () => {
   //   setActiveKeys([]);
   // }
-
+  const myReset = ()=>{
+    setWaterLevel(0)
+    setWaterLevelDeviation(0)
+    setActiveKeys([])
+    setTelegram(`HHZZ ${hydroPostCode} ${currDay}${term}${contentIndex} 10000 20000=`)
+  }
 
   const onSubmit = (data) => {
     let hydroData = {
@@ -458,8 +463,7 @@ export const InputHydroTelegram = ({postCode})=>{
     }
     setHydroData(hydroData)
     showResponse = true
-    setActiveKeys([])
-    setTelegram(`HHZZ ${hydroPostCode} ${currDay}${term}${contentIndex} 10000 20000=`)
+    myReset()
     
   }
   
