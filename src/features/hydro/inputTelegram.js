@@ -44,9 +44,12 @@ export const InputHydroTelegram = ({postCode})=>{
   const [telegram, setTelegram] = useState(`HHZZ ${hydroPostCode} ${currDay}${term}${contentIndex} 10000 20000=`) //useState(`HHZZ ${hydroPostCode} ${group03} ${group11} ${group12}=`) 
   
   const waterLevelChanged = (e)=>{
-    let wl = +e.target.value
-    wl = wl>4999 ? 4999 : wl
-    wl = wl<-999 ? -999 : wl
+    let wl = e.target.value
+    if(/[-]*[0-9]{1,4}/.test(wl)){
+      wl = wl>4999 ? 4999 : wl
+      wl = wl<-999 ? -999 : wl
+    }else
+      wl = 0
     setWaterLevel(wl)
     let g1 = wl >= 0 ? wl.toString().padStart(4,'0') : (5000+Math.abs(wl)).toString()
     setGroup11(`1${g1}`)
@@ -54,17 +57,21 @@ export const InputHydroTelegram = ({postCode})=>{
     setTelegram(newText)
   }
   const waterLevelDeviationChanged = (e)=>{
-    let wld = +e.target.value
-    wld = wld>999 ? 999 : wld
-    wld = wld<-999 ? -999 : wld
+    let wld = e.target.value //[0]==='-'? e.target.value.padStart()
+    if(/^[-]*[0-9]{1,3}$/.test(e.target.value)){
+      // wld = wld>999 ? 999 : wld
+      // wld = wld<-999 ? -999 : wld
+    }else{
+      wld = '0'
+    }
     setWaterLevelDeviation(wld)
-    let g2 = wld === 0 ? '0000' : (wld>0 ? (wld.toString().padStart(3,'0')+'1') : (Math.abs(wld).toString().padStart(3,'0')+'2'))
+    let g2 = +wld === 0 ? '0000' : (wld>0 ? (wld.toString().padStart(3,'0')+'1') : (Math.abs(wld).toString().padStart(3,'0')+'2'))
     setGroup12(`2${g2}`)
     let newText = telegram.slice(0,24)+`${g2}`+telegram.slice(28) 
     setTelegram(newText)
   }
   const showGroup14=()=>{
-    setWaterTemperature(0.0)
+    setWaterTemperature(0)
     if(airTemperature !== null)
       setAirTemperature(0)
     let newText = telegram.slice(0,28)+` 400${airTemperature===null? '//':'00'}`+telegram.slice(28)
@@ -86,22 +93,33 @@ export const InputHydroTelegram = ({postCode})=>{
     setTelegram(newText)
   }
   const waterTemperatureChanged = (e)=>{
-    let wt = +e.target.value
-    wt = wt>9.9 ? 9.9 : wt
-    wt = wt<0.0 ? 0.0 : wt
+    let wt = e.target.value
+    if(/^[0-9]$|(^[0-9][\.,][0-9]{0,1}$)/.test(e.target.value)){
+    }else{
+      let s = e.target.value.length<1? '00':e.target.value
+      wt = s.indexOf('.')>=0? s.slice(0,3):s[1]
+    }
     setWaterTemperature(wt)
-    let newText = telegram.slice(0,30)+`${wt>=1 ? wt*10 : '0'+(wt*10)}`+telegram.slice(32)
+    let newText = telegram.slice(0,30)+`${wt>=1 ? wt*10 : '0'+(wt*10)}`+telegram.slice(32) //+'>'+e.target.value+'<'
     setTelegram(newText)
   }
   const airTemperatureChanged=(e)=>{
-    let at = +e.target.value
-    at = at>49 ? 49 : at
-    at = at<-49 ? -49 : at
+    let at = e.target.value
+    if(/^-{0,1}[0-9]$|^-{0,1}[0-4][0-9]$/.test(at)){
+      at = +at>49 ? 49 : at
+      at = +at<-49 ? -49 : at
+    }else{
+      if(at[0]==='-')
+        at = at.length>3? at.slice(0,3): at //(at.length===1? '-1':at)
+      else
+        at = at.length>2? at.slice(0,2): at
+    }
     setAirTemperature(at)
-    let newText = telegram.slice(0,32)+`${at<0 ? 50-at : (at>=0 && at<10 ? '0'+at : at)}`+telegram.slice(34)
+    let newText = telegram.slice(0,32)+`${at<0 ? 50-at : (at>=0 && at<10 ? '0'+at : at)}`+telegram.slice(34) //+'>'+at+'<'
     setTelegram(newText)
   }
-  const [ip1,setIp1] = useState(1101)
+  const [ip1,setIp1] = useState(11)
+  const [ii1,setIi1] = useState(1)
   const [ip2,setIp2] = useState(1101)
   const [ip3,setIp3] = useState(1101)
   const [ip4,setIp4] = useState(1101)
@@ -116,7 +134,8 @@ export const InputHydroTelegram = ({postCode})=>{
   const showGroup15=()=>{
     ipChar[0] = 11
     ipAddon[0] = '01'
-    setIp1(1101)
+    setIp1(11)
+    setIi1(1)
     let g152 = ipChar[1]===null?'':` 5${ip2}`
     let g153 = ipChar[2]===null?'':` 5${ip3}`
     let g154 = ipChar[3]===null?'':` 5${ip4}`
@@ -132,16 +151,37 @@ export const InputHydroTelegram = ({postCode})=>{
     let newText = telegram.replace(/ 5..../g,'')
     setTelegram(newText)
   }
-  const ip1Changed = (e)=>{
-    let ip1 = e.target.value.padStart(4,'0').slice(0,4)
-    ip1 = +ip1>7777? '7777' : ip1
+  
+  const ip1CodeChanged = e=>{
+    let ip1 = e.target.value
     setIp1(ip1)
-    ipChar[0] = ip1.slice(0,2)
-    ipAddon[0] = ip1.slice(2)
+    ipChar[0] = ip1
     let start151 = telegram[29]==='4'? 28+6 : 28
-    let newText = telegram.slice(0,start151+2)+ip1+telegram.slice(start151+6)
+    let newText = telegram.slice(0,start151+2)+ip1+telegram.slice(start151+4) //+'>'+cursorPosition+'<'
     setTelegram(newText)
   }
+  const ii1CodeChanged = e=>{
+    let ii1 = e.target.value
+    setIi1(ii1)
+    ipAddon[0] = ii1
+    let start151 = telegram[29]==='4'? 28+6 : 28
+    let newText = telegram.slice(0,start151+4)+ii1+telegram.slice(start151+6) //+'>'+cursorPosition+'<'
+    setTelegram(newText)
+  }
+  // const ip1Changed = (e)=>{
+  //   let ip1 = e.target.value.padEnd(4,'0').slice(0,4)
+  //   if(/^[0-9]{4}$/.test(ip1)){
+  //     ip1 = +ip1>7777? '7777' : ip1
+  //     ip1 = +ip1<1101? '1101' : ip1
+  //   }else      
+  //     ip1='1101' //e.target.value.padEnd(4,'0').slice(0,4)
+  //   setIp1(ip1)
+  //   ipChar[0] = ip1.slice(0,2)
+  //   ipAddon[0] = ip1.slice(2)
+  //   let start151 = telegram[29]==='4'? 28+6 : 28
+  //   let newText = telegram.slice(0,start151+2)+ip1+telegram.slice(start151+6) //+'>'+cursorPosition+'<'
+  //   setTelegram(newText)
+  // }
   const showGroup152=()=>{
     ipChar[1] = 11
     ipAddon[1] = '01'
@@ -656,8 +696,30 @@ export const InputHydroTelegram = ({postCode})=>{
     let newText = telegram.slice(0,l-11)+md.toString().padStart(4,'0')+telegram.slice(l-7)
     setTelegram(newText)
   }
-
-
+  let ipCodes = []
+  for (let index = 11; index < 78; index++){
+    ipCodes.push(index);
+  }
+  const ipCodeChanged = e=>{
+    let ip2 = e.target.value+'01' //.padStart(4,'0').slice(0,4)
+    // ip2 = +ip2>7777? '7777' : ip2
+    setIp2(ip2)
+    ipChar[1] = ip2.slice(0,2)
+    ipAddon[1] = ip2.slice(2)
+    let start151 = telegram.indexOf(' 5')
+    let allG5 = combineG5()
+    let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length)
+    setTelegram(newText)
+  }
+  // const a = [1,2,3,4,5]
+  // let i = 0
+  // options77 = a.map(num => {i++; return <options value={i}>{i}</options>})
+  // [1,2,3,4,5].forEach(function(currentValue, index, array) {
+  //   options77.push(<options value={index}>ooo</options>)
+  // });
+  // options77.push(<option value={i}>One</option>)
+  // options77.push(<option value="2">Two</option>)
+  
   const additionSection6 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}> {/*</Accordion><Accordion flush>*/}
     <Accordion.Item eventKey="14">
       <Accordion.Header>Расход воды (Раздел 6)</Accordion.Header>
@@ -711,26 +773,26 @@ export const InputHydroTelegram = ({postCode})=>{
       <Form.Label>Раздел 1</Form.Label>
       <Form.Group className="mb-3" controlId="formWaterLevel">
         <Form.Label>Уровень воды (Группа 1)</Form.Label>
-        <Form.Control type="number" value={waterLevel} onChange={waterLevelChanged} min="-999" max="4999" />
+        <Form.Control type="number" value={waterLevel} onChange={waterLevelChanged} min="-999" max="4999" pattern="[-]*[0-9]{1,3}"/>
         <Form.Text className="text-muted">
           Уровень воды над нулем поста в сантиметрах
         </Form.Text>
       </Form.Group>
       <Form.Group className="mb-3" controlId="formWaterLevelDeviation">
         <Form.Label>Изменение уровня воды (Группа 2)</Form.Label>
-        <Form.Control type="number" value={waterLevelDeviation} onChange={waterLevelDeviationChanged} min="-999" max="999"/>
+        <Form.Control type="number" value={waterLevelDeviation} onChange={waterLevelDeviationChanged} min="-999" max="999" pattern="[-]*[0-9]{1,3}"/>
         <Form.Text className="text-muted">
           Изменение уровня воды в сантиметрах
         </Form.Text>
       </Form.Group>
       {/* <Accordion flush> */}
       <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
-        <Accordion.Item eventKey="0">
+        <Accordion.Item eventKey="15">
           <Accordion.Header>Температура воды и воздуха (Группа 4)</Accordion.Header>
           <Accordion.Body onEnter={showGroup14} onExited={hideGroup14}>
             <Form.Group className="mb-3" controlId="formWaterTemperature">
               <Form.Label>Температура воды</Form.Label>
-              <Form.Control type="number" value={waterTemperature} onChange={waterTemperatureChanged} min="0.0" max="9.9" step="0.1"/>
+              <Form.Control type="number" value={waterTemperature} onChange={waterTemperatureChanged} min="0.0" max="9.9" step="0.1" pattern='^[0-9]$|(^[0-9][\.,][0-9]{0,1}$)'/>
               <Form.Text className="text-muted">
                 С точностью до десятых
               </Form.Text>
@@ -742,7 +804,7 @@ export const InputHydroTelegram = ({postCode})=>{
                 <Accordion.Body onEnter={showAirTemperature} onExited={hideAirTemperature}>
                   <Form.Group className="mb-3" controlId="formAirTemperature">
                     {/* <Form.Label>Температура воды</Form.Label> */}
-                    <Form.Control type="number" value={airTemperature} onChange={airTemperatureChanged} min="-49" max="49" />
+                    <Form.Control type="number" value={airTemperature} onChange={airTemperatureChanged} min="-49" max="49" pattern="^-{0,1}[0-9]$|^-{0,1}[0-4][0-9]$"/>
                   </Form.Group>
                 </Accordion.Body>
               </Accordion.Item>
@@ -753,14 +815,18 @@ export const InputHydroTelegram = ({postCode})=>{
       {/* <Accordion flush > */}
       <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
         <Accordion.Item eventKey="2">
-          {/* <Accordion.Toggle ref={accordion152Ref} as={Button} variant="link" eventKey="0">
-                  create new group
-          </Accordion.Toggle> */}
           <Accordion.Header>Ледовые явления (Группа 5)</Accordion.Header>
           <Accordion.Body onEnter={showGroup15} onExited={hideGroup15}>
             <Form.Group className="mb-3" controlId="formIcePhenomena">
-              <Form.Label>Характеристика/интенсивность явления (Введите 4 цифры в формате EEii или EEEE)</Form.Label>
-              <Form.Control type="number" value={ip1} onChange={ip1Changed} min="1101" max="7777" pattern="[0-9]{4}" />
+              <Form.Label>Выберите характеристику явления</Form.Label>
+              <Form.Select onChange={ip1CodeChanged}>
+                {ipCodes.map(num => <option value={num}>{num}</option>)}
+              </Form.Select>
+              <Form.Label>Выберите характеристику или интенсивность явления</Form.Label>
+              <Form.Select onChange={ii1CodeChanged}>
+                {ipCodes.map(num => <option value={num}>{num}</option>)}
+              </Form.Select>
+              {/* <Form.Control type="number" value={ip1} onChange={ip1Changed} min="1101" max="7777" pattern="^[0-9]{4}$" /> */}
             </Form.Group>
             {/* <Accordion > */}
             <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
@@ -768,7 +834,10 @@ export const InputHydroTelegram = ({postCode})=>{
                 <Accordion.Header>Экземпляр 2</Accordion.Header>
                 <Accordion.Body onEnter={showGroup152} onExited={hideGroup152}>
                   <Form.Group className="mb-3" controlId="formIp2">
-                    <Form.Control type="number" value={ip2} onChange={e=>ip2Changed(e)} min="1101" max="7777" pattern="[0-9]{4}"/>
+                    <Form.Select aria-label="Default select example" onChange={ipCodeChanged}>
+                      {ipCodes.map(num => <option value={num}>{num}</option>)}
+                    </Form.Select>
+                    {/* <Form.Control type="number" value={ip2} onChange={e=>ip2Changed(e)} min="1101" max="7777" pattern="[0-9]{4}"/> */}
                   </Form.Group>
                   <Accordion>
                     <Accordion.Item eventKey="4">
