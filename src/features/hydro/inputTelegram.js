@@ -7,6 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form'
 import Accordion from 'react-bootstrap/Accordion'
+import { icePhenomena, waterBodies } from '../../components/dictionaries'
 // import { AccordionEventKey } from 'react-bootstrap/AccordionContext'
 
 const ipChar = new Array(5).fill(null)
@@ -120,10 +121,14 @@ export const InputHydroTelegram = ({postCode})=>{
   }
   const [ip1,setIp1] = useState(11)
   const [ii1,setIi1] = useState(1)
-  const [ip2,setIp2] = useState(1101)
-  const [ip3,setIp3] = useState(1101)
-  const [ip4,setIp4] = useState(1101)
-  const [ip5,setIp5] = useState(1101)
+  const [ip2,setIp2] = useState(11)
+  const [ii2,setIi2] = useState(1)
+  const [ip3,setIp3] = useState(11)
+  const [ii3,setIi3] = useState(1)
+  const [ip4,setIp4] = useState(11)
+  const [ii4,setIi4] = useState(1)
+  const [ip5,setIp5] = useState(11)
+  const [ii5,setIi5] = useState(1)
   const combineG5=()=>{
     let ret = ''
     for (let i = 0; i < ipChar.length; i++){
@@ -136,10 +141,10 @@ export const InputHydroTelegram = ({postCode})=>{
     ipAddon[0] = '01'
     setIp1(11)
     setIi1(1)
-    let g152 = ipChar[1]===null?'':` 5${ip2}`
-    let g153 = ipChar[2]===null?'':` 5${ip3}`
-    let g154 = ipChar[3]===null?'':` 5${ip4}`
-    let g155 = ipChar[4]===null?'':` 5${ip5}`
+    let g152 = ipChar[1]===null?'':` 5${ip2}${ii2}`
+    let g153 = ipChar[2]===null?'':` 5${ip3}${ii3}`
+    let g154 = ipChar[3]===null?'':` 5${ip4}${ii4}`
+    let g155 = ipChar[4]===null?'':` 5${ip5}${ii5}`
     let g5 = ` 51101${g152}${g153}${g154}${g155}`
     let start15 = telegram[29]==='4'? 28+6 : 28
     let newText = telegram.slice(0,start15)+g5+telegram.slice(start15)
@@ -151,158 +156,177 @@ export const InputHydroTelegram = ({postCode})=>{
     let newText = telegram.replace(/ 5..../g,'')
     setTelegram(newText)
   }
-  
+  // let start151
   const ip1CodeChanged = e=>{
     let ip1 = e.target.value
     setIp1(ip1)
     ipChar[0] = ip1
     let start151 = telegram[29]==='4'? 28+6 : 28
-    let newText = telegram.slice(0,start151+2)+ip1+telegram.slice(start151+4) //+'>'+cursorPosition+'<'
+    let newText = telegram.slice(0,start151+2)+ip1+telegram.slice(start151+4)
     setTelegram(newText)
   }
   const ii1CodeChanged = e=>{
-    let ii1 = e.target.value
-    setIi1(ii1)
-    ipAddon[0] = ii1
+    let ii = +e.target.value>9? e.target.value : '0'+e.target.value
+    setIi1(ii)
+    ipAddon[0] = ii
     let start151 = telegram[29]==='4'? 28+6 : 28
-    let newText = telegram.slice(0,start151+4)+ii1+telegram.slice(start151+6) //+'>'+cursorPosition+'<'
+    let newText = telegram.slice(0,start151+4)+ii+telegram.slice(start151+6) //+'>'+cursorPosition+'<'
     setTelegram(newText)
   }
-  // const ip1Changed = (e)=>{
-  //   let ip1 = e.target.value.padEnd(4,'0').slice(0,4)
-  //   if(/^[0-9]{4}$/.test(ip1)){
-  //     ip1 = +ip1>7777? '7777' : ip1
-  //     ip1 = +ip1<1101? '1101' : ip1
-  //   }else      
-  //     ip1='1101' //e.target.value.padEnd(4,'0').slice(0,4)
-  //   setIp1(ip1)
-  //   ipChar[0] = ip1.slice(0,2)
-  //   ipAddon[0] = ip1.slice(2)
-  //   let start151 = telegram[29]==='4'? 28+6 : 28
-  //   let newText = telegram.slice(0,start151+2)+ip1+telegram.slice(start151+6) //+'>'+cursorPosition+'<'
-  //   setTelegram(newText)
-  // }
+  
   const showGroup152=()=>{
     ipChar[1] = 11
     ipAddon[1] = '01'
-    setIp2(1101)
+    setIp2(11)
+    setIi2(1)
     let start151 = telegram.indexOf(' 5')
-    let newText = telegram.slice(0,start151+6)+` 5${ip2}`+telegram.slice(start151+6)
+    let newText = telegram.slice(0,start151+6)+` 51101`+telegram.slice(start151+6) //${ip2}`+telegram.slice(start151+6)
     setTelegram(newText)
   }
   const hideGroup152=()=>{
     ipChar[1] = null
     ipAddon[1] = null
-    setIp2(1101)
+    setIp2(11)
+    setIi2(1)
     let start152 = telegram.indexOf(' 5')+6
     let newText = telegram.slice(0,start152)+telegram.slice(start152+6)
     setTelegram(newText)
   }
-  const ip2Changed = (e)=>{
-    let ip2 = e.target.value.padStart(4,'0').slice(0,4)
-    ip2 = +ip2>7777? '7777' : ip2
-    setIp2(ip2)
-    ipChar[1] = ip2.slice(0,2)
-    ipAddon[1] = ip2.slice(2)
+  const newG5 = k=>{
     let start151 = telegram.indexOf(' 5')
     let allG5 = combineG5()
-    let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length)
-    setTelegram(newText)
+    return telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length+k*6)
   }
+  const ip2CodeChanged = e=>{
+    let ip = e.target.value
+    setIp2(ip)
+    ipChar[1] = ip
+    // let start151 = telegram.indexOf(' 5')
+    // let allG5 = combineG5()
+    // let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length)
+    // setTelegram(newText)
+    setTelegram(newG5(0))
+  }
+  const ii2CodeChanged = e=>{
+    let ii = +e.target.value>9? e.target.value : '0'+e.target.value
+    setIi2(ii)
+    ipAddon[1] = ii
+    // let start151 = telegram.indexOf(' 5')
+    // let allG5 = combineG5()
+    // let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length)
+    // setTelegram(newText)
+    setTelegram(newG5(0))
+  }
+  
   const showGroup153=()=>{
     if(ipChar[1]===null) return
     ipChar[2] = 11
     ipAddon[2] = '01'
-    setIp3(1101)
-    let start151 = telegram.indexOf(' 5')
-    let allG5 = combineG5()
-    let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length-6)
-    setTelegram(newText)
+    setIp3(11)
+    setIi3(1)
+    setTelegram(newG5(-1))
   }
   const hideGroup153=()=>{
     ipChar[2] = null
     ipAddon[2] = null
-    setIp3(1101)
-    let allG5 = combineG5()
-    let start151 = telegram.indexOf(' 5')
-    let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length+6)
-    setTelegram(newText)
+    setIp3(11)
+    setIi3(1)
+    // let allG5 = combineG5()
+    // let start151 = telegram.indexOf(' 5')
+    // let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length+6)
+    // setTelegram(newText)
+    setTelegram(newG5(1))
   }
-  const ip3Changed = (e)=>{
-    let ip3 = e.target.value.padStart(4,'0').slice(0,4)
-    ip3 = +ip3>7777? '7777' : ip3
-    setIp3(ip3)
-    ipChar[2] = ip3.slice(0,2)
-    ipAddon[2] = ip3.slice(2)
-    let allG5 = combineG5()
-    let start151 = telegram.indexOf(' 5')
-    let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length)
-    setTelegram(newText)
+  const ip3CodeChanged = e=>{
+    let ip = e.target.value
+    setIp3(ip)
+    ipChar[2] = ip
+    // let start151 = telegram.indexOf(' 5')
+    // let allG5 = combineG5()
+    // let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length)
+    // setTelegram(newText)
+    setTelegram(newG5(0))
   }
+  const ii3CodeChanged = e=>{
+    let ii = +e.target.value>9? e.target.value : '0'+e.target.value
+    setIi3(ii)
+    ipAddon[2] = ii
+    // let start151 = telegram.indexOf(' 5')
+    // let allG5 = combineG5()
+    // let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length)
+    // setTelegram(newText)
+    setTelegram(newG5(0))
+  }
+  
   const showGroup154=()=>{
     ipChar[3] = 11
     ipAddon[3] = '01'
-    setIp4(1101)
-    let start151 = telegram.indexOf(' 5')
-    let allG5 = combineG5()
-    let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length-6)
-    setTelegram(newText)
+    setIp4(11)
+    setIi4(1)
+    setTelegram(newG5(-1))
+    // let start151 = telegram.indexOf(' 5')
+    // let allG5 = combineG5()
+    // let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length-6)
+    // setTelegram(newText)
   }
   const hideGroup154=()=>{
     ipChar[3] = null
     ipAddon[3] = null
-    setIp4(1101)
-    let allG5 = combineG5()
-    let start151 = telegram.indexOf(' 5')
-    let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length+6)
-    setTelegram(newText)
+    setIp4(11)
+    setIi4(1)
+    setTelegram(newG5(1))
   }
-  const ip4Changed = (e)=>{
-    let ip4 = e.target.value.padStart(4,'0').slice(0,4)
-    ip4 = +ip4>7777? '7777' : ip4
-    setIp4(ip4)
-    ipChar[3] = ip4.slice(0,2)
-    ipAddon[3] = ip4.slice(2)
-    let allG5 = combineG5()
-    let start151 = telegram.indexOf(' 5')
-    let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length)
-    setTelegram(newText)
+  const ip4CodeChanged = e=>{
+    let ip = e.target.value
+    setIp4(ip)
+    ipChar[3] = ip
+    setTelegram(newG5(0))
   }
+  const ii4CodeChanged = e=>{
+    let ii = +e.target.value>9? e.target.value : '0'+e.target.value
+    setIi4(ii)
+    ipAddon[3] = ii
+    setTelegram(newG5(0))
+  }
+  
   const showGroup155=()=>{
     ipChar[4] = 11
     ipAddon[4] = '01'
-    setIp5(1101)
-    let start151 = telegram.indexOf(' 5')
-    let allG5 = combineG5()
-    let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length-6)
-    setTelegram(newText)
+    setIp5(11)
+    setIi5(1)
+    setTelegram(newG5(-1))
   }
   const hideGroup155=()=>{
     ipChar[4] = null
     ipAddon[4] = null
-    setIp5(1101)
-    let allG5 = combineG5()
-    let start151 = telegram.indexOf(' 5')
-    let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length+6)
-    setTelegram(newText)
+    setIp5(11)
+    setIi5(1)
+    setTelegram(newG5(1))
   }
-  const ip5Changed = (e)=>{
-    let ip5 = e.target.value.padStart(4,'0').slice(0,4)
-    ip5 = +ip5>7777? '7777' : ip5
-    setIp5(ip5)
-    ipChar[4] = (''+ip5).slice(0,2)
-    ipAddon[4] = (''+ip5).slice(2)
-    let allG5 = combineG5()
-    let start151 = telegram.indexOf(' 5')
-    let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length)
-    setTelegram(newText)
+  const ip5CodeChanged = e=>{
+    let ip = e.target.value
+    setIp5(ip)
+    ipChar[4] = ip
+    setTelegram(newG5(0))
   }
+  const ii5CodeChanged = e=>{
+    let ii = +e.target.value>9? e.target.value : '0'+e.target.value
+    setIi5(ii)
+    ipAddon[4] = ii
+    setTelegram(newG5(0))
+  }
+  
 // group6
-  const [wb1,setWb1] = useState('0000')
-  const [wb2,setWb2] = useState('0000')
-  const [wb3,setWb3] = useState('0000')
-  const [wb4,setWb4] = useState('0000')
-  const [wb5,setWb5] = useState('0000')
+  const [wb1,setWb1] = useState('00')
+  const [wbi1,setWbi1] = useState('00')
+  const [wb2,setWb2] = useState('00')
+  const [wbi2,setWbi2] = useState('00')
+  const [wb3,setWb3] = useState('00')
+  const [wbi3,setWbi3] = useState('00')
+  const [wb4,setWb4] = useState('00')
+  const [wbi4,setWbi4] = useState('00')
+  const [wb5,setWb5] = useState('00')
+  const [wbi5,setWbi5] = useState('00')
   const combineG6=()=>{
     let ret = ''
     for (let i = 0; i < wbChar.length; i++){
@@ -323,11 +347,12 @@ export const InputHydroTelegram = ({postCode})=>{
   const showGroup16=()=>{
     wbChar[0] = '00'
     wbAddon[0] = '00'
-    setWb1('0000')
-    let g162 = wbChar[1]===null?'':` 6${wb2}`
-    let g163 = wbChar[2]===null?'':` 6${wb3}`
-    let g164 = wbChar[3]===null?'':` 6${wb4}`
-    let g165 = wbChar[4]===null?'':` 6${wb5}`
+    setWb1('00')
+    setWbi1('00')
+    let g162 = wbChar[1]===null?'':` 6${wb2}${wbi2}`
+    let g163 = wbChar[2]===null?'':` 6${wb3}${wbi3}`
+    let g164 = wbChar[3]===null?'':` 6${wb4}${wbi4}`
+    let g165 = wbChar[4]===null?'':` 6${wb5}${wbi5}`
     let g6 = ` 60000${g162}${g163}${g164}${g165}`
     let start16 = (telegram[29]==='4'? 28+6 : 28) + combineG5().length
     let newText = telegram.slice(0,start16)+g6+telegram.slice(start16)
@@ -339,87 +364,146 @@ export const InputHydroTelegram = ({postCode})=>{
     let newText = telegram.replace(/ 6..../g,'')
     setTelegram(newText)
   }
-  const wb1Changed = (e)=>{
-    let wb1 = e.target.value.padStart(4,'0').slice(0,4)
-    wb1 = +wb1>9191? '9191' : wb1
-    setWb1(wb1)
-    wbChar[0] = wb1.slice(0,2)
-    wbAddon[0] = wb1.slice(2)
+  const wb1CodeChanged = (e)=>{
+    let wb = e.target.value //.padStart(4,'0').slice(0,4)
+    setWb1(wb)
+    wbChar[0] = wb
+    setTelegram(changeG6())
+  }
+  const wbi1CodeChanged = e=>{
+    let wbi = +e.target.value>9? e.target.value : '0'+e.target.value
+    setWbi1(wbi)
+    wbAddon[0] = wbi
     setTelegram(changeG6())
   }
   const showGroup162=()=>{
     wbChar[1]=wbAddon[1] = '00'
-    setWb2('0000')
+    setWb2('00')
+    setWbi2('00')
     setTelegram(changeG6('show'))
   }
   const hideGroup162=()=>{
-    wbChar[1] = null
-    wbAddon[1] = null
-    setWb2('0000')
+    wbChar[1] = wbAddon[1] = null
+    setWb2('00')
+    setWbi2('00')
     setTelegram(changeG6('hide'))
   }
-  const wb2Changed = (e)=>{
-    let wb2 = e.target.value.padStart(4,'0').slice(0,4)
-    wb2 = +wb2>9191? '9191' : wb2
-    setWb2(wb2)
-    wbChar[1] = wb2.slice(0,2)
-    wbAddon[1] = wb2.slice(2)
+  const wb2CodeChanged = (e)=>{
+    let wb = e.target.value
+    setWb2(wb)
+    wbChar[1] = wb
     setTelegram(changeG6())
   }
+  const wbi2CodeChanged = e=>{
+    let wbi = +e.target.value>9? e.target.value : '0'+e.target.value
+    setWbi2(wbi)
+    wbAddon[1] = wbi
+    setTelegram(changeG6())
+  }
+  // const wb2Changed = (e)=>{
+  //   let wb2 = e.target.value.padStart(4,'0').slice(0,4)
+  //   wb2 = +wb2>9191? '9191' : wb2
+  //   setWb2(wb2)
+  //   wbChar[1] = wb2.slice(0,2)
+  //   wbAddon[1] = wb2.slice(2)
+  //   setTelegram(changeG6())
+  // }
   const showGroup163=()=>{
-    wbChar[2]=wbAddon[2] = 0
-    setWb3('0000')
+    wbChar[2]=wbAddon[2] = '00'
+    setWb3('00')
+    setWbi3('00')
     setTelegram(changeG6('show'))
   }
   const hideGroup163=()=>{
     wbChar[2]=wbAddon[2] = null
-    setWb3('0000')
+    setWb3('00')
+    setWbi3('00')
     setTelegram(changeG6('hide'))
   }
-  const wb3Changed = (e)=>{
-    let wb3 = e.target.value.padStart(4,'0').slice(0,4)
-    wb3 = +wb3>9191? '9191' : wb3
-    setWb3(wb3)
-    wbChar[2] = wb3.slice(0,2)
-    wbAddon[2] = wb3.slice(2)
+  const wb3CodeChanged = (e)=>{
+    let wb = e.target.value
+    setWb3(wb)
+    wbChar[2] = wb
     setTelegram(changeG6())
   }
+  const wbi3CodeChanged = e=>{
+    let wbi = +e.target.value>9? e.target.value : '0'+e.target.value
+    setWbi3(wbi)
+    wbAddon[2] = wbi
+    setTelegram(changeG6())
+  }
+  // const wb3Changed = (e)=>{
+  //   let wb3 = e.target.value.padStart(4,'0').slice(0,4)
+  //   wb3 = +wb3>9191? '9191' : wb3
+  //   setWb3(wb3)
+  //   wbChar[2] = wb3.slice(0,2)
+  //   wbAddon[2] = wb3.slice(2)
+  //   setTelegram(changeG6())
+  // }
   const showGroup164=()=>{
-    wbChar[3]=wbAddon[3]=0
-    setWb4('0000')
+    wbChar[3]=wbAddon[3]='00'
+    setWb4('00')
+    setWbi3('00')
     setTelegram(changeG6('show'))
   }
   const hideGroup164=()=>{
     wbChar[3]=ipAddon[3]= null
-    setWb4('0000')
+    setWb4('00')
+    setWbi4('00')
     setTelegram(changeG6('hide'))
   }
-  const wb4Changed = (e)=>{
-    let wb4 = e.target.value.padStart(4,'0').slice(0,4)
-    wb4 = +ip4>9191? '9191' : wb4
-    setWb4(wb4)
-    wbChar[3] = wb4.slice(0,2)
-    wbAddon[3] = wb4.slice(2)
+  const wb4CodeChanged = (e)=>{
+    let wb = e.target.value
+    setWb4(wb)
+    wbChar[3] = wb
     setTelegram(changeG6())
   }
+  const wbi4CodeChanged = e=>{
+    let wbi = +e.target.value>9? e.target.value : '0'+e.target.value
+    setWbi4(wbi)
+    wbAddon[3] = wbi
+    setTelegram(changeG6())
+  }
+  // const wb4Changed = (e)=>{
+  //   let wb4 = e.target.value.padStart(4,'0').slice(0,4)
+  //   wb4 = +ip4>9191? '9191' : wb4
+  //   setWb4(wb4)
+  //   wbChar[3] = wb4.slice(0,2)
+  //   wbAddon[3] = wb4.slice(2)
+  //   setTelegram(changeG6())
+  // }
   const showGroup165=()=>{
-    wbChar[4]=wbAddon[4] = 0
-    setWb5('0000')
+    wbChar[4]=wbAddon[4] = '00'
+    setWb5('00')
+    setWbi5('00')
     setTelegram(changeG6('show'))
   }
   const hideGroup165=()=>{
     wbChar[4]=ipAddon[4] = null
-    setWb5('0000')
+    setWb5('00')
+    setWbi5('00')
     setTelegram(changeG6('hide'))
   }
-  const wb5Changed = (e)=>{
-    let wb5 = e.target.value.padStart(4,'0').slice(0,4)
-    wb5 = +wb5>9191? '9191' : wb5
-    setWb5(wb5)
-    wbChar[4] = wb5.slice(0,2)
-    wbAddon[4] = wb5.slice(2)
+  const wb5CodeChanged = (e)=>{
+    let wb = e.target.value
+    setWb5(wb)
+    wbChar[4] = wb
     setTelegram(changeG6())
   }
+  const wbi5CodeChanged = e=>{
+    let wbi = +e.target.value>9? e.target.value : '0'+e.target.value
+    setWbi5(wbi)
+    wbAddon[4] = wbi
+    setTelegram(changeG6())
+  }
+  // const wb5Changed = (e)=>{
+  //   let wb5 = e.target.value.padStart(4,'0').slice(0,4)
+  //   wb5 = +wb5>9191? '9191' : wb5
+  //   setWb5(wb5)
+  //   wbChar[4] = wb5.slice(0,2)
+  //   wbAddon[4] = wb5.slice(2)
+  //   setTelegram(changeG6())
+  // }
 
   const {
     register,
@@ -700,17 +784,17 @@ export const InputHydroTelegram = ({postCode})=>{
   for (let index = 11; index < 78; index++){
     ipCodes.push(index);
   }
-  const ipCodeChanged = e=>{
-    let ip2 = e.target.value+'01' //.padStart(4,'0').slice(0,4)
-    // ip2 = +ip2>7777? '7777' : ip2
-    setIp2(ip2)
-    ipChar[1] = ip2.slice(0,2)
-    ipAddon[1] = ip2.slice(2)
-    let start151 = telegram.indexOf(' 5')
-    let allG5 = combineG5()
-    let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length)
-    setTelegram(newText)
-  }
+  // const ipCodeChanged = e=>{
+  //   let ip2 = e.target.value+'01' //.padStart(4,'0').slice(0,4)
+  //   // ip2 = +ip2>7777? '7777' : ip2
+  //   setIp2(ip2)
+  //   ipChar[1] = ip2.slice(0,2)
+  //   ipAddon[1] = ip2.slice(2)
+  //   let start151 = telegram.indexOf(' 5')
+  //   let allG5 = combineG5()
+  //   let newText = telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length)
+  //   setTelegram(newText)
+  // }
   // const a = [1,2,3,4,5]
   // let i = 0
   // options77 = a.map(num => {i++; return <options value={i}>{i}</options>})
@@ -719,7 +803,8 @@ export const InputHydroTelegram = ({postCode})=>{
   // });
   // options77.push(<option value={i}>One</option>)
   // options77.push(<option value="2">Two</option>)
-  
+  // const icePhI = icePhenomenaIntens+icePhenomena
+  // alert(JSON.stringify(icePhI))
   const additionSection6 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}> {/*</Accordion><Accordion flush>*/}
     <Accordion.Item eventKey="14">
       <Accordion.Header>Расход воды (Раздел 6)</Accordion.Header>
@@ -820,22 +905,25 @@ export const InputHydroTelegram = ({postCode})=>{
             <Form.Group className="mb-3" controlId="formIcePhenomena">
               <Form.Label>Выберите характеристику явления</Form.Label>
               <Form.Select onChange={ip1CodeChanged}>
-                {ipCodes.map(num => <option value={num}>{num}</option>)}
+                {Object.keys(icePhenomena).map(ip => {if(+ip>10) return <option value={ip}>{icePhenomena[ip]}</option>})}
               </Form.Select>
               <Form.Label>Выберите характеристику или интенсивность явления</Form.Label>
               <Form.Select onChange={ii1CodeChanged}>
-                {ipCodes.map(num => <option value={num}>{num}</option>)}
+                {Object.keys(icePhenomena).map(ip => <option value={ip}>{icePhenomena[ip]}</option>)}
               </Form.Select>
-              {/* <Form.Control type="number" value={ip1} onChange={ip1Changed} min="1101" max="7777" pattern="^[0-9]{4}$" /> */}
             </Form.Group>
-            {/* <Accordion > */}
             <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
               <Accordion.Item eventKey="3" id="accordion-ip2" >
                 <Accordion.Header>Экземпляр 2</Accordion.Header>
                 <Accordion.Body onEnter={showGroup152} onExited={hideGroup152}>
                   <Form.Group className="mb-3" controlId="formIp2">
-                    <Form.Select aria-label="Default select example" onChange={ipCodeChanged}>
-                      {ipCodes.map(num => <option value={num}>{num}</option>)}
+                    <Form.Label>Выберите характеристику явления</Form.Label>
+                    <Form.Select onChange={ip2CodeChanged} defaultValue={"11"}>
+                      {Object.keys(icePhenomena).map(ip => {if(+ip>10) return <option value={ip}>{icePhenomena[ip]}</option>})}
+                    </Form.Select>
+                    <Form.Label>Выберите характеристику или интенсивность явления</Form.Label>
+                    <Form.Select onChange={ii2CodeChanged}>
+                      {Object.keys(icePhenomena).map(ip => <option value={ip}>{icePhenomena[ip]}</option>)}
                     </Form.Select>
                     {/* <Form.Control type="number" value={ip2} onChange={e=>ip2Changed(e)} min="1101" max="7777" pattern="[0-9]{4}"/> */}
                   </Form.Group>
@@ -844,21 +932,44 @@ export const InputHydroTelegram = ({postCode})=>{
                       <Accordion.Header>Экземпляр 3</Accordion.Header>
                       <Accordion.Body onEnter={showGroup153} onExited={hideGroup153}>
                         <Form.Group className="mb-3" controlId="formIp3" >
-                          <Form.Control type="number" value={ip3} onChange={ip3Changed} min="1101" max="7777" pattern="[0-9]{4}" />
+                          <Form.Label>Выберите характеристику явления</Form.Label>
+                          <Form.Select onChange={ip3CodeChanged} defaultValue={"11"}>
+                            {Object.keys(icePhenomena).map(ip => {if(+ip>10) return <option value={ip}>{icePhenomena[ip]}</option>})}
+                          </Form.Select>
+                          <Form.Label>Выберите характеристику или интенсивность явления</Form.Label>
+                          <Form.Select onChange={ii3CodeChanged}>
+                            {Object.keys(icePhenomena).map(ip => <option value={ip}>{icePhenomena[ip]}</option>)}
+                          </Form.Select>
                         </Form.Group>
                         <Accordion>
                           <Accordion.Item eventKey="5">
                             <Accordion.Header>Экземпляр 4</Accordion.Header>
                             <Accordion.Body onEnter={showGroup154} onExited={hideGroup154}>
                               <Form.Group className="mb-3" controlId="formIp4">
-                                <Form.Control type="number" value={ip4} onChange={ip4Changed} min="1101" max="7777" pattern="[0-9]{4}" />
+                                <Form.Label>Выберите характеристику явления</Form.Label>
+                                <Form.Select onChange={ip4CodeChanged} defaultValue={"11"}>
+                                  {Object.keys(icePhenomena).map(ip => {if(+ip>10) return <option value={ip}>{icePhenomena[ip]}</option>})}
+                                </Form.Select>
+                                <Form.Label>Выберите характеристику или интенсивность явления</Form.Label>
+                                <Form.Select onChange={ii4CodeChanged}>
+                                  {Object.keys(icePhenomena).map(ip => <option value={ip}>{icePhenomena[ip]}</option>)}
+                                </Form.Select>
+                                {/* <Form.Control type="number" value={ip4} onChange={ip4Changed} min="1101" max="7777" pattern="[0-9]{4}" /> */}
                               </Form.Group>
                               <Accordion>
                                 <Accordion.Item eventKey="6">
                                   <Accordion.Header>Экземпляр 5</Accordion.Header>
                                   <Accordion.Body onEnter={showGroup155} onExited={hideGroup155}>
                                     <Form.Group className="mb-3" controlId="formIp5">
-                                      <Form.Control type="number" value={ip5} onChange={ip5Changed} min="1101" max="7777" pattern="[0-9]{4}" />
+                                      <Form.Label>Выберите характеристику явления</Form.Label>
+                                      <Form.Select onChange={ip5CodeChanged} defaultValue={"11"}>
+                                        {Object.keys(icePhenomena).map(ip => {if(+ip>10) return <option value={ip}>{icePhenomena[ip]}</option>})}
+                                      </Form.Select>
+                                      <Form.Label>Выберите характеристику или интенсивность явления</Form.Label>
+                                      <Form.Select onChange={ii5CodeChanged}>
+                                        {Object.keys(icePhenomena).map(ip => <option value={ip}>{icePhenomena[ip]}</option>)}
+                                      </Form.Select>
+                                      {/* <Form.Control type="number" value={ip5} onChange={ip5Changed} min="1101" max="7777" pattern="[0-9]{4}" /> */}
                                     </Form.Group>
                                   </Accordion.Body>
                                 </Accordion.Item>
@@ -881,46 +992,80 @@ export const InputHydroTelegram = ({postCode})=>{
           <Accordion.Header>Состояние водного объекта (Группа 6)</Accordion.Header>
           <Accordion.Body onEnter={showGroup16} onExited={hideGroup16}>
             <Form.Group className="mb-3" controlId="formStateWaterBody">
-              <Form.Label>Характеристика объекта/интенсивность явления (Введите 4 цифры в формате CCii или CCCC)</Form.Label>
-              <Form.Control type="text" value={wb1} onChange={e=>wb1Changed(e)} pattern="[0-9]{4}" min="0000" max="9191" />
+              <Form.Label>Выберите характеристику объекта</Form.Label>
+              <Form.Select onChange={wb1CodeChanged} defaultValue={"0"}>
+                {Object.keys(waterBodies).map(wb => {if(+wb==0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
+              </Form.Select>
+              <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
+              <Form.Select onChange={wbi1CodeChanged}>
+                {Object.keys(waterBodies).map(wb => <option value={wb}>{waterBodies[wb]}</option>)}
+              </Form.Select>
             </Form.Group>
             <Accordion>
               <Accordion.Item eventKey="8">
                 <Accordion.Header>Экземпляр 2</Accordion.Header>
                 <Accordion.Body onEnter={showGroup162} onExited={hideGroup162}>
                   <Form.Group className="mb-3" controlId="form-wb2">
-                    <Form.Control type="text" value={wb2} onChange={e=>wb2Changed(e)} min="0000" max="9191" pattern="[0-9]{4}"/>
+                    <Form.Label>Выберите характеристику объекта</Form.Label>
+                    <Form.Select onChange={wb2CodeChanged} defaultValue={"0"}>
+                      {Object.keys(waterBodies).map(wb => {if(+wb==0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
+                    </Form.Select>
+                    <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
+                    <Form.Select onChange={wbi2CodeChanged}>
+                      {Object.keys(waterBodies).map(wb => <option value={wb}>{waterBodies[wb]}</option>)}
+                    </Form.Select>
                   </Form.Group>
-                </Accordion.Body>
-              </Accordion.Item>
-            </Accordion>
-            <Accordion>
-              <Accordion.Item eventKey="9">
-                <Accordion.Header>Экземпляр 3</Accordion.Header>
-                <Accordion.Body onEnter={showGroup163} onExited={hideGroup163}>
-                  <Form.Group className="mb-3" controlId="form-wb3">
-                    <Form.Control type="text" value={wb3} onChange={e=>wb3Changed(e)} min="0000" max="9191" pattern="[0-9]{4}" />
-                  </Form.Group>
-                </Accordion.Body>
-              </Accordion.Item>
-            </Accordion>
-            <Accordion>
-              <Accordion.Item eventKey="10">
-                <Accordion.Header>Экземпляр 4</Accordion.Header>
-                <Accordion.Body onEnter={showGroup164} onExited={hideGroup164}>
-                  <Form.Group className="mb-3" controlId="form-wb4">
-                    <Form.Control type="text" value={wb4} onChange={e=>wb4Changed(e)} min="0000" max="9191" pattern="[0-9]{4}" />
-                  </Form.Group>
-                </Accordion.Body>
-              </Accordion.Item>
-            </Accordion>
-            <Accordion>
-              <Accordion.Item eventKey="11">
-                <Accordion.Header>Экземпляр 5</Accordion.Header>
-                <Accordion.Body onEnter={showGroup165} onExited={hideGroup165}>
-                  <Form.Group className="mb-3" controlId="form-wb5">
-                    <Form.Control type="text" value={wb5} onChange={e=>wb5Changed(e)} min="0000" max="9191" pattern="[0-9]{4}" />
-                  </Form.Group>
+                  <Accordion>
+                    <Accordion.Item eventKey="9">
+                      <Accordion.Header>Экземпляр 3</Accordion.Header>
+                      <Accordion.Body onEnter={showGroup163} onExited={hideGroup163}>
+                        <Form.Group className="mb-3" controlId="form-wb3">
+                          <Form.Label>Выберите характеристику объекта</Form.Label>
+                          <Form.Select onChange={wb3CodeChanged} defaultValue={"0"}>
+                            {Object.keys(waterBodies).map(wb => {if(+wb==0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
+                          </Form.Select>
+                          <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
+                          <Form.Select onChange={wbi3CodeChanged}>
+                            {Object.keys(waterBodies).map(wb => <option value={wb}>{waterBodies[wb]}</option>)}
+                          </Form.Select>
+                        </Form.Group>
+                        <Accordion>
+                          <Accordion.Item eventKey="10">
+                            <Accordion.Header>Экземпляр 4</Accordion.Header>
+                            <Accordion.Body onEnter={showGroup164} onExited={hideGroup164}>
+                              <Form.Group className="mb-3" controlId="form-wb4">
+                                <Form.Label>Выберите характеристику объекта</Form.Label>
+                                <Form.Select onChange={wb4CodeChanged} defaultValue={"0"}>
+                                  {Object.keys(waterBodies).map(wb => {if(+wb==0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
+                                </Form.Select>
+                                <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
+                                <Form.Select onChange={wbi4CodeChanged}>
+                                  {Object.keys(waterBodies).map(wb => <option value={wb}>{waterBodies[wb]}</option>)}
+                                </Form.Select>
+                              </Form.Group>
+                              <Accordion>
+                                <Accordion.Item eventKey="11">
+                                  <Accordion.Header>Экземпляр 5</Accordion.Header>
+                                  <Accordion.Body onEnter={showGroup165} onExited={hideGroup165}>
+                                    <Form.Group className="mb-3" controlId="form-wb5">
+                                      <Form.Label>Выберите характеристику объекта</Form.Label>
+                                      <Form.Select onChange={wb5CodeChanged} defaultValue={"0"}>
+                                        {Object.keys(waterBodies).map(wb => {if(+wb==0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
+                                      </Form.Select>
+                                      <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
+                                      <Form.Select onChange={wbi5CodeChanged}>
+                                        {Object.keys(waterBodies).map(wb => <option value={wb}>{waterBodies[wb]}</option>)}
+                                      </Form.Select>
+                                    </Form.Group>
+                                  </Accordion.Body>
+                                </Accordion.Item>
+                              </Accordion>
+                            </Accordion.Body>
+                          </Accordion.Item>
+                        </Accordion>
+                      </Accordion.Body>
+                    </Accordion.Item>
+                  </Accordion>
                 </Accordion.Body>
               </Accordion.Item>
             </Accordion>
