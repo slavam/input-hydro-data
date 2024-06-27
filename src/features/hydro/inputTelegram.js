@@ -704,7 +704,7 @@ export const InputHydroTelegram = ({postCode})=>{
     setMaxDepth(1)
     setWcHour(9)
     let startSection6 = telegram.length-1
-    let newText = telegram.slice(0,startSection6)+` 966${wcMonth} 10000 20000 30000 40001 5${wcDay}09=`
+    let newText = telegram.slice(0,startSection6)+` 966${wcMonth} 10000 20000 30001 40001 5${wcDay}09=`
     setTelegram(newText)
   }
   const hideSection6=()=>{
@@ -732,9 +732,12 @@ export const InputHydroTelegram = ({postCode})=>{
     setTelegram(newText)
   }
   const wcWaterLevelChanged=e=>{
-    let wl = +e.target.value
-    wl = wl>4999 ? 4999 : wl
-    wl = wl<-999 ? -999 : wl
+    let wl = e.target.value
+    if(/[-]{0,1}[0-9]{1,4}/.test(wl)){
+      wl = +wl>4999 ? '4999' : wl
+      wl = +wl<-999 ? '-999' : wl
+    }else
+      wl = 0
     setWcWaterLevel(wl)
     let g1 = wl >= 0 ? wl.toString().padStart(4,'0') : (5000+Math.abs(wl)).toString()
     let startSection6 = telegram.indexOf(' 966')
@@ -742,23 +745,27 @@ export const InputHydroTelegram = ({postCode})=>{
     setTelegram(newText)
   }
   const waterConsumptionChanged=e=>{
-    let wc = +e.target.value
-    wc = wc>999999? 999999 : wc
-    wc = wc<0.0? 0.0 : wc
-    setWaterConsumption(wc)
-    let exp = wc.toExponential()
-    exp = Number(exp.slice(exp.lastIndexOf('e')+1))
-    let num = exp >=0? exp+1 : 0
-    let pointPos = e.target.value.lastIndexOf('.')<0? 0:e.target.value.lastIndexOf('.')
-    let val = wc<1.? e.target.value.slice(pointPos+1,pointPos+4).padEnd(3,'0') : Number(e.target.value.replace('.','').padEnd(3,'0')).toString().slice(0,3) //padStart(3,'0').slice(0,3) 
-    let startSection6 = telegram.indexOf(' 966')
-    let newText = telegram.slice(0,startSection6+14)+`${num}${val}`+telegram.slice(startSection6+18)
-    setTelegram(newText) //+`>>${e.target.value}<<`)
+    if(/[0-9]+([\.,][0-9]+)?/.test(e.target.value)){
+      let wc = +e.target.value
+      wc = wc>999999.0? 999999.0 : wc
+      wc = wc<0.0? 0.0 : wc
+      setWaterConsumption(parseFloat(wc))
+      let exp = wc.toExponential()
+      exp = Number(exp.slice(exp.lastIndexOf('e')+1))
+      let num = exp >=0? exp+1 : 0
+      let pointPos = e.target.value.lastIndexOf('.')<0? 0:e.target.value.lastIndexOf('.')
+      let val = wc<1.? e.target.value.slice(pointPos+1,pointPos+4).padEnd(3,'0') : Number(e.target.value.replace('.','').padEnd(3,'0')).toString().slice(0,3) //padStart(3,'0').slice(0,3) 
+      let startSection6 = telegram.indexOf(' 966')
+      let newText = telegram.slice(0,startSection6+14)+`${num}${val}`+telegram.slice(startSection6+18)
+      setTelegram(newText) //+`>>${e.target.value}<<`)
+    }else{setWaterConsumption(0)}
   }
   const riverAreaChanged=e=>{
     if(/[0-9]+([\.,][0-9]+)?/.test(e.target.value)){
       let ra = +e.target.value
-      setRiverArea(ra)
+      ra = ra>999999.0? 999999.0 : ra
+      ra = ra<0.0? 0.0 : ra
+      setRiverArea(parseFloat(ra))
       let exp = ra.toExponential()
       exp = Number(exp.slice(exp.lastIndexOf('e')+1))
       let num = exp >=0? exp+1 : 0
@@ -767,18 +774,19 @@ export const InputHydroTelegram = ({postCode})=>{
       let startSection6 = telegram.indexOf(' 966')
       let newText = telegram.slice(0,startSection6+20)+`${num}${val}`+telegram.slice(startSection6+24)
       setTelegram(newText)
-    }else{setRiverArea(1)}
-    // ra = ra>999999? 999999 : ra
-    // ra = ra<0.0? 0.0 : ra
+    }else{setRiverArea(parseFloat(1))}
   }
   const maxDepthChanged=e=>{
-    let md = +e.target.value //.padStart(4,'0').slice(0,4)
-    md = md<1? 1 : md
-    md = md>9999? 9999 : md
-    setMaxDepth(md)
-    let l = telegram.length
-    let newText = telegram.slice(0,l-11)+md.toString().padStart(4,'0')+telegram.slice(l-7)
-    setTelegram(newText)
+     //.padStart(4,'0').slice(0,4)
+    if(/^[0-9]{1,4}$/.test(e.target.value)){
+      let md = +e.target.value
+    // md = md<1? 1 : md
+    // md = md>9999? 9999 : md
+      setMaxDepth(md)
+      let l = telegram.length
+      let newText = telegram.slice(0,l-11)+md.toString().padStart(4,'0')+telegram.slice(l-7)
+      setTelegram(newText)
+    }else setMaxDepth(1)
   }
   let ipCodes = []
   for (let index = 11; index < 78; index++){
@@ -821,7 +829,7 @@ export const InputHydroTelegram = ({postCode})=>{
         <br/>
         <Form.Group className="mb-3" controlId="form-wc-water-level">
           <Form.Label>Уровень воды (Группа 1)</Form.Label>
-          <Form.Control type="number" value={wcWaterLevel} onChange={wcWaterLevelChanged} min="-999" max="4999" pattern='[0-9]{4}'/>
+          <Form.Control type="number" value={wcWaterLevel} onChange={wcWaterLevelChanged} min="-999" max="4999" pattern="[-]{0,1}[0-9]{1,4}"/>
           <Form.Text className="text-muted">
             Уровень воды над нулем поста в сантиметрах
           </Form.Text>
@@ -829,7 +837,7 @@ export const InputHydroTelegram = ({postCode})=>{
         <br/>
         <Form.Group className="mb-3" controlId="form-water-consumption">
           <Form.Label>Расход воды (Группа 2)</Form.Label>
-          <Form.Control type="number" value={waterConsumption} onChange={waterConsumptionChanged} min="0.0" max="99999.0" step="1" />
+          <Form.Control type="number" value={waterConsumption} onChange={waterConsumptionChanged} step="any" pattern="[0-9]+([\.,][0-9]+)?"/>
           <Form.Text className="text-muted">
             Метры кубические за секунду (м<sup>3</sup>/с)
           </Form.Text>
@@ -837,7 +845,7 @@ export const InputHydroTelegram = ({postCode})=>{
         <br/>
         <Form.Group className="mb-3" controlId="form-river-cross-sectional-area">
           <Form.Label>Площадь сечения реки (Группа 3)</Form.Label>
-          <Form.Control type="number" value={riverArea} onChange={riverAreaChanged} min="0.0" max="99999.0" pattern="[0-9]+([\.,][0-9]+)?" />
+          <Form.Control type="number" value={riverArea} onChange={riverAreaChanged} pattern="[0-9]+([\.,][0-9]+)?" step="any"/>
           <Form.Text className="text-muted">
             Метры квадратные (м<sup>2</sup>)
           </Form.Text>
@@ -845,7 +853,7 @@ export const InputHydroTelegram = ({postCode})=>{
         <br/>
         <Form.Group className="mb-3" controlId="form-max-depth">
           <Form.Label>Максимальная глубина (Группа 4)</Form.Label>
-          <Form.Control type="number" value={maxDepth} onChange={maxDepthChanged} min="1" max="9999" pattern='[0-9]{4}'/>
+          <Form.Control type="number" value={maxDepth} onChange={maxDepthChanged} min="1" max="9999" pattern='[0-9]{1,4}'/>
           <Form.Text className="text-muted">
             В сантиметрах
           </Form.Text>
@@ -994,7 +1002,7 @@ export const InputHydroTelegram = ({postCode})=>{
             <Form.Group className="mb-3" controlId="formStateWaterBody">
               <Form.Label>Выберите характеристику объекта</Form.Label>
               <Form.Select onChange={wb1CodeChanged} defaultValue={"0"}>
-                {Object.keys(waterBodies).map(wb => {if(+wb==0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
+                {Object.keys(waterBodies).map(wb => {if(+wb===0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
               </Form.Select>
               <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
               <Form.Select onChange={wbi1CodeChanged}>
@@ -1008,7 +1016,7 @@ export const InputHydroTelegram = ({postCode})=>{
                   <Form.Group className="mb-3" controlId="form-wb2">
                     <Form.Label>Выберите характеристику объекта</Form.Label>
                     <Form.Select onChange={wb2CodeChanged} defaultValue={"0"}>
-                      {Object.keys(waterBodies).map(wb => {if(+wb==0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
+                      {Object.keys(waterBodies).map(wb => {if(+wb===0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
                     </Form.Select>
                     <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
                     <Form.Select onChange={wbi2CodeChanged}>
@@ -1022,7 +1030,7 @@ export const InputHydroTelegram = ({postCode})=>{
                         <Form.Group className="mb-3" controlId="form-wb3">
                           <Form.Label>Выберите характеристику объекта</Form.Label>
                           <Form.Select onChange={wb3CodeChanged} defaultValue={"0"}>
-                            {Object.keys(waterBodies).map(wb => {if(+wb==0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
+                            {Object.keys(waterBodies).map(wb => {if(+wb===0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
                           </Form.Select>
                           <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
                           <Form.Select onChange={wbi3CodeChanged}>
@@ -1036,7 +1044,7 @@ export const InputHydroTelegram = ({postCode})=>{
                               <Form.Group className="mb-3" controlId="form-wb4">
                                 <Form.Label>Выберите характеристику объекта</Form.Label>
                                 <Form.Select onChange={wb4CodeChanged} defaultValue={"0"}>
-                                  {Object.keys(waterBodies).map(wb => {if(+wb==0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
+                                  {Object.keys(waterBodies).map(wb => {if(+wb===0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
                                 </Form.Select>
                                 <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
                                 <Form.Select onChange={wbi4CodeChanged}>
@@ -1050,7 +1058,7 @@ export const InputHydroTelegram = ({postCode})=>{
                                     <Form.Group className="mb-3" controlId="form-wb5">
                                       <Form.Label>Выберите характеристику объекта</Form.Label>
                                       <Form.Select onChange={wb5CodeChanged} defaultValue={"0"}>
-                                        {Object.keys(waterBodies).map(wb => {if(+wb==0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
+                                        {Object.keys(waterBodies).map(wb => {if(+wb===0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
                                       </Form.Select>
                                       <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
                                       <Form.Select onChange={wbi5CodeChanged}>
