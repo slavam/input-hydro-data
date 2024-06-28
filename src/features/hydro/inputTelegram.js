@@ -34,7 +34,6 @@ export const InputHydroTelegram = ({postCode})=>{
   let lastDay = 32 - new Date(currYear, currMonth, 32).getDate()
   let d = today.getUTCDate()
   let currDay = d>9 ? d : ('0'+d)
-  // const group03 = `${currDay}${term}${contentIndex}`
   
   const [group11, setGroup11] = useState('10000')
   const [waterLevel, setWaterLevel] = useState(0)
@@ -530,6 +529,7 @@ export const InputHydroTelegram = ({postCode})=>{
   const myReset = ()=>{
     setWaterLevel(0)
     setWaterLevelDeviation(0)
+    setContentIndex(1)
     setActiveKeys([])
     setTelegram(`HHZZ ${hydroPostCode} ${currDay}${term}${contentIndex} 10000 20000=`)
   }
@@ -698,22 +698,26 @@ export const InputHydroTelegram = ({postCode})=>{
   const [maxDepth, setMaxDepth] = useState(null)
   // const section6 = ` 966${wcMonth} 10000 20000 30000 40001 5${wcDay}09`
   const showSection6=()=>{
+    setContentIndex(2)
     setWcWaterLevel(0)
     setWaterConsumption(0.0)
     setRiverArea(1)
     setMaxDepth(1)
     setWcHour(9)
     let startSection6 = telegram.length-1
-    let newText = telegram.slice(0,startSection6)+` 966${wcMonth} 10000 20000 30001 40001 5${wcDay}09=`
+    let newText = telegram.slice(0,15)+'2'+telegram.slice(16)
+    newText =newText.slice(0,startSection6)+` 966${wcMonth} 10000 20000 30001 40001 5${wcDay}09=`
     setTelegram(newText)
   }
   const hideSection6=()=>{
+    setContentIndex(1)
     setWcWaterLevel(null)
     setWaterConsumption(null)
     setRiverArea(null)
     setMaxDepth(null)
     let startSection6 = telegram.indexOf(' 966')
-    let newText = telegram.slice(0,startSection6)+'='
+    let newText = telegram.slice(0,15)+'1'+telegram.slice(16)
+    newText = newText.slice(0,startSection6)+'='
     setTelegram(newText)
   }
   const wcDateChanged=e=>{
