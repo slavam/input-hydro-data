@@ -32,7 +32,7 @@ export const InputHydroTelegram = ({postCode})=>{
   let currDay = d>9 ? d : ('0'+d)
   
   const [waterLevel, setWaterLevel] = useState(0)
-  const [waterLevel21, setWaterLevel21] = useState(0)
+  const [waterLevel21, setWaterLevel21] = useState(null)
   const [waterLevelDeviation, setWaterLevelDeviation] = useState(0)
   const [wlDeviation21, setWLDeviation21]=useState(0)
   const [waterTemperature, setWaterTemperature] = useState(0)
@@ -126,7 +126,7 @@ export const InputHydroTelegram = ({postCode})=>{
   }
   const showAirTemperature=()=>{
     setAirTemperature(0)
-    let newText = telegram.replace(/\/\//g,'00')
+    let newText = telegram.replace(/\/\//,'00')
     setTelegram(newText)
   }
   const hideAirTemperature=()=>{
@@ -165,18 +165,18 @@ export const InputHydroTelegram = ({postCode})=>{
       at = +at>49 ? 49 : at
       at = +at<-49 ? -49 : at
     }else{
-      if(at[0]==='-')
-        at = at.length>3? at.slice(0,3): at //(at.length===1? '-1':at)
-      else
-        at = at.length>2? at.slice(0,2): at
+      at=0
     }
     let newText
     switch (e.target.id) {
       case 'aTemp1':
         setAirTemperature(at)
-        newText = telegram.slice(0,32)+`${+at<0 ? 50-at : (+at>=0 && +at<10 ? '0'+at : at)}`+telegram.slice(34) //+'>'+at+'<'    
+        newText = telegram.slice(0,32)+`${+at<0 ? 50-at : (+at>=0 && +at<10 ? (+at).toString().padStart(2,'0') : at)}`+telegram.slice(34)// +'>'+at+'<'    
         break;
       case 'aTemp21':
+        setAirTemperature21(at)
+        let startSection2 = telegram.indexOf(' 922')
+        newText = telegram.slice(0,startSection2+22)+`${+at<0 ? 50-at : (+at>=0 && +at<10 ? (+at).toString().padStart(2,'0') : at)}`+telegram.slice(24)
         break
       default:
         break;
@@ -225,27 +225,70 @@ export const InputHydroTelegram = ({postCode})=>{
     let newText = telegram.replace(/ 5..../g,'')
     setTelegram(newText)
   }
+  const group5Jsx=(id,ipChange,iiChange)=>{
+    return(<Form.Group className="mb-3" >
+      <Form.Label>Выберите характеристику явления</Form.Label>
+      <Form.Select id={id+'ip'} onChange={ip1CodeChanged}>
+        {Object.keys(icePhenomena).map(ip => {if(+ip>10) return <option value={ip}>{icePhenomena[ip]}</option>})}
+      </Form.Select>
+      <Form.Label>Выберите характеристику или интенсивность явления</Form.Label>
+      <Form.Select id={id+'ipi'} onChange={ii1CodeChanged}>
+        {Object.keys(icePhenomena).map(ip => <option value={ip}>{icePhenomena[ip]}</option>)}
+      </Form.Select>
+    </Form.Group>)
+  }
   const ip1CodeChanged = e=>{
     let ip = e.target.value
     switch (e.target.id) {
       case 'g151ip':
         ipChar[0] = ip
         setIp1(ip)
-        let start151 = telegram[29]==='4'? 28+6 : 28
-        let newText = telegram.slice(0,start151+2)+ip+telegram.slice(start151+4)
-        setTelegram(newText)
         break;
       case 'g152ip':
         setIp2(ip)
         ipChar[1] = ip
-        setTelegram(newG5(0))
         break;
+      case 'g153ip':
+        ipChar[2] = ip
+        setIp3(ip)
+        break;
+      case 'g154ip':
+        ipChar[3] = ip
+        setIp4(ip)
+        break;
+      case 'g155ip':
+        ipChar[4] = ip
+        setIp5(ip)
+        break;
+      // case 'g2151':
+      //   break
     }
+    setTelegram(newG5(0))
   }
   const ii1CodeChanged = e=>{
     let ii = +e.target.value>9? e.target.value : '0'+e.target.value
-    setIi1(ii)
-    ipAddon[0] = ii
+    switch (e.target.id) {
+      case 'g151ipi':
+        setIi1(ii)
+        ipAddon[0] = ii    
+        break;
+      case 'g152ipi':
+        setIi2(ii)
+        ipAddon[1] = ii    
+        break;
+      case 'g153ipi':
+        setIi3(ii)
+        ipAddon[2] = ii    
+        break;
+      case 'g154ipi':
+        setIi4(ii)
+        ipAddon[3] = ii    
+        break;
+      case 'g155ipi':
+        setIi5(ii)
+        ipAddon[4] = ii    
+        break;
+    }
     setTelegram(newG5(0))
   }
   const showGroup152=()=>{
@@ -261,12 +304,12 @@ export const InputHydroTelegram = ({postCode})=>{
     setIi2(1)
     setTelegram(newG5(1))
   }
-  const ii2CodeChanged = e=>{
-    let ii = +e.target.value>9? e.target.value : '0'+e.target.value
-    setIi2(ii)
-    ipAddon[1] = ii
-    setTelegram(newG5(0))
-  }
+  // const ii2CodeChanged = e=>{
+  //   let ii = +e.target.value>9? e.target.value : '0'+e.target.value
+  //   setIi2(ii)
+  //   ipAddon[1] = ii
+  //   setTelegram(newG5(0))
+  // }
   const showGroup153=()=>{
     ipChar[2] = 11
     ipAddon[2] = '01'
@@ -280,18 +323,18 @@ export const InputHydroTelegram = ({postCode})=>{
     setIi3(1)
     setTelegram(newG5(1))
   }
-  const ip3CodeChanged = e=>{
-    let ip = e.target.value
-    setIp3(ip)
-    ipChar[2] = ip
-    setTelegram(newG5(0))
-  }
-  const ii3CodeChanged = e=>{
-    let ii = +e.target.value>9? e.target.value : '0'+e.target.value
-    setIi3(ii)
-    ipAddon[2] = ii
-    setTelegram(newG5(0))
-  }
+  // const ip3CodeChanged = e=>{
+  //   let ip = e.target.value
+  //   setIp3(ip)
+  //   ipChar[2] = ip
+  //   setTelegram(newG5(0))
+  // }
+  // const ii3CodeChanged = e=>{
+  //   let ii = +e.target.value>9? e.target.value : '0'+e.target.value
+  //   setIi3(ii)
+  //   ipAddon[2] = ii
+  //   setTelegram(newG5(0))
+  // }
   const showGroup154=()=>{
     ipChar[3] = 11
     ipAddon[3] = '01'
@@ -305,18 +348,18 @@ export const InputHydroTelegram = ({postCode})=>{
     setIi4(1)
     setTelegram(newG5(1))
   }
-  const ip4CodeChanged = e=>{
-    let ip = e.target.value
-    setIp4(ip)
-    ipChar[3] = ip
-    setTelegram(newG5(0))
-  }
-  const ii4CodeChanged = e=>{
-    let ii = +e.target.value>9? e.target.value : '0'+e.target.value
-    setIi4(ii)
-    ipAddon[3] = ii
-    setTelegram(newG5(0))
-  }
+  // const ip4CodeChanged = e=>{
+  //   let ip = e.target.value
+  //   setIp4(ip)
+  //   ipChar[3] = ip
+  //   setTelegram(newG5(0))
+  // }
+  // const ii4CodeChanged = e=>{
+  //   let ii = +e.target.value>9? e.target.value : '0'+e.target.value
+  //   setIi4(ii)
+  //   ipAddon[3] = ii
+  //   setTelegram(newG5(0))
+  // }
   const showGroup155=()=>{
     ipChar[4] = 11
     ipAddon[4] = '01'
@@ -330,18 +373,18 @@ export const InputHydroTelegram = ({postCode})=>{
     setIi5(1)
     setTelegram(newG5(1))
   }
-  const ip5CodeChanged = e=>{
-    let ip = e.target.value
-    setIp5(ip)
-    ipChar[4] = ip
-    setTelegram(newG5(0))
-  }
-  const ii5CodeChanged = e=>{
-    let ii = +e.target.value>9? e.target.value : '0'+e.target.value
-    setIi5(ii)
-    ipAddon[4] = ii
-    setTelegram(newG5(0))
-  }
+  // const ip5CodeChanged = e=>{
+  //   let ip = e.target.value
+  //   setIp5(ip)
+  //   ipChar[4] = ip
+  //   setTelegram(newG5(0))
+  // }
+  // const ii5CodeChanged = e=>{
+  //   let ii = +e.target.value>9? e.target.value : '0'+e.target.value
+  //   setIi5(ii)
+  //   ipAddon[4] = ii
+  //   setTelegram(newG5(0))
+  // }
   
 // group6
   const [wb1,setWb1] = useState('00')
@@ -688,13 +731,16 @@ export const InputHydroTelegram = ({postCode})=>{
     setTelegram(newText)
   }
   const hideSection6=()=>{
-    setContentIndex(1)
     setWcWaterLevel(null)
     setWaterConsumption(null)
     setRiverArea(null)
     setMaxDepth(null)
     let startSection6 = telegram.indexOf(' 966')
-    let newText = telegram.slice(0,15)+'1'+telegram.slice(16)
+    let newText = telegram
+    if(waterLevel21===null){
+      setContentIndex(1)
+      newText = telegram.slice(0,15)+'1'+telegram.slice(16)
+    }
     newText = newText.slice(0,startSection6)+'='
     setTelegram(newText)
   }
@@ -772,6 +818,7 @@ export const InputHydroTelegram = ({postCode})=>{
       setTelegram(newText)
     }else setMaxDepth(1)
   }
+  // section2
   const showSection21=()=>{
     setContentIndex(2)
     setWaterLevel21(0)
@@ -811,6 +858,127 @@ export const InputHydroTelegram = ({postCode})=>{
     let newText = telegram.slice(0,startSection2+18)+telegram.slice(startSection2+24)
     setTelegram(newText)
   }
+  const showAirTemperature21=()=>{
+    setAirTemperature21(0)
+    let startSection2 = telegram.indexOf(' 922')
+    let newText = telegram.slice(0,startSection2+22)+'00'+telegram.slice(startSection2+24) // replace(/\/\//g,'00')
+    setTelegram(newText)
+  }
+  const hideAirTemperature21=()=>{
+    setAirTemperature21(null)
+    let startSection2 = telegram.indexOf(' 922')
+    let newText = telegram.slice(0,startSection2+22)+'//'+telegram.slice(startSection2+24)
+    setTelegram(newText)
+  }
+  const ipCharS2 = new Array(5) //.fill(null)
+  for(let i=0; i<ipCharS2.length; i++){ipCharS2[i]= new Array(5).fill(null)}
+  
+  const ipAddonS2 = new Array(5) //.fill(null)
+  for(let i=0; i<ipAddonS2.length; i++){ipAddonS2[i]= new Array(5).fill(null)}
+  // alert(JSON.stringify(ipAddonS2))
+  // const [ip211,setIp211] = useState(11)
+  // const [ii211,setIi211] = useState(1)
+  // const [ip212,setIp212] = useState(11)
+  // const [ii212,setIi212] = useState(1)
+  // const [ip213,setIp213] = useState(11)
+  // const [ii213,setIi213] = useState(1)
+  // const [ip214,setIp214] = useState(11)
+  // const [ii214,setIi214] = useState(1)
+  // const [ip215,setIp215] = useState(11)
+  // const [ii215,setIi215] = useState(1)
+  const combineS2G5=(j)=>{
+    let ret = ''
+    for (let i = 0; i < ipCharS2[j].length; i++){
+      ret += ipCharS2[j][i]===null? '':` 5${ipCharS2[j][i]}${ipAddonS2[j][i]}`
+    }
+    return ret
+  }
+  const newS2G5 =(j,k)=>{
+    let startS2=telegram.indexOf(' 922')
+    let startS2G5 = startS2+(telegram[startS2+19]==='4'? 18+6 : 18)
+    let allG5 = combineS2G5(j)
+    return telegram.slice(0,startS2G5)+allG5+telegram.slice(startS2G5+allG5.length+k*6)
+  }
+  const showGroupS2G5=(j,i)=>{
+    ipCharS2[j][i] = 11
+    ipAddonS2[j][i] = '01'
+    // setIp211(11)
+    // setIi211(1)
+    let nt = newS2G5(j,-1)
+    // alert(nt)
+    setTelegram(nt)
+  }
+  const showGroupS21G51=()=>{
+    showGroupS2G5(0,0)
+  }
+  const showGroupS21G52=()=>{
+    showGroupS2G5(0,1)
+  }
+  const showGroupS21G53=()=>{
+    showGroupS2G5(0,2)
+  }
+  const showGroupS21G54=()=>{
+    showGroupS2G5(0,3)
+  }
+  const showGroupS21G55=()=>{
+    showGroupS2G5(0,4)
+  }
+  const hideGroupS2G5=(j,i)=>{
+    // if(ipCharS2[s] && ipCharS2[s][g] && ipAddonS2[s] && ipAddonS2[s][g])
+      ipCharS2[j][i] = ipAddonS2[j][i] = null
+    // setIp2(11)
+    // setIi2(1)
+    // alert(combineS2G5(j))
+    setTelegram(newS2G5(j,1))
+  }
+  const hideGroupS21G51=()=>{
+    hideGroupS2G5(0,0)
+  }
+  const hideGroupS21G52=()=>{
+    hideGroupS2G5(0,1)
+  }
+  const hideGroupS21G53=()=>{
+    hideGroupS2G5(0,2)
+  }
+  const hideGroupS21G54=()=>{
+    hideGroupS2G5(0,3)
+  }
+  const hideGroupS21G55=()=>{
+    hideGroupS2G5(0,4)
+  }
+  const ip2CodeChanged = e=>{
+    let ip = e.target.value
+    switch (e.target.id) {
+      case 'g2151ip':
+        ipCharS2[0][0] = ip
+        break;
+      case 'g2152ip':
+        ipCharS2[0][1] = ip
+        break
+      case 'g2153ip':
+        ipCharS2[0][2] = ip
+        break
+      case 'g2154ip':
+        ipCharS2[0][3] = ip
+        break
+      case 'g2155ip':
+        ipCharS2[0][4] = ip
+        break
+    }
+    setTelegram(newS2G5(0,0))
+  }
+  const ii2CodeChanged = e=>{
+    let ii = e.target.value
+    switch (e.target.id) {
+      case 'g2151ii':
+        ipAddonS2[0][0] = ii
+        break;
+      case 'g2152ii':
+        ipAddonS2[0][1] = ii
+        break
+    }
+    setTelegram(newS2G5(0,0))
+  }
   const additionSection2 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
     <Accordion.Item eventKey="16">
       <Accordion.Header>Данные за прошедшие сутки (Раздел 2)</Accordion.Header>
@@ -823,25 +991,57 @@ export const InputHydroTelegram = ({postCode})=>{
             <Accordion.Header>Температура воды и воздуха (Группа 4)</Accordion.Header>
             <Accordion.Body onEnter={showGroup241} onExited={hideGroup241}>
               {waterTemperatureJsx('wTemp21',waterTemperature21)}
-              {/* <Form.Group className="mb-3" controlId="formWaterTemperature">
-                <Form.Label>Температура воды</Form.Label>
-                <Form.Control type="number" value={waterTemperature} onChange={waterTemperatureChanged} min="0.0" max="9.9" step="0.1" pattern='^[0-9]$|(^[0-9][\.,][0-9]{0,1}$)'/>
-                <Form.Text className="text-muted">С точностью до десятых</Form.Text>
-              </Form.Group> */}
               <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                 <Accordion.Item eventKey="1" >
                   <Accordion.Header>Температура воздуха</Accordion.Header>
-                  <Accordion.Body onEnter={showAirTemperature} onExited={hideAirTemperature}>
+                  <Accordion.Body onEnter={showAirTemperature21} onExited={hideAirTemperature21}>
                     {airTemperatureJsx('aTemp21',airTemperature21)}
-                    {/* <Form.Group className="mb-3" controlId="formAirTemperature">
-                      <Form.Control type="number" value={airTemperature} onChange={airTemperatureChanged} min="-49" max="49" pattern="^-{0,1}[0-9]$|^-{0,1}[0-4][0-9]$"/>
-                    </Form.Group> */}
                   </Accordion.Body>
                 </Accordion.Item>
               </Accordion>
             </Accordion.Body>
           </Accordion.Item>
         </Accordion>
+        <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+        <Accordion.Item eventKey="18">
+          <Accordion.Header>Ледовые явления (Группа 5)</Accordion.Header>
+          <Accordion.Body onEnter={showGroupS21G51} onExit={hideGroupS21G51}>
+            {group5Jsx('g2151',ip2CodeChanged,ii2CodeChanged)}
+            <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+              <Accordion.Item eventKey="19" id="accordion-ip2" >
+                <Accordion.Header>Экземпляр 2</Accordion.Header>
+                <Accordion.Body onEnter={showGroupS21G52} onExited={hideGroupS21G52}>
+                  {group5Jsx('g2152',ip2CodeChanged,ii2CodeChanged)}
+                  <Accordion>
+                    <Accordion.Item eventKey="20">
+                      <Accordion.Header>Экземпляр 3</Accordion.Header>
+                      <Accordion.Body onEnter={showGroupS21G53} onExited={hideGroupS21G53}>
+                        {group5Jsx('g2153',ip2CodeChanged,ii2CodeChanged)}
+                        <Accordion>
+                          <Accordion.Item eventKey="21">
+                            <Accordion.Header>Экземпляр 4</Accordion.Header>
+                            <Accordion.Body onEnter={showGroupS21G54} onExited={hideGroupS21G54}>
+                              {group5Jsx('g2154',ip2CodeChanged,ii2CodeChanged)}
+                              <Accordion>
+                                <Accordion.Item eventKey="22">
+                                  <Accordion.Header>Экземпляр 5</Accordion.Header>
+                                  <Accordion.Body onEnter={showGroupS21G55} onExited={hideGroupS21G55}>
+                                    {group5Jsx('g2155',ip2CodeChanged,ii2CodeChanged)}
+                                  </Accordion.Body>
+                                </Accordion.Item>
+                              </Accordion>
+                            </Accordion.Body>
+                          </Accordion.Item>
+                        </Accordion>
+                      </Accordion.Body>
+                    </Accordion.Item>
+                  </Accordion>
+                </Accordion.Body>
+              </Accordion.Item>
+            </Accordion>
+          </Accordion.Body>
+        </Accordion.Item>
+      </Accordion>
       </Accordion.Body>
     </Accordion.Item>
   </Accordion>
@@ -893,21 +1093,11 @@ export const InputHydroTelegram = ({postCode})=>{
           <Accordion.Header>Температура воды и воздуха (Группа 4)</Accordion.Header>
           <Accordion.Body onEnter={showGroup14} onExited={hideGroup14}>
             {waterTemperatureJsx('wTemp1',waterTemperature)}
-            {/* <Form.Group className="mb-3" controlId="formWaterTemperature">
-              <Form.Label>Температура воды</Form.Label>
-              <Form.Control type="number" value={waterTemperature} onChange={waterTemperatureChanged} min="0.0" max="9.9" step="0.1" pattern='^[0-9]$|(^[0-9][\.,][0-9]{0,1}$)'/>
-              <Form.Text className="text-muted">
-                С точностью до десятых
-              </Form.Text>
-            </Form.Group> */}
             <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
               <Accordion.Item eventKey="1" >
                 <Accordion.Header>Температура воздуха</Accordion.Header>
                 <Accordion.Body onEnter={showAirTemperature} onExited={hideAirTemperature}>
                   {airTemperatureJsx('aTemp1',airTemperature)}
-                  {/* <Form.Group className="mb-3" controlId="formAirTemperature">
-                    <Form.Control type="number" value={airTemperature} onChange={airTemperatureChanged} min="-49" max="49" pattern="^-{0,1}[0-9]$|^-{0,1}[0-4][0-9]$"/>
-                  </Form.Group> */}
                 </Accordion.Body>
               </Accordion.Item>
             </Accordion>
@@ -918,72 +1108,27 @@ export const InputHydroTelegram = ({postCode})=>{
         <Accordion.Item eventKey="2">
           <Accordion.Header>Ледовые явления (Группа 5)</Accordion.Header>
           <Accordion.Body onEnter={showGroup15} onExited={hideGroup15}>
-            <Form.Group className="mb-3" controlId="formIcePhenomena">
-              <Form.Label>Выберите характеристику явления</Form.Label>
-              <Form.Select id="g151ip" onChange={ip1CodeChanged}>
-                {Object.keys(icePhenomena).map(ip => {if(+ip>10) return <option value={ip}>{icePhenomena[ip]}</option>})}
-              </Form.Select>
-              <Form.Label>Выберите характеристику или интенсивность явления</Form.Label>
-              <Form.Select id="g151ipi" onChange={ii1CodeChanged}>
-                {Object.keys(icePhenomena).map(ip => <option value={ip}>{icePhenomena[ip]}</option>)}
-              </Form.Select>
-            </Form.Group>
+            {group5Jsx('g151',ip1CodeChanged,ii1CodeChanged)}
             <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
               <Accordion.Item eventKey="3" id="accordion-ip2" >
                 <Accordion.Header>Экземпляр 2</Accordion.Header>
                 <Accordion.Body onEnter={showGroup152} onExited={hideGroup152}>
-                  <Form.Group className="mb-3" >
-                    <Form.Label>Выберите характеристику явления</Form.Label>
-                    <Form.Select id="g152ip" onChange={ip1CodeChanged} defaultValue={"11"}>
-                      {Object.keys(icePhenomena).map(ip => {if(+ip>10) return <option value={ip}>{icePhenomena[ip]}</option>})}
-                    </Form.Select>
-                    <Form.Label>Выберите характеристику или интенсивность явления</Form.Label>
-                    <Form.Select id="g152ipi" onChange={ii2CodeChanged}>
-                      {Object.keys(icePhenomena).map(ip => <option value={ip}>{icePhenomena[ip]}</option>)}
-                    </Form.Select>
-                  </Form.Group>
+                  {group5Jsx('g152',ip1CodeChanged,ii1CodeChanged)}
                   <Accordion>
                     <Accordion.Item eventKey="4">
                       <Accordion.Header>Экземпляр 3</Accordion.Header>
                       <Accordion.Body onEnter={showGroup153} onExited={hideGroup153}>
-                        <Form.Group className="mb-3" controlId="formIp3" >
-                          <Form.Label>Выберите характеристику явления</Form.Label>
-                          <Form.Select onChange={ip3CodeChanged} defaultValue={"11"}>
-                            {Object.keys(icePhenomena).map(ip => {if(+ip>10) return <option value={ip}>{icePhenomena[ip]}</option>})}
-                          </Form.Select>
-                          <Form.Label>Выберите характеристику или интенсивность явления</Form.Label>
-                          <Form.Select onChange={ii3CodeChanged}>
-                            {Object.keys(icePhenomena).map(ip => <option value={ip}>{icePhenomena[ip]}</option>)}
-                          </Form.Select>
-                        </Form.Group>
+                        {group5Jsx('g153',ip1CodeChanged,ii1CodeChanged)}
                         <Accordion>
                           <Accordion.Item eventKey="5">
                             <Accordion.Header>Экземпляр 4</Accordion.Header>
                             <Accordion.Body onEnter={showGroup154} onExited={hideGroup154}>
-                              <Form.Group className="mb-3" controlId="formIp4">
-                                <Form.Label>Выберите характеристику явления</Form.Label>
-                                <Form.Select onChange={ip4CodeChanged} defaultValue={"11"}>
-                                  {Object.keys(icePhenomena).map(ip => {if(+ip>10) return <option value={ip}>{icePhenomena[ip]}</option>})}
-                                </Form.Select>
-                                <Form.Label>Выберите характеристику или интенсивность явления</Form.Label>
-                                <Form.Select onChange={ii4CodeChanged}>
-                                  {Object.keys(icePhenomena).map(ip => <option value={ip}>{icePhenomena[ip]}</option>)}
-                                </Form.Select>
-                              </Form.Group>
+                              {group5Jsx('g154',ip1CodeChanged,ii1CodeChanged)}
                               <Accordion>
                                 <Accordion.Item eventKey="6">
                                   <Accordion.Header>Экземпляр 5</Accordion.Header>
                                   <Accordion.Body onEnter={showGroup155} onExited={hideGroup155}>
-                                    <Form.Group className="mb-3" controlId="formIp5">
-                                      <Form.Label>Выберите характеристику явления</Form.Label>
-                                      <Form.Select onChange={ip5CodeChanged} defaultValue={"11"}>
-                                        {Object.keys(icePhenomena).map(ip => {if(+ip>10) return <option value={ip}>{icePhenomena[ip]}</option>})}
-                                      </Form.Select>
-                                      <Form.Label>Выберите характеристику или интенсивность явления</Form.Label>
-                                      <Form.Select onChange={ii5CodeChanged}>
-                                        {Object.keys(icePhenomena).map(ip => <option value={ip}>{icePhenomena[ip]}</option>)}
-                                      </Form.Select>
-                                    </Form.Group>
+                                    {group5Jsx('g155',ip1CodeChanged,ii1CodeChanged)}
                                   </Accordion.Body>
                                 </Accordion.Item>
                               </Accordion>
