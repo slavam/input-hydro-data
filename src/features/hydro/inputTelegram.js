@@ -5,8 +5,17 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form'
 import Accordion from 'react-bootstrap/Accordion'
+import Card from 'react-bootstrap/Card'
 import { icePhenomena, waterBodies } from '../../components/dictionaries'
 
+const ipCharS2 = new Array(5) //.fill(null)
+for(let i=0; i<ipCharS2.length; i++){ipCharS2[i]= new Array(5).fill(null)}
+const ipAddonS2 = new Array(5) //.fill(null)
+for(let i=0; i<ipAddonS2.length; i++){ipAddonS2[i]= new Array(5).fill(null)}
+const wbCharS2 = new Array(5) //.fill(null)
+for(let i=0; i<ipCharS2.length; i++){wbCharS2[i]= new Array(5).fill(null)}
+const wbAddonS2 = new Array(5) //.fill(null)
+for(let i=0; i<ipAddonS2.length; i++){wbAddonS2[i]= new Array(5).fill(null)}
 const ipChar = new Array(5).fill(null)
 const ipAddon = new Array(5).fill(null)
 const wbChar = new Array(5).fill(null)
@@ -220,7 +229,6 @@ export const InputHydroTelegram = ({postCode})=>{
     setTelegram(newText)
   }
   const hideGroup15=()=>{
-    // ipChar = ipAddon = []
     ipChar[0] = ipAddon[0] = null
     let newText = telegram.replace(/ 5..../g,'')
     setTelegram(newText)
@@ -228,11 +236,11 @@ export const InputHydroTelegram = ({postCode})=>{
   const group5Jsx=(id,ipChange,iiChange)=>{
     return(<Form.Group className="mb-3" >
       <Form.Label>Выберите характеристику явления</Form.Label>
-      <Form.Select id={id+'ip'} onChange={ip1CodeChanged}>
+      <Form.Select id={id+'ip'} onChange={ipChange} menuPortalTarget={document.body}>
         {Object.keys(icePhenomena).map(ip => {if(+ip>10) return <option value={ip}>{icePhenomena[ip]}</option>})}
       </Form.Select>
       <Form.Label>Выберите характеристику или интенсивность явления</Form.Label>
-      <Form.Select id={id+'ipi'} onChange={ii1CodeChanged}>
+      <Form.Select id={id+'ipi'} onChange={iiChange}>
         {Object.keys(icePhenomena).map(ip => <option value={ip}>{icePhenomena[ip]}</option>)}
       </Form.Select>
     </Form.Group>)
@@ -260,8 +268,6 @@ export const InputHydroTelegram = ({postCode})=>{
         ipChar[4] = ip
         setIp5(ip)
         break;
-      // case 'g2151':
-      //   break
     }
     setTelegram(newG5(0))
   }
@@ -304,12 +310,7 @@ export const InputHydroTelegram = ({postCode})=>{
     setIi2(1)
     setTelegram(newG5(1))
   }
-  // const ii2CodeChanged = e=>{
-  //   let ii = +e.target.value>9? e.target.value : '0'+e.target.value
-  //   setIi2(ii)
-  //   ipAddon[1] = ii
-  //   setTelegram(newG5(0))
-  // }
+  
   const showGroup153=()=>{
     ipChar[2] = 11
     ipAddon[2] = '01'
@@ -323,18 +324,7 @@ export const InputHydroTelegram = ({postCode})=>{
     setIi3(1)
     setTelegram(newG5(1))
   }
-  // const ip3CodeChanged = e=>{
-  //   let ip = e.target.value
-  //   setIp3(ip)
-  //   ipChar[2] = ip
-  //   setTelegram(newG5(0))
-  // }
-  // const ii3CodeChanged = e=>{
-  //   let ii = +e.target.value>9? e.target.value : '0'+e.target.value
-  //   setIi3(ii)
-  //   ipAddon[2] = ii
-  //   setTelegram(newG5(0))
-  // }
+  
   const showGroup154=()=>{
     ipChar[3] = 11
     ipAddon[3] = '01'
@@ -348,18 +338,7 @@ export const InputHydroTelegram = ({postCode})=>{
     setIi4(1)
     setTelegram(newG5(1))
   }
-  // const ip4CodeChanged = e=>{
-  //   let ip = e.target.value
-  //   setIp4(ip)
-  //   ipChar[3] = ip
-  //   setTelegram(newG5(0))
-  // }
-  // const ii4CodeChanged = e=>{
-  //   let ii = +e.target.value>9? e.target.value : '0'+e.target.value
-  //   setIi4(ii)
-  //   ipAddon[3] = ii
-  //   setTelegram(newG5(0))
-  // }
+  
   const showGroup155=()=>{
     ipChar[4] = 11
     ipAddon[4] = '01'
@@ -373,30 +352,8 @@ export const InputHydroTelegram = ({postCode})=>{
     setIi5(1)
     setTelegram(newG5(1))
   }
-  // const ip5CodeChanged = e=>{
-  //   let ip = e.target.value
-  //   setIp5(ip)
-  //   ipChar[4] = ip
-  //   setTelegram(newG5(0))
-  // }
-  // const ii5CodeChanged = e=>{
-  //   let ii = +e.target.value>9? e.target.value : '0'+e.target.value
-  //   setIi5(ii)
-  //   ipAddon[4] = ii
-  //   setTelegram(newG5(0))
-  // }
   
 // group6
-  const [wb1,setWb1] = useState('00')
-  const [wbi1,setWbi1] = useState('00')
-  const [wb2,setWb2] = useState('00')
-  const [wbi2,setWbi2] = useState('00')
-  const [wb3,setWb3] = useState('00')
-  const [wbi3,setWbi3] = useState('00')
-  const [wb4,setWb4] = useState('00')
-  const [wbi4,setWbi4] = useState('00')
-  const [wb5,setWb5] = useState('00')
-  const [wbi5,setWbi5] = useState('00')
   const combineG6=()=>{
     let ret = ''
     for (let i = 0; i < wbChar.length; i++){
@@ -404,7 +361,7 @@ export const InputHydroTelegram = ({postCode})=>{
     }
     return ret
   }
-  const changeG6=(k)=>{ //op='change')=>{
+  const changeG6=(k)=>{
     let allG6 = combineG6()
     let start16 = telegram.indexOf(' 6')
     return telegram.slice(0,start16)+allG6+telegram.slice(start16+allG6.length+k*6)
@@ -412,12 +369,10 @@ export const InputHydroTelegram = ({postCode})=>{
   const showGroup16=()=>{
     wbChar[0] = '00'
     wbAddon[0] = '00'
-    setWb1('00')
-    setWbi1('00')
-    let g162 = wbChar[1]===null?'':` 6${wb2}${wbi2}`
-    let g163 = wbChar[2]===null?'':` 6${wb3}${wbi3}`
-    let g164 = wbChar[3]===null?'':` 6${wb4}${wbi4}`
-    let g165 = wbChar[4]===null?'':` 6${wb5}${wbi5}`
+    let g162 = wbChar[1]===null?'':` 6${wbChar[1]}${wbAddon[1]}`
+    let g163 = wbChar[2]===null?'':` 6${wbChar[2]}${wbAddon[2]}`
+    let g164 = wbChar[3]===null?'':` 6${wbChar[3]}${wbAddon[3]}`
+    let g165 = wbChar[4]===null?'':` 6${wbChar[4]}${wbAddon[4]}`
     let g6 = ` 60000${g162}${g163}${g164}${g165}`
     let start16 = (telegram[29]==='4'? 28+6 : 28) + combineG5().length
     let newText = telegram.slice(0,start16)+g6+telegram.slice(start16)
@@ -428,114 +383,63 @@ export const InputHydroTelegram = ({postCode})=>{
     let newText = telegram.replace(/ 6..../g,'')
     setTelegram(newText)
   }
-  const wb1CodeChanged = (e)=>{
+  const group6Jsx = (id,wbChange,wbiChange)=>{
+    return(<Form.Group className="mb-3" >
+      <Form.Label>Выберите характеристику объекта</Form.Label>
+      <Form.Select id={id+'wb'} onChange={wbChange} >
+        {Object.keys(waterBodies).map(wb => {if(+wb===0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
+      </Form.Select>
+      <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
+      <Form.Select id={id+'wbi'} onChange={wbiChange}>
+        {Object.keys(waterBodies).map(wb => <option value={wb}>{waterBodies[wb]}</option>)}
+      </Form.Select>
+    </Form.Group>)
+  }
+  const wb1CodeChanged = e=>{
     let wb = +e.target.value>9? e.target.value : '0'+e.target.value
-    setWb1(wb)
-    wbChar[0] = wb
+    let i = +e.target.id[3]-1 // 'g161wb'
+    wbChar[i] = wb
     setTelegram(changeG6(0))
   }
   const wbi1CodeChanged = e=>{
     let wbi = +e.target.value>9? e.target.value : '0'+e.target.value
-    setWbi1(wbi)
-    wbAddon[0] = wbi
+    let i = +e.target.id[3]-1 // 'g161wbi'
+    wbAddon[i] = wbi
     setTelegram(changeG6(0))
   }
   const showGroup162=()=>{
     wbChar[1]=wbAddon[1] = '00'
-    setWb2('00')
-    setWbi2('00')
-    setTelegram(changeG6(-1)) //'show'))
+    setTelegram(changeG6(-1))
   }
   const hideGroup162=()=>{
     wbChar[1] = wbAddon[1] = null
-    setWb2('00')
-    setWbi2('00')
-    setTelegram(changeG6(1)) //'hide'))
-  }
-  const wb2CodeChanged = (e)=>{
-    let wb = +e.target.value>9? e.target.value : '0'+e.target.value
-    setWb2(wb)
-    wbChar[1] = wb
-    setTelegram(changeG6(0))
-  }
-  const wbi2CodeChanged = e=>{
-    let wbi = +e.target.value>9? e.target.value : '0'+e.target.value
-    setWbi2(wbi)
-    wbAddon[1] = wbi
-    setTelegram(changeG6(0))
+    setTelegram(changeG6(1))
   }
   const showGroup163=()=>{
     wbChar[2]=wbAddon[2] = '00'
-    setWb3('00')
-    setWbi3('00')
     setTelegram(changeG6(-1)) //'show'))
   }
   const hideGroup163=()=>{
     wbChar[2]=wbAddon[2] = null
-    setWb3('00')
-    setWbi3('00')
     setTelegram(changeG6(1)) //'hide'))
-  }
-  const wb3CodeChanged = (e)=>{
-    let wb = +e.target.value>9? e.target.value : '0'+e.target.value
-    setWb3(wb)
-    wbChar[2] = wb
-    setTelegram(changeG6(0)) //))
-  }
-  const wbi3CodeChanged = e=>{
-    let wbi = +e.target.value>9? e.target.value : '0'+e.target.value
-    setWbi3(wbi)
-    wbAddon[2] = wbi
-    setTelegram(changeG6(0)) //))
   }
   const showGroup164=()=>{
     wbChar[3]=wbAddon[3]='00'
-    setWb4('00')
-    setWbi3('00')
     setTelegram(changeG6(-1)) //'show'))
   }
   const hideGroup164=()=>{
     wbChar[3]=ipAddon[3]= null
-    setWb4('00')
-    setWbi4('00')
     setTelegram(changeG6(1)) //'hide'))
-  }
-  const wb4CodeChanged = (e)=>{
-    let wb = +e.target.value>9? e.target.value : '0'+e.target.value
-    setWb4(wb)
-    wbChar[3] = wb
-    setTelegram(changeG6(0)) //))
-  }
-  const wbi4CodeChanged = e=>{
-    let wbi = +e.target.value>9? e.target.value : '0'+e.target.value
-    setWbi4(wbi)
-    wbAddon[3] = wbi
-    setTelegram(changeG6(0)) //))
   }
   const showGroup165=()=>{
     wbChar[4]=wbAddon[4] = '00'
-    setWb5('00')
-    setWbi5('00')
     setTelegram(changeG6(-1)) //'show'))
   }
   const hideGroup165=()=>{
     wbChar[4]=ipAddon[4] = null
-    setWb5('00')
-    setWbi5('00')
     setTelegram(changeG6(1)) //'hide'))
   }
-  const wb5CodeChanged = (e)=>{
-    let wb = +e.target.value>9? e.target.value : '0'+e.target.value
-    setWb5(wb)
-    wbChar[4] = wb
-    setTelegram(changeG6(0)) //))
-  }
-  const wbi5CodeChanged = e=>{
-    let wbi = +e.target.value>9? e.target.value : '0'+e.target.value
-    setWbi5(wbi)
-    wbAddon[4] = wbi
-    setTelegram(changeG6(0)) //))
-  }
+  
   const {
     register,
     control,
@@ -610,7 +514,7 @@ export const InputHydroTelegram = ({postCode})=>{
     myReset()
     
   }
-  
+  // group7
   let formGroup17
   const [iceThickness, setIceThickness] = useState(null)
   const [snowThickness, setSnowThickness] = useState(null)
@@ -620,7 +524,6 @@ export const InputHydroTelegram = ({postCode})=>{
   const showGroup17=()=>{
     setIceThickness(1)
     setSnowThickness(0)
-    // setSymbolIT('001')
     let start17 = getStartG17()
     let newText = telegram.slice(0,start17)+' 70010'+telegram.slice(start17)
     setTelegram(newText)
@@ -628,45 +531,71 @@ export const InputHydroTelegram = ({postCode})=>{
   const hideGroup17=()=>{
     setIceThickness(null)
     setSnowThickness(null)
-    let newText = telegram.replace(/ 7..../g, "")
+    let newText = telegram.replace(/ 7..../, "")
     setTelegram(newText)
+  }
+  const group7IceJsx=(id,iceT)=>{
+    return(<Form.Group className="mb-3" >
+      <Form.Label>Толщина льда в сантиметрах</Form.Label>
+      <Form.Control id={id} type="number" value={iceT} onChange={iceThicknessChanged} min="1" max="999" pattern='[0-9]{1,3}'/>
+    </Form.Group>)
   }
   const iceThicknessChanged=e=>{
-    let it = +e.target.value
-    it = it<1? 1 : it
-    it = it>999? 999 : it
-    setIceThickness(it)
-    let start17 = telegram.indexOf(' 7')
-    let newText = telegram.slice(0,start17+2)+`${it.toString().padStart(3, "0")}`+telegram.slice(start17+5)
+    let it = e.target.value
+    it = +it<1? 1 : it
+    it = +it>999? 999 : it
+    let newText = telegram
+    switch (e.target.id) {
+      case 's1g7':
+        setIceThickness(it)
+        let start17 = telegram.indexOf(' 7')
+        newText = telegram.slice(0,start17+2)+`${it.toString().padStart(3, "0")}`+telegram.slice(start17+5)
+        break;
+      case 's2g7':
+        setIceThickness21(it)
+        let startS2 = telegram.indexOf(' 922')
+        let start27 = telegram.indexOf(' 7',startS2)
+        newText = telegram.slice(0,start27+2)+`${(+it).toString().padStart(3, "0")}`+telegram.slice(start27+5)
+      default:
+        break;
+    }
     setTelegram(newText)
+  }
+  const group7SnowJsx=(id,snowT)=>{
+    return(<Form.Group className="mb-3" >
+      <Form.Label>Высота снежного покрова</Form.Label>
+      <Form.Control id={id} type="number" value={snowT} onChange={snowThicknessChanged} min="0" max="9" pattern='[0-9]'/>
+      <Form.Text className="text-muted">Цифра кода</Form.Text>
+    </Form.Group>)
   }
   const snowThicknessChanged=e=>{
-    let st = +e.target.value
-    setSnowThickness(st)
-    let start17 = telegram.indexOf(' 7')
-    let newText = telegram.slice(0,start17+5)+st+telegram.slice(start17+6)
+    let st = e.target.value
+    if(!/^0?[0-9]$/.test(st))
+      st=0
+    let newText = telegram
+    switch (e.target.id) {
+      case 's1g7':
+        setSnowThickness(+st)
+        let start17 = telegram.indexOf(' 7')
+        newText = telegram.slice(0,start17+5)+(+st).toString()+telegram.slice(start17+6)    
+        break;
+      case 's2g7':
+        setSnowThickness21(st)
+        let startS2 = telegram.indexOf(' 922')
+        let start27 = telegram.indexOf(' 7',startS2)
+        newText = telegram.slice(0,start27+5)+(+st).toString()+telegram.slice(start27+6)
+      default:
+        break;
+    }
     setTelegram(newText)
   }
-  if(((d+0) % 5 === 0) || (d === lastDay)){
+  if(((d+2+0) % 5 === 0) || (d === lastDay)){
     formGroup17 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}> {/*</Accordion><Accordion flush>*/}
       <Accordion.Item eventKey="13">
         <Accordion.Header>Лёд/Снег (Группа 7)</Accordion.Header>
         <Accordion.Body onEnter={showGroup17} onExited={hideGroup17}>
-          <Form.Group className="mb-3" controlId="form-ice-thickness">
-            <Form.Label>Толщина льда</Form.Label>
-            <Form.Control type="number" value={iceThickness} onChange={iceThicknessChanged} min="1" max="999" pattern='[0-9]{3}'/>
-            <Form.Text className="text-muted">
-              В сантиметрах
-            </Form.Text>
-          </Form.Group>
-          <br/>
-          <Form.Group className="mb-3" controlId="form-snow-thickness">
-            <Form.Label>Высота снежного покрова</Form.Label>
-            <Form.Control type="number" value={snowThickness} onChange={snowThicknessChanged} min="0" max="9"  pattern='[0-9]'/>
-            <Form.Text className="text-muted">
-              Цифра кода
-            </Form.Text>
-          </Form.Group>
+          {group7IceJsx('s1g7',iceThickness)}
+          {group7SnowJsx('s1g7',snowThickness)}
         </Accordion.Body>
       </Accordion.Item>
     </Accordion>
@@ -778,7 +707,7 @@ export const InputHydroTelegram = ({postCode})=>{
     setTelegram(newText)
   }
   const waterConsumptionChanged=e=>{
-    if(/[0-9]+([\.,][0-9]+)?/.test(e.target.value)){
+    if(/[0-9]+([.,][0-9]+)?/.test(e.target.value)){
       let wc = +e.target.value
       wc = wc>999999.0? 999999.0 : wc
       wc = wc<0.0? 0.0 : wc
@@ -794,7 +723,7 @@ export const InputHydroTelegram = ({postCode})=>{
     }else{setWaterConsumption(0)}
   }
   const riverAreaChanged=e=>{
-    if(/[0-9]+([\.,][0-9]+)?/.test(e.target.value)){
+    if(/[0-9]+([.,][0-9]+)?/.test(e.target.value)){
       let ra = +e.target.value
       ra = ra>999999.0? 999999.0 : ra
       ra = ra<0.0? 0.0 : ra
@@ -870,22 +799,7 @@ export const InputHydroTelegram = ({postCode})=>{
     let newText = telegram.slice(0,startSection2+22)+'//'+telegram.slice(startSection2+24)
     setTelegram(newText)
   }
-  const ipCharS2 = new Array(5) //.fill(null)
-  for(let i=0; i<ipCharS2.length; i++){ipCharS2[i]= new Array(5).fill(null)}
   
-  const ipAddonS2 = new Array(5) //.fill(null)
-  for(let i=0; i<ipAddonS2.length; i++){ipAddonS2[i]= new Array(5).fill(null)}
-  // alert(JSON.stringify(ipAddonS2))
-  // const [ip211,setIp211] = useState(11)
-  // const [ii211,setIi211] = useState(1)
-  // const [ip212,setIp212] = useState(11)
-  // const [ii212,setIi212] = useState(1)
-  // const [ip213,setIp213] = useState(11)
-  // const [ii213,setIi213] = useState(1)
-  // const [ip214,setIp214] = useState(11)
-  // const [ii214,setIi214] = useState(1)
-  // const [ip215,setIp215] = useState(11)
-  // const [ii215,setIi215] = useState(1)
   const combineS2G5=(j)=>{
     let ret = ''
     for (let i = 0; i < ipCharS2[j].length; i++){
@@ -902,10 +816,7 @@ export const InputHydroTelegram = ({postCode})=>{
   const showGroupS2G5=(j,i)=>{
     ipCharS2[j][i] = 11
     ipAddonS2[j][i] = '01'
-    // setIp211(11)
-    // setIi211(1)
     let nt = newS2G5(j,-1)
-    // alert(nt)
     setTelegram(nt)
   }
   const showGroupS21G51=()=>{
@@ -924,11 +835,7 @@ export const InputHydroTelegram = ({postCode})=>{
     showGroupS2G5(0,4)
   }
   const hideGroupS2G5=(j,i)=>{
-    // if(ipCharS2[s] && ipCharS2[s][g] && ipAddonS2[s] && ipAddonS2[s][g])
-      ipCharS2[j][i] = ipAddonS2[j][i] = null
-    // setIp2(11)
-    // setIi2(1)
-    // alert(combineS2G5(j))
+    ipCharS2[j][i] = ipAddonS2[j][i] = null
     setTelegram(newS2G5(j,1))
   }
   const hideGroupS21G51=()=>{
@@ -968,7 +875,7 @@ export const InputHydroTelegram = ({postCode})=>{
     setTelegram(newS2G5(0,0))
   }
   const ii2CodeChanged = e=>{
-    let ii = e.target.value
+    let ii = +e.target.value<10? '0'+e.target.value : e.target.value
     switch (e.target.id) {
       case 'g2151ii':
         ipAddonS2[0][0] = ii
@@ -976,8 +883,185 @@ export const InputHydroTelegram = ({postCode})=>{
       case 'g2152ii':
         ipAddonS2[0][1] = ii
         break
+      case 'g2153ii':
+        ipAddonS2[0][2] = ii
+        break
+      case 'g2154ii':
+        ipAddonS2[0][3] = ii
+        break
+      case 'g2155ii':
+        ipAddonS2[0][4] = ii
+        break
     }
     setTelegram(newS2G5(0,0))
+  }
+  const combineS2G6=(j)=>{
+    let ret = ''
+    for (let i = 0; i < wbCharS2[j].length; i++){
+      ret += wbCharS2[j][i]===null? '':` 6${wbCharS2[j][i]}${wbAddonS2[j][i]}`
+    }
+    return ret
+  }
+  const newS2G6 =(j,k)=>{
+    let startS2=telegram.indexOf(' 922')
+    let startS2G6 = telegram.indexOf(" 6", startS2)
+    let allG6 = combineS2G6(j)
+    return telegram.slice(0,startS2G6)+allG6+telegram.slice(startS2G6+allG6.length+k*6)
+  }
+  const wb2CodeChanged = e=>{
+    let wb = +e.target.value<10? '0'+e.target.value : e.target.value
+    let j = +e.target.id[2]-1 // 's21g61wb'
+    let i = +e.target.id[5]-1 // 's21g61wb'
+    wbCharS2[j][i] = wb
+    setTelegram(newS2G6(j,0))
+    // setTelegram(changeG6(0))
+    // switch (e.target.id) {
+    //   case 'g2151ip':
+    //     wbCharS2[0][0] = wb
+    //     break;
+    //   case 'g2152ip':
+    //     ipCharS2[0][1] = ip
+    //     break
+    //   case 'g2153ip':
+    //     ipCharS2[0][2] = ip
+    //     break
+    //   case 'g2154ip':
+    //     ipCharS2[0][3] = ip
+    //     break
+    //   case 'g2155ip':
+    //     ipCharS2[0][4] = ip
+    //     break
+    // }
+    
+  }
+  const wbi2CodeChanged = e=>{
+    let wbi = +e.target.value<10? '0'+e.target.value : e.target.value
+    let j = +e.target.id[2]-1 // 's21g61wb'
+    let i = +e.target.id[5]-1 // 's21g61wb'
+    wbAddonS2[j][i] = wbi
+    setTelegram(newS2G6(j,0))
+
+    // let ii = +e.target.value<10? '0'+e.target.value : e.target.value
+    // switch (e.target.id) {
+    //   case 'g2151ii':
+    //     ipAddonS2[0][0] = ii
+    //     break;
+    //   case 'g2152ii':
+    //     ipAddonS2[0][1] = ii
+    //     break
+    //   case 'g2153ii':
+    //     ipAddonS2[0][2] = ii
+    //     break
+    //   case 'g2154ii':
+    //     ipAddonS2[0][3] = ii
+    //     break
+    //   case 'g2155ii':
+    //     ipAddonS2[0][4] = ii
+    //     break
+    // }
+    // setTelegram(newS2G5(0,0))
+  }
+  // const showGroup16=()=>{
+  //   wbChar[0] = '00'
+  //   wbAddon[0] = '00'
+  //   let g162 = wbChar[1]===null?'':` 6${wbChar[1]}${wbAddon[1]}`
+  //   let g163 = wbChar[2]===null?'':` 6${wbChar[2]}${wbAddon[2]}`
+  //   let g164 = wbChar[3]===null?'':` 6${wbChar[3]}${wbAddon[3]}`
+  //   let g165 = wbChar[4]===null?'':` 6${wbChar[4]}${wbAddon[4]}`
+  //   let g6 = ` 60000${g162}${g163}${g164}${g165}`
+  //   let start16 = (telegram[29]==='4'? 28+6 : 28) + combineG5().length
+  //   let newText = telegram.slice(0,start16)+g6+telegram.slice(start16)
+  //   setTelegram(newText)
+  // }
+  // const hideGroup16=()=>{
+  //   wbChar[0] = wbAddon[0] = null
+  //   let newText = telegram.replace(/ 6..../g,'')
+  //   setTelegram(newText)
+  // }
+  const showGroupS2G6=(j,i)=>{
+    wbCharS2[j][i] = wbAddonS2[j][i] = '00'
+    setTelegram(newS2G6(j,-1))
+  }
+  const showGroupS21G61=()=>{
+    // alert(activeKeys)
+    showGroupS2G6(0,0)
+  }
+  const showGroupS21G62=()=>{
+    showGroupS2G6(0,1)
+  }
+  const showGroupS21G63=()=>{
+    showGroupS2G6(0,2)
+  }
+  const showGroupS21G64=()=>{
+    showGroupS2G6(0,3)
+  }
+  const showGroupS21G65=()=>{
+    showGroupS2G6(0,4)
+  }
+  const hideGroupS2G6=(j,i)=>{
+    wbCharS2[j][i] = wbAddonS2[j][i] = null
+    setTelegram(newS2G6(j,1))
+  }
+  const hideGroupS21G61=()=>{
+    // wbCharS2[0][0] = wbAddonS2[0][0] = wbCharS2[0][1] = wbAddonS2[0][1] = wbCharS2[0][2] = wbAddonS2[0][2] = wbCharS2[0][3] = wbAddonS2[0][3] = wbCharS2[0][4] = wbAddonS2[0][4] = null
+    hideGroupS2G6(0,0)
+    // let i = activeKeys.indexOf(25)
+    // let newAk = activeKeys.splice(i, 1)
+    // setActiveKeys(newAk)
+  }
+  const hideGroupS21G62=()=>{
+    hideGroupS2G6(0,1)
+  }
+  const hideGroupS21G63=()=>{
+    hideGroupS2G6(0,2)
+  }
+  const hideGroupS21G64=()=>{
+    hideGroupS2G6(0,3)
+  }
+  const hideGroupS21G65=()=>{
+    hideGroupS2G6(0,4)
+  }
+  let formGroup27 = null
+  const [iceThickness21, setIceThickness21] = useState(null)
+  const [snowThickness21, setSnowThickness21] = useState(null)
+  const getStartG27=()=>{
+    let startSection2 = telegram.indexOf(' 922')
+    let startS2G4 = telegram.indexOf(' 4',startSection2)
+    let startS2G5 = telegram.indexOf(' 5',startSection2)
+    let startS2G6 = telegram.indexOf(' 6',startSection2)
+    if(startS2G6>0)
+      return startS2G6+combineS2G6(0).length
+    else if(startS2G5>0)
+      return startS2G5+combineS2G5(0).length
+    else if(startS2G4>0)
+      return startS2G4+6
+    else 
+      return startSection2+18
+  }
+  const showGroup27=()=>{
+    setIceThickness21(1)
+    setSnowThickness21(0)
+    let start27 = getStartG27()
+    let newText = telegram.slice(0,start27)+' 70010'+telegram.slice(start27)
+    setTelegram(newText)
+  }
+  const hideGroup27=()=>{
+    setIceThickness21(null)
+    setSnowThickness21(null)
+    let startS2G7 = telegram.indexOf(' 7',telegram.indexOf(' 922'))
+    let newText = telegram.slice(0,startS2G7)+telegram.slice(startS2G7+6)
+    setTelegram(newText)
+  }
+  if(((d+2+0) % 5 === 0) || (d === lastDay)){
+    formGroup27 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}> {/*</Accordion><Accordion flush>*/}
+      <Accordion.Item eventKey="29">
+        <Accordion.Header>Лёд/Снег (Группа 7)</Accordion.Header>
+        <Accordion.Body onEnter={showGroup27} onExited={hideGroup27}>
+          {group7IceJsx('s2g7',iceThickness21)}
+          {group7SnowJsx('s2g7',snowThickness21)}
+        </Accordion.Body>
+      </Accordion.Item>
+    </Accordion>
   }
   const additionSection2 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
     <Accordion.Item eventKey="16">
@@ -992,7 +1076,7 @@ export const InputHydroTelegram = ({postCode})=>{
             <Accordion.Body onEnter={showGroup241} onExited={hideGroup241}>
               {waterTemperatureJsx('wTemp21',waterTemperature21)}
               <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
-                <Accordion.Item eventKey="1" >
+                <Accordion.Item eventKey="18" >
                   <Accordion.Header>Температура воздуха</Accordion.Header>
                   <Accordion.Body onEnter={showAirTemperature21} onExited={hideAirTemperature21}>
                     {airTemperatureJsx('aTemp21',airTemperature21)}
@@ -1003,45 +1087,86 @@ export const InputHydroTelegram = ({postCode})=>{
           </Accordion.Item>
         </Accordion>
         <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
-        <Accordion.Item eventKey="18">
-          <Accordion.Header>Ледовые явления (Группа 5)</Accordion.Header>
-          <Accordion.Body onEnter={showGroupS21G51} onExit={hideGroupS21G51}>
-            {group5Jsx('g2151',ip2CodeChanged,ii2CodeChanged)}
-            <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
-              <Accordion.Item eventKey="19" id="accordion-ip2" >
-                <Accordion.Header>Экземпляр 2</Accordion.Header>
-                <Accordion.Body onEnter={showGroupS21G52} onExited={hideGroupS21G52}>
-                  {group5Jsx('g2152',ip2CodeChanged,ii2CodeChanged)}
-                  <Accordion>
-                    <Accordion.Item eventKey="20">
-                      <Accordion.Header>Экземпляр 3</Accordion.Header>
-                      <Accordion.Body onEnter={showGroupS21G53} onExited={hideGroupS21G53}>
-                        {group5Jsx('g2153',ip2CodeChanged,ii2CodeChanged)}
-                        <Accordion>
-                          <Accordion.Item eventKey="21">
-                            <Accordion.Header>Экземпляр 4</Accordion.Header>
-                            <Accordion.Body onEnter={showGroupS21G54} onExited={hideGroupS21G54}>
-                              {group5Jsx('g2154',ip2CodeChanged,ii2CodeChanged)}
-                              <Accordion>
-                                <Accordion.Item eventKey="22">
-                                  <Accordion.Header>Экземпляр 5</Accordion.Header>
-                                  <Accordion.Body onEnter={showGroupS21G55} onExited={hideGroupS21G55}>
-                                    {group5Jsx('g2155',ip2CodeChanged,ii2CodeChanged)}
-                                  </Accordion.Body>
-                                </Accordion.Item>
-                              </Accordion>
-                            </Accordion.Body>
-                          </Accordion.Item>
-                        </Accordion>
-                      </Accordion.Body>
-                    </Accordion.Item>
-                  </Accordion>
-                </Accordion.Body>
-              </Accordion.Item>
-            </Accordion>
-          </Accordion.Body>
-        </Accordion.Item>
-      </Accordion>
+          <Accordion.Item eventKey="19">
+            <Accordion.Header>Ледовые явления (Группа 5)</Accordion.Header>
+            <Accordion.Body onEnter={showGroupS21G51} onExit={hideGroupS21G51}>
+              {group5Jsx('g2151',ip2CodeChanged,ii2CodeChanged)}
+              <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+                <Accordion.Item eventKey="20" id="accordion-ip2" >
+                  <Accordion.Header>Экземпляр 2</Accordion.Header>
+                  <Accordion.Body onEnter={showGroupS21G52} onExited={hideGroupS21G52}>
+                    {group5Jsx('g2152',ip2CodeChanged,ii2CodeChanged)}
+                    <Accordion>
+                      <Accordion.Item eventKey="21">
+                        <Accordion.Header>Экземпляр 3</Accordion.Header>
+                        <Accordion.Body onEnter={showGroupS21G53} onExited={hideGroupS21G53}>
+                          {group5Jsx('g2153',ip2CodeChanged,ii2CodeChanged)}
+                          <Accordion>
+                            <Accordion.Item eventKey="22">
+                              <Accordion.Header>Экземпляр 4</Accordion.Header>
+                              <Accordion.Body onEnter={showGroupS21G54} onExited={hideGroupS21G54}>
+                                {group5Jsx('g2154',ip2CodeChanged,ii2CodeChanged)}
+                                <Accordion>
+                                  <Accordion.Item eventKey="23">
+                                    <Accordion.Header>Экземпляр 5</Accordion.Header>
+                                    <Accordion.Body onEnter={showGroupS21G55} onExited={hideGroupS21G55}>
+                                      {group5Jsx('g2155',ip2CodeChanged,ii2CodeChanged)}
+                                    </Accordion.Body>
+                                  </Accordion.Item>
+                                </Accordion>
+                              </Accordion.Body>
+                            </Accordion.Item>
+                          </Accordion>
+                        </Accordion.Body>
+                      </Accordion.Item>
+                    </Accordion>
+                  </Accordion.Body>
+                </Accordion.Item>
+              </Accordion>
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+        <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+          <Accordion.Item eventKey="24">
+            <Accordion.Header>Состояние водного объекта (Группа 6)</Accordion.Header>
+            <Accordion.Body onEnter={showGroupS21G61} onExited={hideGroupS21G61}>
+              {group6Jsx('s21g61',wb2CodeChanged,wbi2CodeChanged)}
+              <Accordion>
+                <Accordion.Item eventKey="25">
+                  <Accordion.Header>Экземпляр 2</Accordion.Header>
+                  <Accordion.Body onEnter={showGroupS21G62} onExited={hideGroupS21G62}>
+                    {group6Jsx('s21g62',wb2CodeChanged,wbi2CodeChanged)}
+                    <Accordion>
+                      <Accordion.Item eventKey="26">
+                        <Accordion.Header>Экземпляр 3</Accordion.Header>
+                        <Accordion.Body onEnter={showGroupS21G63} onExited={hideGroupS21G63}>
+                          {group6Jsx('s21g63',wb2CodeChanged,wbi2CodeChanged)}
+                          <Accordion>
+                            <Accordion.Item eventKey="27">
+                              <Accordion.Header>Экземпляр 4</Accordion.Header>
+                              <Accordion.Body onEnter={showGroupS21G64} onExited={hideGroupS21G64}>
+                                {group6Jsx('s21g64',wb2CodeChanged,wbi2CodeChanged)}
+                                <Accordion>
+                                  <Accordion.Item eventKey="28">
+                                    <Accordion.Header>Экземпляр 5</Accordion.Header>
+                                    <Accordion.Body onEnter={showGroupS21G65} onExited={hideGroupS21G65}>
+                                      {group6Jsx('s21g65',wb2CodeChanged,wbi2CodeChanged)}
+                                    </Accordion.Body>
+                                  </Accordion.Item>
+                                </Accordion>
+                              </Accordion.Body>
+                            </Accordion.Item>
+                          </Accordion>
+                        </Accordion.Body>
+                      </Accordion.Item>
+                    </Accordion>
+                  </Accordion.Body>
+                </Accordion.Item>
+              </Accordion>
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+        {formGroup27}
       </Accordion.Body>
     </Accordion.Item>
   </Accordion>
@@ -1061,14 +1186,14 @@ export const InputHydroTelegram = ({postCode})=>{
         {waterLevelJsx('group61',wcWaterLevel)}
         <Form.Group className="mb-3" controlId="form-water-consumption">
           <Form.Label>Расход воды (Группа 2)</Form.Label>
-          <Form.Control type="number" value={waterConsumption} onChange={waterConsumptionChanged} step="any" pattern="[0-9]+([\.,][0-9]+)?"/>
+          <Form.Control type="number" value={waterConsumption} onChange={waterConsumptionChanged} step="any" pattern="[0-9]+([.,][0-9]+)?"/>
           <Form.Text className="text-muted">
             Метры кубические за секунду (м<sup>3</sup>/с)
           </Form.Text>
         </Form.Group>
         <Form.Group className="mb-3" controlId="form-river-cross-sectional-area">
           <Form.Label>Площадь сечения реки (Группа 3)</Form.Label>
-          <Form.Control type="number" value={riverArea} onChange={riverAreaChanged} pattern="[0-9]+([\.,][0-9]+)?" step="any"/>
+          <Form.Control type="number" value={riverArea} onChange={riverAreaChanged} pattern="[0-9]+([.,][0-9]+)?" step="any"/>
           <Form.Text className="text-muted">
             Метры квадратные (м<sup>2</sup>)
           </Form.Text>
@@ -1083,6 +1208,20 @@ export const InputHydroTelegram = ({postCode})=>{
       </Accordion.Body>
     </Accordion.Item>
   </Accordion>
+  const telegramCard = <Card
+    bg={'Primary'}
+    text={'black'}
+    style={{ width: '18rem', position: 'fixed', width: '380px', top: '60px',left: '10px'}}
+    className="mb-2"
+  >
+    {/* <Card.Header>Header</Card.Header> */}
+    <Card.Body>
+      <Card.Title>Текст телеграммы</Card.Title>
+      <Card.Text>
+        {telegram}
+      </Card.Text>
+    </Card.Body>
+  </Card>
   const myForm =
     <Form onSubmit={handleSubmit(onSubmit)} onReset={reset}> 
       <Form.Label>Раздел 1</Form.Label>
@@ -1148,72 +1287,27 @@ export const InputHydroTelegram = ({postCode})=>{
         <Accordion.Item eventKey="7">
           <Accordion.Header>Состояние водного объекта (Группа 6)</Accordion.Header>
           <Accordion.Body onEnter={showGroup16} onExited={hideGroup16}>
-            <Form.Group className="mb-3" controlId="formStateWaterBody">
-              <Form.Label>Выберите характеристику объекта</Form.Label>
-              <Form.Select onChange={wb1CodeChanged} defaultValue={"0"}>
-                {Object.keys(waterBodies).map(wb => {if(+wb===0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
-              </Form.Select>
-              <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
-              <Form.Select onChange={wbi1CodeChanged}>
-                {Object.keys(waterBodies).map(wb => <option value={wb}>{waterBodies[wb]}</option>)}
-              </Form.Select>
-            </Form.Group>
+            {group6Jsx('g161',wb1CodeChanged,wbi1CodeChanged)}
             <Accordion>
               <Accordion.Item eventKey="8">
                 <Accordion.Header>Экземпляр 2</Accordion.Header>
                 <Accordion.Body onEnter={showGroup162} onExited={hideGroup162}>
-                  <Form.Group className="mb-3" controlId="form-wb2">
-                    <Form.Label>Выберите характеристику объекта</Form.Label>
-                    <Form.Select onChange={wb2CodeChanged} defaultValue={"0"}>
-                      {Object.keys(waterBodies).map(wb => {if(+wb===0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
-                    </Form.Select>
-                    <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
-                    <Form.Select onChange={wbi2CodeChanged}>
-                      {Object.keys(waterBodies).map(wb => <option value={wb}>{waterBodies[wb]}</option>)}
-                    </Form.Select>
-                  </Form.Group>
+                  {group6Jsx('g162',wb1CodeChanged,wbi1CodeChanged)}
                   <Accordion>
                     <Accordion.Item eventKey="9">
                       <Accordion.Header>Экземпляр 3</Accordion.Header>
                       <Accordion.Body onEnter={showGroup163} onExited={hideGroup163}>
-                        <Form.Group className="mb-3" controlId="form-wb3">
-                          <Form.Label>Выберите характеристику объекта</Form.Label>
-                          <Form.Select onChange={wb3CodeChanged} defaultValue={"0"}>
-                            {Object.keys(waterBodies).map(wb => {if(+wb===0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
-                          </Form.Select>
-                          <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
-                          <Form.Select onChange={wbi3CodeChanged}>
-                            {Object.keys(waterBodies).map(wb => <option value={wb}>{waterBodies[wb]}</option>)}
-                          </Form.Select>
-                        </Form.Group>
+                        {group6Jsx('g163',wb1CodeChanged,wbi1CodeChanged)}
                         <Accordion>
                           <Accordion.Item eventKey="10">
                             <Accordion.Header>Экземпляр 4</Accordion.Header>
                             <Accordion.Body onEnter={showGroup164} onExited={hideGroup164}>
-                              <Form.Group className="mb-3" controlId="form-wb4">
-                                <Form.Label>Выберите характеристику объекта</Form.Label>
-                                <Form.Select onChange={wb4CodeChanged} defaultValue={"0"}>
-                                  {Object.keys(waterBodies).map(wb => {if(+wb===0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
-                                </Form.Select>
-                                <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
-                                <Form.Select onChange={wbi4CodeChanged}>
-                                  {Object.keys(waterBodies).map(wb => <option value={wb}>{waterBodies[wb]}</option>)}
-                                </Form.Select>
-                              </Form.Group>
+                              {group6Jsx('g164',wb1CodeChanged,wbi1CodeChanged)}
                               <Accordion>
                                 <Accordion.Item eventKey="11">
                                   <Accordion.Header>Экземпляр 5</Accordion.Header>
                                   <Accordion.Body onEnter={showGroup165} onExited={hideGroup165}>
-                                    <Form.Group className="mb-3" controlId="form-wb5">
-                                      <Form.Label>Выберите характеристику объекта</Form.Label>
-                                      <Form.Select onChange={wb5CodeChanged} defaultValue={"0"}>
-                                        {Object.keys(waterBodies).map(wb => {if(+wb===0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
-                                      </Form.Select>
-                                      <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
-                                      <Form.Select onChange={wbi5CodeChanged}>
-                                        {Object.keys(waterBodies).map(wb => <option value={wb}>{waterBodies[wb]}</option>)}
-                                      </Form.Select>
-                                    </Form.Group>
+                                    {group6Jsx('g165',wb1CodeChanged,wbi1CodeChanged)}
                                   </Accordion.Body>
                                 </Accordion.Item>
                               </Accordion>
@@ -1241,7 +1335,6 @@ export const InputHydroTelegram = ({postCode})=>{
                 Цифры кода
               </Form.Text>
             </Form.Group>
-            <br/>
             <Form.Group className="mb-3" controlId="form-duration-precipitation">
               <Form.Label>Продолжительность выпадения осадков</Form.Label>
               <Form.Control type="number" value={durationPrecipitation} onChange={durationPrecipitationChanged} min="0" max="4"  pattern='[0-9]'/>
@@ -1261,6 +1354,7 @@ export const InputHydroTelegram = ({postCode})=>{
 
   let content
   content = <div>
+    {/* {telegramCard} */}
     <p>{telegram}</p>
     {myForm}
   </div>
