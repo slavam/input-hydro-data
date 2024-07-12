@@ -462,9 +462,9 @@ export const InputHydroTelegram = ({postCode})=>{
     ret["obsDate2"+j]=obsDate
     ret['waterLevel2'+j]=wl
     ret['wlDeviation2'+j]=wld
-    if(waterTemp)
+    if(waterTemp!==null)
       ret['waterTemp2'+j]=waterTemp
-    if(airTemp)
+    if(airTemp!==null)
       ret['airTemperature2'+j]=airTemp
     if(ipChar2[0]!==null)
       for (let i = 0; i < 5; i++) {
@@ -505,9 +505,9 @@ export const InputHydroTelegram = ({postCode})=>{
       waterLevel,
       waterLevelDeviation
     }
-    if(waterTemperature)
+    if(waterTemperature!==null)
       hydroData["waterTemperature"] = waterTemperature
-    if(airTemperature)
+    if(airTemperature!==null)
       hydroData["airTemperature"] = airTemperature
     if(ipChar[0]!==null){
       for (let i = 0; i < 5; i++) {
@@ -549,7 +549,7 @@ export const InputHydroTelegram = ({postCode})=>{
       hydroData["riverArea"]=riverArea
       hydroData["maxDepth"]=maxDepth
     }
-    if(waterLevel21){
+    if(waterLevel21!==null){
       let s2 = section2submit(1,obsDate21,waterLevel21,wlDeviation21,waterTemperature21,
         airTemperature21,ipCharS2[0],ipAddonS2[0],wbCharS2[0],wbAddonS2[0],iceThickness,snowThickness,precipitation21,pDuration21)
       hydroData = {...hydroData, ...s2}
