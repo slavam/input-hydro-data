@@ -165,7 +165,7 @@ export const InputHydroTelegram = ({postCode})=>{
   }
   const airTemperatureJsx=(id,aTemp)=>{
     return(<Form.Group className="mb-3" >
-      <Form.Control id={id}type="number" value={aTemp} onChange={airTemperatureChanged} min="-49" max="49" pattern="^-?[0-9]$|^-?[0-4][0-9]$"/>
+      <Form.Control id={id} type="number" value={aTemp} onChange={airTemperatureChanged} min="-49" max="49" pattern="^-?[0-9]$|^-?[0-4][0-9]$"/>
     </Form.Group>)
   }
   const airTemperatureChanged=(e)=>{
@@ -185,7 +185,7 @@ export const InputHydroTelegram = ({postCode})=>{
       case 'aTemp21':
         setAirTemperature21(at)
         let startSection2 = telegram.indexOf(' 922')
-        newText = telegram.slice(0,startSection2+22)+`${+at<0 ? 50-at : (+at>=0 && +at<10 ? (+at).toString().padStart(2,'0') : at)}`+telegram.slice(24)
+        newText = telegram.slice(0,startSection2+22)+`${+at<0 ? 50-at : (+at>=0 && +at<10 ? (+at).toString().padStart(2,'0') : at)}`+telegram.slice(startSection2+24)
         break
       default:
         break;
@@ -732,7 +732,6 @@ export const InputHydroTelegram = ({postCode})=>{
   const [waterConsumption, setWaterConsumption] = useState(null)
   const [riverArea, setRiverArea] = useState(null)
   const [maxDepth, setMaxDepth] = useState(null)
-  // const section6 = ` 966${wcMonth} 10000 20000 30000 40001 5${wcDay}09`
   const showSection6=()=>{
     setContentIndex(2)
     setWcWaterLevel(0)
@@ -1018,7 +1017,6 @@ export const InputHydroTelegram = ({postCode})=>{
     setTelegram(newS2G6(j,-1))
   }
   const showGroupS21G61=()=>{
-    // alert(activeKeys)
     showGroupS2G6(0,0)
   }
   const showGroupS21G62=()=>{
@@ -1038,11 +1036,7 @@ export const InputHydroTelegram = ({postCode})=>{
     setTelegram(newS2G6(j,1))
   }
   const hideGroupS21G61=()=>{
-    // wbCharS2[0][0] = wbAddonS2[0][0] = wbCharS2[0][1] = wbAddonS2[0][1] = wbCharS2[0][2] = wbAddonS2[0][2] = wbCharS2[0][3] = wbAddonS2[0][3] = wbCharS2[0][4] = wbAddonS2[0][4] = null
     hideGroupS2G6(0,0)
-    // let i = activeKeys.indexOf(25)
-    // let newAk = activeKeys.splice(i, 1)
-    // setActiveKeys(newAk)
   }
   const hideGroupS21G62=()=>{
     hideGroupS2G6(0,1)
@@ -1255,10 +1249,6 @@ export const InputHydroTelegram = ({postCode})=>{
       <Accordion.Header>Расход воды (Раздел 6)</Accordion.Header>
       <Accordion.Body onEnter={showSection6} onExited={hideSection6}>
         {dateObservationJsx('section6date',wcDate)}
-        {/* <Form.Group className="mb-3" controlId="form-observed-date">
-          <Form.Label>Дата измерения расхода воды</Form.Label>
-          <Form.Control type="date" value={wcDate} onChange={wcDateChanged}  />
-        </Form.Group> */}
         <Form.Group className="mb-3" controlId="form-observed-hour">
           <Form.Label>Час измерения расхода воды</Form.Label>
           <Form.Control type="number" value={wcHour} onChange={wcHourChanged} min='0' max='23' pattern='[012][0-9]' />
@@ -1292,9 +1282,7 @@ export const InputHydroTelegram = ({postCode})=>{
     bg={'Primary'}
     text={'black'}
     style={{ width: '18rem', position: 'fixed', width: '380px', top: '60px',left: '10px'}}
-    className="mb-2"
-  >
-    {/* <Card.Header>Header</Card.Header> */}
+    className="mb-2">
     <Card.Body>
       <Card.Title>Текст телеграммы</Card.Title>
       <Card.Text>
