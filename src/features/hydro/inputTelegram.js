@@ -44,7 +44,7 @@ export const InputHydroTelegram = ({postCode})=>{
   const [waterLevel21, setWaterLevel21] = useState(null)
   const [waterLevelDeviation, setWaterLevelDeviation] = useState(0)
   const [wlDeviation21, setWLDeviation21]=useState(0)
-  const [waterTemperature, setWaterTemperature] = useState(0)
+  const [waterTemperature, setWaterTemperature] = useState(null)
   const [waterTemperature21, setWaterTemperature21] = useState(0)
   const [airTemperature, setAirTemperature] = useState(null)
   const [airTemperature21, setAirTemperature21] = useState(null)
@@ -792,7 +792,9 @@ export const InputHydroTelegram = ({postCode})=>{
     setTelegram(newText)
   }
   const waterConsumptionChanged=e=>{
-    if(/[0-9]+([.,][0-9]+)?/.test(e.target.value)){
+    let startSection6 = telegram.indexOf(' 966')
+    let newText = telegram
+    if(/^[0-9]+([.,][0-9]+)?$/.test(e.target.value)){
       let wc = +e.target.value
       wc = wc>999999.0? 999999.0 : wc
       wc = wc<0.0? 0.0 : wc
@@ -801,14 +803,20 @@ export const InputHydroTelegram = ({postCode})=>{
       exp = Number(exp.slice(exp.lastIndexOf('e')+1))
       let num = exp >=0? exp+1 : 0
       let pointPos = e.target.value.lastIndexOf('.')<0? 0:e.target.value.lastIndexOf('.')
-      let val = wc<1.? e.target.value.slice(pointPos+1,pointPos+4).padEnd(3,'0') : Number(e.target.value.replace('.','').padEnd(3,'0')).toString().slice(0,3) //padStart(3,'0').slice(0,3) 
-      let startSection6 = telegram.indexOf(' 966')
-      let newText = telegram.slice(0,startSection6+14)+`${num}${val}`+telegram.slice(startSection6+18)
+      let val = wc<1.? e.target.value.slice(pointPos+1,pointPos+4).padEnd(3,'0') : Number(e.target.value.replace('.','')).toString().padEnd(3,'0').slice(0,3)
+      // alert(val)
+      newText = telegram.slice(0,startSection6+14)+`${num}${val}`+telegram.slice(startSection6+18)
       setTelegram(newText) //+`>>${e.target.value}<<`)
-    }else{setWaterConsumption(0)}
+    }else{
+      setWaterConsumption(0)
+      newText = telegram.slice(0,startSection6+14)+`0000`+telegram.slice(startSection6+18)
+      setTelegram(newText)
+    }
   }
   const riverAreaChanged=e=>{
-    if(/[0-9]+([.,][0-9]+)?/.test(e.target.value)){
+    let startSection6 = telegram.indexOf(' 966')
+    let newText = telegram
+    if(/^[0-9]+([.,][0-9]+)?$/.test(e.target.value)){
       let ra = +e.target.value
       ra = ra>999999.0? 999999.0 : ra
       ra = ra<0.0? 0.0 : ra
@@ -816,12 +824,16 @@ export const InputHydroTelegram = ({postCode})=>{
       let exp = ra.toExponential()
       exp = Number(exp.slice(exp.lastIndexOf('e')+1))
       let num = exp >=0? exp+1 : 0
-      let pointPos = e.target.value.lastIndexOf('.')
-      let val = ra<1.? e.target.value.slice(pointPos+1,pointPos+4).padEnd(3,'0') : Number(e.target.value.replace('.','').padEnd(3,'0')).toString().slice(0,3)
-      let startSection6 = telegram.indexOf(' 966')
-      let newText = telegram.slice(0,startSection6+20)+`${num}${val}`+telegram.slice(startSection6+24)
+      // let pointPos = e.target.value.lastIndexOf('.')
+      let pointPos = e.target.value.lastIndexOf('.')<0? 0:e.target.value.lastIndexOf('.')
+      let val = ra<1.? e.target.value.slice(pointPos+1,pointPos+4).padEnd(3,'0') : Number(e.target.value.replace('.','')).toString().padEnd(3,'0').slice(0,3)
+      newText = telegram.slice(0,startSection6+20)+`${num}${val}`+telegram.slice(startSection6+24)
       setTelegram(newText)
-    }else{setRiverArea(parseFloat(1))}
+    }else{
+      setRiverArea(parseFloat(1))
+      newText = telegram.slice(0,startSection6+20)+`0001`+telegram.slice(startSection6+24)
+      setTelegram(newText)
+    }
   }
   const maxDepthChanged=e=>{
     if(/^[0-9]{1,4}$/.test(e.target.value)){
