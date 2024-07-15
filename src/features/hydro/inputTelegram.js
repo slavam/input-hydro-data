@@ -170,7 +170,7 @@ export const InputHydroTelegram = ({postCode})=>{
   }
   const airTemperatureChanged=(e)=>{
     let at = e.target.value
-    if(/^-?[0-9]$|^-?[0-4][0-9]$/.test(at)){
+    if(/^-?[0-9]$|^-?[0-9][0-9]$/.test(at)){
       at = +at>49 ? 49 : at
       at = +at<-49 ? -49 : at
     }else{
