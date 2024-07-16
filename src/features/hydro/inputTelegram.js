@@ -65,7 +65,7 @@ export const InputHydroTelegram = ({postCode})=>{
     }else
       wl = 0
     let g1 = +wl >= 0 ? wl.toString().padStart(4,'0') : (5000+Math.abs(+wl)).toString()      
-    let newText
+    let newText = telegram
     switch (e.target.id) {
       case 'group11':
         setWaterLevel(wl)
@@ -98,7 +98,7 @@ export const InputHydroTelegram = ({postCode})=>{
     if(!/^-?[0-9]{1,3}$/.test(e.target.value))
       wld = '0'
     let g2 = +wld === 0 ? '0000' : (+wld>0 ? (wld.toString().padStart(3,'0')+'1') : (Math.abs(+wld).toString().padStart(3,'0')+'2'))
-    let newText
+    let newText = telegram
     switch (e.target.id) {
       case "group12":
         setWaterLevelDeviation(wld)
@@ -115,7 +115,7 @@ export const InputHydroTelegram = ({postCode})=>{
     setTelegram(newText)
   }
   const waterTemperatureJsx=(id,wt)=>{
-    return (<Form.Group className="mb-3" controlId="formWaterTemperature">
+    return (<Form.Group className="mb-3" >
       <Form.Label>Температура воды</Form.Label>
       <Form.Control id={id} type="number" value={wt} onChange={waterTemperatureChanged} min="0.0" max="9.9" step="0.1" pattern='^[0-9]$|(^[0-9][.,][0-9]?$)'/>
       <Form.Text className="text-muted">С точностью до десятых</Form.Text>
@@ -149,7 +149,7 @@ export const InputHydroTelegram = ({postCode})=>{
       let s = e.target.value.length<1? '00':e.target.value
       wt = s.indexOf('.')>=0? s.slice(0,3):s[1]
     }
-    let newText
+    let newText = telegram
     switch (e.target.id) {
       case 'wTemp1':
         setWaterTemperature(wt)
@@ -170,13 +170,13 @@ export const InputHydroTelegram = ({postCode})=>{
   }
   const airTemperatureChanged=(e)=>{
     let at = e.target.value
-    if(/^-?[0-9]$|^-?[0-9][0-9]$/.test(at)){
+    if(/^-?[0-9]$|^-?[0-9]{2}$/.test(at)){
       at = +at>49 ? 49 : at
       at = +at<-49 ? -49 : at
     }else{
       at=0
     }
-    let newText
+    let newText = telegram
     switch (e.target.id) {
       case 'aTemp1':
         setAirTemperature(at)
@@ -766,7 +766,7 @@ export const InputHydroTelegram = ({postCode})=>{
   }
   const wcDateChanged=e=>{
     let od = e.target.value
-    let newText
+    let newText = telegram
     switch (e.target.id) {
       case 'section6date':
         setWcDate(od)
@@ -804,7 +804,6 @@ export const InputHydroTelegram = ({postCode})=>{
       let num = exp >=0? exp+1 : 0
       let pointPos = e.target.value.lastIndexOf('.')<0? 0:e.target.value.lastIndexOf('.')
       let val = wc<1.? e.target.value.slice(pointPos+1,pointPos+4).padEnd(3,'0') : Number(e.target.value.replace('.','')).toString().padEnd(3,'0').slice(0,3)
-      // alert(val)
       newText = telegram.slice(0,startSection6+14)+`${num}${val}`+telegram.slice(startSection6+18)
       setTelegram(newText) //+`>>${e.target.value}<<`)
     }else{
@@ -1011,8 +1010,6 @@ export const InputHydroTelegram = ({postCode})=>{
     let i = +e.target.id[5]-1 // 's21g61wb'
     wbCharS2[j][i] = wb
     setTelegram(newS2G6(j,0))
-    
-    
   }
   const wbi2CodeChanged = e=>{
     let wbi = +e.target.value<10? '0'+e.target.value : e.target.value
@@ -1020,8 +1017,6 @@ export const InputHydroTelegram = ({postCode})=>{
     let i = +e.target.id[5]-1 // 's21g61wb'
     wbAddonS2[j][i] = wbi
     setTelegram(newS2G6(j,0))
-
-    
   }
   
   const showGroupS2G6=(j,i)=>{
@@ -1268,14 +1263,14 @@ export const InputHydroTelegram = ({postCode})=>{
         {waterLevelJsx('group61',wcWaterLevel)}
         <Form.Group className="mb-3" controlId="form-water-consumption">
           <Form.Label>Расход воды (Группа 2)</Form.Label>
-          <Form.Control type="number" value={waterConsumption} onChange={waterConsumptionChanged} step="any" pattern="[0-9]+([.,][0-9]+)?"/>
+          <Form.Control type="number" value={waterConsumption} onChange={waterConsumptionChanged} step="any" pattern="^[0-9]+([.,][0-9]+)?$"/>
           <Form.Text className="text-muted">
             Метры кубические за секунду (м<sup>3</sup>/с)
           </Form.Text>
         </Form.Group>
         <Form.Group className="mb-3" controlId="form-river-cross-sectional-area">
           <Form.Label>Площадь сечения реки (Группа 3)</Form.Label>
-          <Form.Control type="number" value={riverArea} onChange={riverAreaChanged} pattern="[0-9]+([.,][0-9]+)?" step="any"/>
+          <Form.Control type="number" value={riverArea} onChange={riverAreaChanged} pattern="^[0-9]+([.,][0-9]+)?$" step="any"/>
           <Form.Text className="text-muted">
             Метры квадратные (м<sup>2</sup>)
           </Form.Text>
