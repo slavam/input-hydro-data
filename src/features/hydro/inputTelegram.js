@@ -42,20 +42,26 @@ export const InputHydroTelegram = ({postCode})=>{
   
   const [waterLevel, setWaterLevel] = useState(0)
   const [waterLevel21, setWaterLevel21] = useState(null)
+  const [waterLevel22, setWaterLevel22] = useState(null)
   const [waterLevelDeviation, setWaterLevelDeviation] = useState(0)
   const [wlDeviation21, setWLDeviation21]=useState(0)
+  const [wlDeviation22, setWLDeviation22]=useState(0)
   const [waterTemperature, setWaterTemperature] = useState(null)
   const [waterTemperature21, setWaterTemperature21] = useState(0)
+  const [waterTemperature22, setWaterTemperature22] = useState(0)
   const [airTemperature, setAirTemperature] = useState(null)
   const [airTemperature21, setAirTemperature21] = useState(null)
+  const [airTemperature22, setAirTemperature22] = useState(null)
   const [telegram, setTelegram] = useState(`HHZZ ${hydroPostCode} ${currDay}${term}${contentIndex} 10000 20000=`)
   
   const waterLevelJsx = (id, wl)=>{
     return (<Form.Group className="mb-3" >
-      <Form.Label>Уровень воды над нулем поста (Группа 1)</Form.Label>
+      <Form.Label>Уровень воды над нулем поста в сантиметрах (Группа 1)</Form.Label>
       <Form.Control id={id} type="number" value={wl} onChange={waterLevelChanged} min="-999" max="4999" pattern="^-?[0-9]{1,4}$"/>
-      <Form.Text className="text-muted">В сантиметрах</Form.Text>
     </Form.Group>)
+  }
+  const startSection22=()=>{
+    return(telegram.indexOf(' 922',telegram.indexOf(' 922')+1))
   }
   const waterLevelChanged = (e)=>{
     let wl = e.target.value
@@ -81,6 +87,11 @@ export const InputHydroTelegram = ({postCode})=>{
         let startSection21 = telegram.indexOf(' 922')
         newText = telegram.slice(0,startSection21+8)+g1+telegram.slice(startSection21+12) 
         break
+      case 'group212':
+        setWaterLevel22(wl)
+        let startS22=startSection22() // = telegram.indexOf(' 922',telegram.indexOf(' 922')+1)
+        newText = telegram.slice(0,startS22+8)+g1+telegram.slice(startS22+12) 
+        break
       default:
         break;
     }
@@ -88,9 +99,9 @@ export const InputHydroTelegram = ({postCode})=>{
   }
   const wlDeviationJsx=(id,wld)=>{
     return(<Form.Group className="mb-3" >
-      <Form.Label>Изменение уровня воды (Группа 2)</Form.Label>
+      <Form.Label>Изменение уровня воды в сантиметрах (Группа 2)</Form.Label>
       <Form.Control id={id} type="number" value={wld} onChange={waterLevelDeviationChanged} min="-999" max="999" pattern="^-?[0-9]{1,3}$"/>
-      <Form.Text className="text-muted">В сантиметрах</Form.Text>
+      {/* <Form.Text className="text-muted">В сантиметрах</Form.Text> */}
     </Form.Group>)
   }
   const waterLevelDeviationChanged = (e)=>{
@@ -109,6 +120,11 @@ export const InputHydroTelegram = ({postCode})=>{
         let startSection21 = telegram.indexOf(' 922')
         newText = telegram.slice(0,startSection21+14)+g2+telegram.slice(startSection21+18) 
         break
+      case 'group222':
+        setWLDeviation22(wld)
+        let startS22=startSection22() // = telegram.indexOf(' 922',telegram.indexOf(' 922')+1)
+        newText = telegram.slice(0,startS22+14)+g2+telegram.slice(startS22+18) 
+        break
       default:
         break;
     }
@@ -116,9 +132,9 @@ export const InputHydroTelegram = ({postCode})=>{
   }
   const waterTemperatureJsx=(id,wt)=>{
     return (<Form.Group className="mb-3" >
-      <Form.Label>Температура воды</Form.Label>
+      <Form.Label>Температура воды с точностью до десятых</Form.Label>
       <Form.Control id={id} type="number" value={wt} onChange={waterTemperatureChanged} min="0.0" max="9.9" step="0.1" pattern='^[0-9]$|(^[0-9][.,][0-9]?$)'/>
-      <Form.Text className="text-muted">С точностью до десятых</Form.Text>
+      {/* <Form.Text className="text-muted">С точностью до десятых</Form.Text> */}
     </Form.Group>)
   }
   const showGroup14=()=>{
@@ -160,6 +176,11 @@ export const InputHydroTelegram = ({postCode})=>{
         let startSection2 = telegram.indexOf(' 922')
         newText = telegram.slice(0,startSection2+20)+`${+wt>=1 ? +wt*10 : '0'+(10*wt).toString()}`+telegram.slice(startSection2+22)
         break
+      case 'wTemp22':
+        setWaterTemperature22(wt)
+        let startS22=startSection22() // = telegram.indexOf(' 922',telegram.indexOf(' 922')+1)
+        newText = telegram.slice(0,startS22+20)+`${+wt>=1 ? +wt*10 : '0'+(10*wt).toString()}`+telegram.slice(startS22+22)
+        break
     }
     setTelegram(newText)
   }
@@ -186,6 +207,11 @@ export const InputHydroTelegram = ({postCode})=>{
         setAirTemperature21(at)
         let startSection2 = telegram.indexOf(' 922')
         newText = telegram.slice(0,startSection2+22)+`${+at<0 ? 50-at : (+at>=0 && +at<10 ? (+at).toString().padStart(2,'0') : at)}`+telegram.slice(startSection2+24)
+        break
+      case 'aTemp22':
+        setAirTemperature22(at)
+        let startS22=startSection22() //= telegram.indexOf(' 922')
+        newText = telegram.slice(0,startS22+22)+`${+at<0 ? 50-at : (+at>=0 && +at<10 ? (+at).toString().padStart(2,'0') : at)}`+telegram.slice(startS22+24)
         break
       default:
         break;
@@ -551,8 +577,18 @@ export const InputHydroTelegram = ({postCode})=>{
     }
     if(waterLevel21!==null){
       let s2 = section2submit(1,obsDate21,waterLevel21,wlDeviation21,waterTemperature21,
-        airTemperature21,ipCharS2[0],ipAddonS2[0],wbCharS2[0],wbAddonS2[0],iceThickness,snowThickness,precipitation21,pDuration21)
+        airTemperature21,ipCharS2[0],ipAddonS2[0],wbCharS2[0],wbAddonS2[0],iceThickness21,snowThickness21,precipitation21,pDuration21)
       hydroData = {...hydroData, ...s2}
+      // alert(JSON.stringify(hydroData).replace(/\\/g,""))
+    }
+    if(waterLevel22!==null){
+      if(obsDate21 === obsDate22){
+        alert("Разделы 922 должны иметь разные даты")
+        return
+      }
+      let s22 = section2submit(2,obsDate22,waterLevel22,wlDeviation22,waterTemperature22,
+        airTemperature22,ipCharS2[1],ipAddonS2[1],wbCharS2[1],wbAddonS2[1],iceThickness22,snowThickness22,precipitation22,pDuration22)
+      hydroData = {...hydroData, ...s22}
       // alert(JSON.stringify(hydroData).replace(/\\/g,""))
     }
     setHydroData(hydroData)
@@ -601,6 +637,14 @@ export const InputHydroTelegram = ({postCode})=>{
         let startS2 = telegram.indexOf(' 922')
         let start27 = telegram.indexOf(' 7',startS2)
         newText = telegram.slice(0,start27+2)+`${(+it).toString().padStart(3, "0")}`+telegram.slice(start27+5)
+        break
+      case 's22g7':
+        setIceThickness22(it)
+        // let startS2 = telegram.indexOf(' 922',te)
+        // let startS22=startSection22() 
+        let start227 = telegram.indexOf(' 7',startSection22())
+        newText = telegram.slice(0,start227+2)+`${(+it).toString().padStart(3, "0")}`+telegram.slice(start227+5)
+        break
       default:
         break;
     }
@@ -608,9 +652,9 @@ export const InputHydroTelegram = ({postCode})=>{
   }
   const group7SnowJsx=(id,snowT)=>{
     return(<Form.Group className="mb-3" >
-      <Form.Label>Высота снежного покрова</Form.Label>
+      <Form.Label>Высота снежного покрова (цифра кода)</Form.Label>
       <Form.Control id={id} type="number" value={snowT} onChange={snowThicknessChanged} min="0" max="9" pattern='[0-9]'/>
-      <Form.Text className="text-muted">Цифра кода</Form.Text>
+      {/* <Form.Text className="text-muted">Цифра кода</Form.Text> */}
     </Form.Group>)
   }
   const snowThicknessChanged=e=>{
@@ -629,6 +673,13 @@ export const InputHydroTelegram = ({postCode})=>{
         let startS2 = telegram.indexOf(' 922')
         let start27 = telegram.indexOf(' 7',startS2)
         newText = telegram.slice(0,start27+5)+(+st).toString()+telegram.slice(start27+6)
+        break
+      case 's22g7':
+        setSnowThickness22(st)
+        let startS22 = startSection22() //telegram.indexOf(' 922')
+        let start227 = telegram.indexOf(' 7',startS22)
+        newText = telegram.slice(0,start227+5)+(+st).toString()+telegram.slice(start227+6)
+        break
       default:
         break;
     }
@@ -667,17 +718,17 @@ export const InputHydroTelegram = ({postCode})=>{
   }
   const precipitationJsx = (id,precipitation)=>{
     return(<Form.Group className="mb-3" >
-      <Form.Label>Количество осадков</Form.Label>
+      <Form.Label>Количество осадков (цифры кода)</Form.Label>
       <Form.Control id={id} type="number" value={precipitation} onChange={precipitationChanged} min="0" max="999" pattern='[0-9]{1,3}'/>
-      <Form.Text className="text-muted">Цифры кода</Form.Text>
+      {/* <Form.Text className="text-muted">Цифры кода</Form.Text> */}
     </Form.Group>
     )
   }
   const pDurationJsx=(id,durationPrecipitation)=>{
     return(<Form.Group className="mb-3" >
-      <Form.Label>Продолжительность выпадения осадков</Form.Label>
+      <Form.Label>Продолжительность выпадения осадков (цифра кода)</Form.Label>
       <Form.Control id={id} type="number" value={durationPrecipitation} onChange={durationPrecipitationChanged} min="0" max="4"  pattern='^0?[0-4]$'/>
-      <Form.Text className="text-muted">Цифра кода</Form.Text>
+      {/* <Form.Text className="text-muted">Цифра кода</Form.Text> */}
     </Form.Group>)
   }
   const precipitationChanged=e=>{
@@ -695,6 +746,11 @@ export const InputHydroTelegram = ({postCode})=>{
         setPrecipitation21(p)
         let start20 = getStartG20()
         newText = telegram.slice(0,start20+2)+(+p).toString().padStart(3,'0')+telegram.slice(start20+5)    
+        break
+      case 's22g0':
+        setPrecipitation22(p)
+        let start220 = getStartS22G0()
+        newText = telegram.slice(0,start220+2)+(+p).toString().padStart(3,'0')+telegram.slice(start220+5)    
         break
       default:
         break;
@@ -717,6 +773,11 @@ export const InputHydroTelegram = ({postCode})=>{
         let start20 = getStartG20()
         newText = telegram.slice(0,start20+5)+(+dp).toString()+telegram.slice(start20+6)
         break
+      case 's22g0':
+        setPDuration22(dp)
+        let start220 = getStartS22G0()
+        newText = telegram.slice(0,start220+5)+(+dp).toString()+telegram.slice(start220+6)
+        break
       default:
         break;
     }
@@ -727,6 +788,7 @@ export const InputHydroTelegram = ({postCode})=>{
   let wcDay = currDay
   const [wcDate, setWcDate] = useState(today.toISOString().slice(0,10))
   const [obsDate21, setObsDate21]=useState(today.toISOString().slice(0,10))
+  const [obsDate22, setObsDate22]=useState(today.toISOString().slice(0,10))
   const [wcHour, setWcHour] = useState(9)
   const [wcWaterLevel, setWcWaterLevel] = useState(null)
   const [waterConsumption, setWaterConsumption] = useState(null)
@@ -776,7 +838,13 @@ export const InputHydroTelegram = ({postCode})=>{
         break;
       case 'section2date1':
         setObsDate21(od)
-        newText = telegram.replace(/ 922../g, ` 922${od.slice(8,10)}`)
+        newText = telegram.replace(/ 922../, ` 922${od.slice(8,10)}`)
+        break
+      case 'section2date2':
+        setObsDate22(od)
+        let startDate22 = startSection22() //telegram.indexOf(' 922',telegram.indexOf(' 922')+1)
+        // newText = telegram.replace(/ 922../g, ` 922${od.slice(8,10)}`)
+        newText = telegram.slice(0,startDate22+4)+od.slice(8,10)+telegram.slice(startDate22+6)
         break
       default:
         break;
@@ -827,21 +895,21 @@ export const InputHydroTelegram = ({postCode})=>{
       let pointPos = e.target.value.lastIndexOf('.')<0? 0:e.target.value.lastIndexOf('.')
       let val = ra<1.? e.target.value.slice(pointPos+1,pointPos+4).padEnd(3,'0') : Number(e.target.value.replace('.','')).toString().padEnd(3,'0').slice(0,3)
       newText = telegram.slice(0,startSection6+20)+`${num}${val}`+telegram.slice(startSection6+24)
-      setTelegram(newText)
     }else{
       setRiverArea(parseFloat(1))
       newText = telegram.slice(0,startSection6+20)+`0001`+telegram.slice(startSection6+24)
-      setTelegram(newText)
     }
+    setTelegram(newText)
   }
   const maxDepthChanged=e=>{
+    let newText = telegram
     if(/^[0-9]{1,4}$/.test(e.target.value)){
       let md = +e.target.value
       setMaxDepth(md)
       let l = telegram.length
-      let newText = telegram.slice(0,l-11)+md.toString().padStart(4,'0')+telegram.slice(l-7)
-      setTelegram(newText)
+      newText = telegram.slice(0,l-11)+md.toString().padStart(4,'0')+telegram.slice(l-7)
     }else setMaxDepth(1)
+    setTelegram(newText)
   }
   // section2
   const showSection21=()=>{
@@ -866,6 +934,23 @@ export const InputHydroTelegram = ({postCode})=>{
       newText = telegram.slice(0,15)+'1'+telegram.slice(16)
     }
     newText = newText.slice(0,startSection2)+telegram.slice(stopSection2)
+    setTelegram(newText)
+  }
+  const showSection22=()=>{
+    setWaterLevel22(0)
+    setWLDeviation22(0.0)
+    let startSection6 = telegram.indexOf(' 966')
+    let startS22 = startSection6>0? startSection6 : telegram.length-1
+    let obsDay = obsDate22.slice(8,10)
+    let newText =telegram.slice(0,startS22)+` 922${obsDay} 10000 20000`+telegram.slice(startS22)
+    setTelegram(newText)
+  }
+  const hideSection22=()=>{
+    setWaterLevel22(null)
+    setWLDeviation22(null)
+    let startS22=startSection22()
+    let stopSection22 = telegram.indexOf(' 966')>=0? telegram.indexOf(' 966') : telegram.length-1
+    let newText = telegram.slice(0,startS22)+telegram.slice(stopSection22)
     setTelegram(newText)
   }
   const showGroup241=()=>{
@@ -895,7 +980,33 @@ export const InputHydroTelegram = ({postCode})=>{
     let newText = telegram.slice(0,startSection2+22)+'//'+telegram.slice(startSection2+24)
     setTelegram(newText)
   }
-  
+  const showGroup242=()=>{
+    setWaterTemperature22(0)
+    if(airTemperature22 !== null)
+      setAirTemperature22(0)
+    let startS22 = startSection22()
+    let newText = telegram.slice(0,startS22+18)+` 400${airTemperature22===null? '//':'00'}`+telegram.slice(startS22+18)
+    setTelegram(newText)
+  }
+  const hideGroup242=()=>{
+    setWaterTemperature22(null)
+    setAirTemperature22(null)
+    let startS22=startSection22() //  = telegram.indexOf(' 922')
+    let newText = telegram.slice(0,startS22+18)+telegram.slice(startS22+24)
+    setTelegram(newText)
+  }
+  const showAirTemperature22=()=>{
+    setAirTemperature22(0)
+    let startS22=startSection22() //  = telegram.indexOf(' 922')
+    let newText = telegram.slice(0,startS22+22)+'00'+telegram.slice(startS22+24)
+    setTelegram(newText)
+  }
+  const hideAirTemperature22=()=>{
+    setAirTemperature22(null)
+    let startS22=startSection22() //  = telegram.indexOf(' 922')
+    let newText = telegram.slice(0,startS22+22)+'//'+telegram.slice(startS22+24)
+    setTelegram(newText)
+  }
   const combineS2G5=(j)=>{
     let ret = ''
     for (let i = 0; i < ipCharS2[j].length; i++){
@@ -904,7 +1015,18 @@ export const InputHydroTelegram = ({postCode})=>{
     return ret
   }
   const newS2G5 =(j,k)=>{
-    let startS2=telegram.indexOf(' 922')
+    let startS2
+    switch (j) {
+      case 0:
+        startS2=telegram.indexOf(' 922')
+        break;
+      case 1:
+        // startS2=telegram.indexOf(' 922',telegram.indexOf(' 922')+1)
+        startS2=startSection22() 
+        break;
+      default:
+        break;
+    }
     let startS2G5 = startS2+(telegram[startS2+19]==='4'? 18+6 : 18)
     let allG5 = combineS2G5(j)
     return telegram.slice(0,startS2G5)+allG5+telegram.slice(startS2G5+allG5.length+k*6)
@@ -930,6 +1052,21 @@ export const InputHydroTelegram = ({postCode})=>{
   const showGroupS21G55=()=>{
     showGroupS2G5(0,4)
   }
+  const showGroupS22G51=()=>{
+    showGroupS2G5(1,0)
+  }
+  const showGroupS22G52=()=>{
+    showGroupS2G5(1,1)
+  }
+  const showGroupS22G53=()=>{
+    showGroupS2G5(1,2)
+  }
+  const showGroupS22G54=()=>{
+    showGroupS2G5(1,3)
+  }
+  const showGroupS22G55=()=>{
+    showGroupS2G5(1,4)
+  }
   const hideGroupS2G5=(j,i)=>{
     ipCharS2[j][i] = ipAddonS2[j][i] = null
     setTelegram(newS2G5(j,1))
@@ -949,47 +1086,34 @@ export const InputHydroTelegram = ({postCode})=>{
   const hideGroupS21G55=()=>{
     hideGroupS2G5(0,4)
   }
+  const hideGroupS22G51=()=>{
+    hideGroupS2G5(1,0)
+  }
+  const hideGroupS22G52=()=>{
+    hideGroupS2G5(1,1)
+  }
+  const hideGroupS22G53=()=>{
+    hideGroupS2G5(1,2)
+  }
+  const hideGroupS22G54=()=>{
+    hideGroupS2G5(1,3)
+  }
+  const hideGroupS22G55=()=>{
+    hideGroupS2G5(1,4)
+  }
   const ip2CodeChanged = e=>{
     let ip = e.target.value
-    switch (e.target.id) {
-      case 'g2151ip':
-        ipCharS2[0][0] = ip
-        break;
-      case 'g2152ip':
-        ipCharS2[0][1] = ip
-        break
-      case 'g2153ip':
-        ipCharS2[0][2] = ip
-        break
-      case 'g2154ip':
-        ipCharS2[0][3] = ip
-        break
-      case 'g2155ip':
-        ipCharS2[0][4] = ip
-        break
-    }
-    setTelegram(newS2G5(0,0))
+    let j = +e.target.id[2]-1 // 'g2151ip'
+    let i = +e.target.id[4]-1 
+    ipCharS2[j][i] = ip
+    setTelegram(newS2G5(j,0))
   }
   const ii2CodeChanged = e=>{
     let ii = +e.target.value<10? '0'+e.target.value : e.target.value
-    switch (e.target.id) {
-      case 'g2151ii':
-        ipAddonS2[0][0] = ii
-        break;
-      case 'g2152ii':
-        ipAddonS2[0][1] = ii
-        break
-      case 'g2153ii':
-        ipAddonS2[0][2] = ii
-        break
-      case 'g2154ii':
-        ipAddonS2[0][3] = ii
-        break
-      case 'g2155ii':
-        ipAddonS2[0][4] = ii
-        break
-    }
-    setTelegram(newS2G5(0,0))
+    let j = +e.target.id[2]-1 // 'g2151ii'
+    let i = +e.target.id[4]-1 
+    ipAddonS2[j][i] = ii
+    setTelegram(newS2G5(j,0))
   }
   const combineS2G6=(j)=>{
     let ret = ''
@@ -999,7 +1123,18 @@ export const InputHydroTelegram = ({postCode})=>{
     return ret
   }
   const newS2G6 =(j,k)=>{
-    let startS2=telegram.indexOf(' 922')
+    let startS2
+    switch (j) {
+      case 0:
+        startS2=telegram.indexOf(' 922')
+        break;
+      case 1:
+        // startS2=telegram.indexOf(' 922',telegram.indexOf(' 922')+1)
+        startS2=startSection22()
+        break;
+      default:
+        break;
+    }
     let startS2G6 = telegram.indexOf(" 6", startS2)
     let allG6 = combineS2G6(j)
     return telegram.slice(0,startS2G6)+allG6+telegram.slice(startS2G6+allG6.length+k*6)
@@ -1038,6 +1173,21 @@ export const InputHydroTelegram = ({postCode})=>{
   const showGroupS21G65=()=>{
     showGroupS2G6(0,4)
   }
+  const showGroupS22G61=()=>{
+    showGroupS2G6(1,0)
+  }
+  const showGroupS22G62=()=>{
+    showGroupS2G6(1,1)
+  }
+  const showGroupS22G63=()=>{
+    showGroupS2G6(1,2)
+  }
+  const showGroupS22G64=()=>{
+    showGroupS2G6(1,3)
+  }
+  const showGroupS22G65=()=>{
+    showGroupS2G6(1,4)
+  }
   const hideGroupS2G6=(j,i)=>{
     wbCharS2[j][i] = wbAddonS2[j][i] = null
     setTelegram(newS2G6(j,1))
@@ -1056,6 +1206,21 @@ export const InputHydroTelegram = ({postCode})=>{
   }
   const hideGroupS21G65=()=>{
     hideGroupS2G6(0,4)
+  }
+  const hideGroupS22G61=()=>{
+    hideGroupS2G6(1,0)
+  }
+  const hideGroupS22G62=()=>{
+    hideGroupS2G6(1,1)
+  }
+  const hideGroupS22G63=()=>{
+    hideGroupS2G6(1,2)
+  }
+  const hideGroupS22G64=()=>{
+    hideGroupS2G6(1,3)
+  }
+  const hideGroupS22G65=()=>{
+    hideGroupS2G6(1,4)
   }
   let formGroup27 = null
   const [iceThickness21, setIceThickness21] = useState(null)
@@ -1099,6 +1264,50 @@ export const InputHydroTelegram = ({postCode})=>{
       </Accordion.Item>
     </Accordion>
   }
+  let formS22Group7 = null
+  const [iceThickness22, setIceThickness22] = useState(null)
+  const [snowThickness22, setSnowThickness22] = useState(null)
+  const getStartS22G7=()=>{
+    // let startSection22 = telegram.indexOf(' 922',telegram.indexOf(' 922')+1)
+    let startS22=startSection22() //
+    let startS2G4 = telegram.indexOf(' 4',startS22)
+    let startS2G5 = telegram.indexOf(' 5',startS22)
+    let startS2G6 = telegram.indexOf(' 6',startS22)
+    if(startS2G6>0)
+      return startS2G6+combineS2G6(1).length
+    else if(startS2G5>0)
+      return startS2G5+combineS2G5(1).length
+    else if(startS2G4>0)
+      return startS2G4+6
+    else 
+      return startS22+18
+  }
+  const showS22Group7=()=>{
+    setIceThickness22(1)
+    setSnowThickness22(0)
+    let start27 = getStartS22G7()
+    let newText = telegram.slice(0,start27)+' 70010'+telegram.slice(start27)
+    setTelegram(newText)
+  }
+  const hideS22Group7=()=>{
+    setIceThickness22(null)
+    setSnowThickness22(null)
+    let startS22G7 = telegram.indexOf(' 7',startSection22()) //telegram.indexOf(' 922',telegram.indexOf(' 922')+1))
+    let newText = telegram.slice(0,startS22G7)+telegram.slice(startS22G7+6)
+    setTelegram(newText)
+  }
+  if(((d+0) % 5 === 0) || (d === lastDay)){ // true || 
+    formS22Group7 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+      <Accordion.Item eventKey="44">
+        <Accordion.Header>Лёд/Снег (Группа 7)</Accordion.Header>
+        <Accordion.Body onEnter={showS22Group7} onExited={hideS22Group7}>
+          {group7IceJsx('s22g7',iceThickness22)}
+          {group7SnowJsx('s22g7',snowThickness22)}
+        </Accordion.Body>
+      </Accordion.Item>
+    </Accordion>
+  }
+
   let formGroup20 = null
   const [precipitation21, setPrecipitation21] = useState(null)
   const [pDuration21, setPDuration21] = useState(null)
@@ -1143,6 +1352,158 @@ export const InputHydroTelegram = ({postCode})=>{
     </Accordion.Item>
   </Accordion>
 
+  let formS22Group0 = null
+  const [precipitation22, setPrecipitation22] = useState(null)
+  const [pDuration22, setPDuration22] = useState(null)
+  const getStartS22G0=()=>{
+    let startS22 = startSection22()
+    let startS2G4 = telegram.indexOf(' 4',startS22)
+    let startS2G5 = telegram.indexOf(' 5',startS22)
+    let startS2G6 = telegram.indexOf(' 6',startS22)
+    let startS2G7 = telegram.indexOf(' 7',startS22)
+    if(startS2G7>0)
+      return startS2G7+6
+    else if(startS2G6>0)
+      return startS2G6+combineS2G6(1).length
+    else if(startS2G5>0)
+      return startS2G5+combineS2G5(1).length
+    else if(startS2G4>0)
+      return startS2G4+6
+    else 
+      return startS22+18
+  }
+  const showS22Group0=()=>{
+    setPrecipitation22(0)
+    setPDuration22(0)
+    let start20 = getStartS22G0()
+    let newText = telegram.slice(0,start20)+' 00000'+telegram.slice(start20)
+    setTelegram(newText)
+  }
+  const hideS22Group0=()=>{
+    setPrecipitation22(null)
+    setPDuration22(null)
+    let start20 = getStartS22G0()
+    let newText = telegram.slice(0,start20)+telegram.slice(start20+6)
+    setTelegram(newText)
+  }
+  formS22Group0 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+    <Accordion.Item eventKey="45">
+      <Accordion.Header>Осадки (Группа 0)</Accordion.Header>
+      <Accordion.Body onEnter={showS22Group0} onExited={hideS22Group0}>
+        {precipitationJsx('s22g0',precipitation22)}
+        {pDurationJsx('s22g0',pDuration22)}
+      </Accordion.Body>
+    </Accordion.Item>
+  </Accordion>
+
+  const additionSection22 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+    <Accordion.Item eventKey="31">
+      <Accordion.Header>Данные за прошедшие сутки (Раздел 2 экземпляр 2)</Accordion.Header>
+      <Accordion.Body onEnter={showSection22} onExited={hideSection22}>
+        {dateObservationJsx('section2date2',obsDate22)}
+        {waterLevelJsx('group212',waterLevel22)}
+        {wlDeviationJsx('group222',wlDeviation22)}
+        <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+          <Accordion.Item eventKey="32">
+            <Accordion.Header>Температура воды и воздуха (Группа 4)</Accordion.Header>
+            <Accordion.Body onEnter={showGroup242} onExited={hideGroup242}>
+              {waterTemperatureJsx('wTemp22',waterTemperature22)}
+              <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+                <Accordion.Item eventKey="33" >
+                  <Accordion.Header>Температура воздуха</Accordion.Header>
+                  <Accordion.Body onEnter={showAirTemperature22} onExited={hideAirTemperature22}>
+                    {airTemperatureJsx('aTemp22',airTemperature22)}
+                  </Accordion.Body>
+                </Accordion.Item>
+              </Accordion>
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+        <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+          <Accordion.Item eventKey="34">
+            <Accordion.Header>Ледовые явления (Группа 5)</Accordion.Header>
+            <Accordion.Body onEnter={showGroupS22G51} onExit={hideGroupS22G51}>
+              {group5Jsx('g2251',ip2CodeChanged,ii2CodeChanged)}
+              <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+                <Accordion.Item eventKey="35" id="accordion-ip2" >
+                  <Accordion.Header>Экземпляр 2</Accordion.Header>
+                  <Accordion.Body onEnter={showGroupS22G52} onExited={hideGroupS22G52}>
+                    {group5Jsx('g2252',ip2CodeChanged,ii2CodeChanged)}
+                    <Accordion>
+                      <Accordion.Item eventKey="36">
+                        <Accordion.Header>Экземпляр 3</Accordion.Header>
+                        <Accordion.Body onEnter={showGroupS22G53} onExited={hideGroupS22G53}>
+                          {group5Jsx('g2253',ip2CodeChanged,ii2CodeChanged)}
+                          <Accordion>
+                            <Accordion.Item eventKey="37">
+                              <Accordion.Header>Экземпляр 4</Accordion.Header>
+                              <Accordion.Body onEnter={showGroupS22G54} onExited={hideGroupS22G54}>
+                                {group5Jsx('g2254',ip2CodeChanged,ii2CodeChanged)}
+                                <Accordion>
+                                  <Accordion.Item eventKey="38">
+                                    <Accordion.Header>Экземпляр 5</Accordion.Header>
+                                    <Accordion.Body onEnter={showGroupS22G55} onExited={hideGroupS22G55}>
+                                      {group5Jsx('g2255',ip2CodeChanged,ii2CodeChanged)}
+                                    </Accordion.Body>
+                                  </Accordion.Item>
+                                </Accordion>
+                              </Accordion.Body>
+                            </Accordion.Item>
+                          </Accordion>
+                        </Accordion.Body>
+                      </Accordion.Item>
+                    </Accordion>
+                  </Accordion.Body>
+                </Accordion.Item>
+              </Accordion>
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+        <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+          <Accordion.Item eventKey="39">
+            <Accordion.Header>Состояние водного объекта (Группа 6)</Accordion.Header>
+            <Accordion.Body onEnter={showGroupS22G61} onExited={hideGroupS22G61}>
+              {group6Jsx('s22g61',wb2CodeChanged,wbi2CodeChanged)}
+              <Accordion>
+                <Accordion.Item eventKey="40">
+                  <Accordion.Header>Экземпляр 2</Accordion.Header>
+                  <Accordion.Body onEnter={showGroupS22G62} onExited={hideGroupS22G62}>
+                    {group6Jsx('s22g62',wb2CodeChanged,wbi2CodeChanged)}
+                    <Accordion>
+                      <Accordion.Item eventKey="41">
+                        <Accordion.Header>Экземпляр 3</Accordion.Header>
+                        <Accordion.Body onEnter={showGroupS22G63} onExited={hideGroupS22G63}>
+                          {group6Jsx('s22g63',wb2CodeChanged,wbi2CodeChanged)}
+                          <Accordion>
+                            <Accordion.Item eventKey="42">
+                              <Accordion.Header>Экземпляр 4</Accordion.Header>
+                              <Accordion.Body onEnter={showGroupS22G64} onExited={hideGroupS22G64}>
+                                {group6Jsx('s22g64',wb2CodeChanged,wbi2CodeChanged)}
+                                <Accordion>
+                                  <Accordion.Item eventKey="43">
+                                    <Accordion.Header>Экземпляр 5</Accordion.Header>
+                                    <Accordion.Body onEnter={showGroupS22G65} onExited={hideGroupS22G65}>
+                                      {group6Jsx('s22g65',wb2CodeChanged,wbi2CodeChanged)}
+                                    </Accordion.Body>
+                                  </Accordion.Item>
+                                </Accordion>
+                              </Accordion.Body>
+                            </Accordion.Item>
+                          </Accordion>
+                        </Accordion.Body>
+                      </Accordion.Item>
+                    </Accordion>
+                  </Accordion.Body>
+                </Accordion.Item>
+              </Accordion>
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+        {formS22Group7}
+        {formS22Group0}
+      </Accordion.Body>
+    </Accordion.Item>
+  </Accordion>
   const additionSection2 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
     <Accordion.Item eventKey="16">
       <Accordion.Header>Данные за прошедшие сутки (Раздел 2)</Accordion.Header>
@@ -1248,6 +1609,7 @@ export const InputHydroTelegram = ({postCode})=>{
         </Accordion>
         {formGroup27}
         {formGroup20}
+        {additionSection22}
       </Accordion.Body>
     </Accordion.Item>
   </Accordion>
@@ -1262,25 +1624,16 @@ export const InputHydroTelegram = ({postCode})=>{
         </Form.Group>
         {waterLevelJsx('group61',wcWaterLevel)}
         <Form.Group className="mb-3" controlId="form-water-consumption">
-          <Form.Label>Расход воды (Группа 2)</Form.Label>
+          <Form.Label>Расход воды м<sup>3</sup>/с (Группа 2)</Form.Label>
           <Form.Control type="number" value={waterConsumption} onChange={waterConsumptionChanged} step="any" pattern="^[0-9]+([.,][0-9]+)?$"/>
-          <Form.Text className="text-muted">
-            Метры кубические за секунду (м<sup>3</sup>/с)
-          </Form.Text>
         </Form.Group>
         <Form.Group className="mb-3" controlId="form-river-cross-sectional-area">
-          <Form.Label>Площадь сечения реки (Группа 3)</Form.Label>
+          <Form.Label>Площадь сечения реки м<sup>2</sup> (Группа 3)</Form.Label>
           <Form.Control type="number" value={riverArea} onChange={riverAreaChanged} pattern="^[0-9]+([.,][0-9]+)?$" step="any"/>
-          <Form.Text className="text-muted">
-            Метры квадратные (м<sup>2</sup>)
-          </Form.Text>
         </Form.Group>
         <Form.Group className="mb-3" controlId="form-max-depth">
-          <Form.Label>Максимальная глубина (Группа 4)</Form.Label>
+          <Form.Label>Максимальная глубина в сантиметрах (Группа 4)</Form.Label>
           <Form.Control type="number" value={maxDepth} onChange={maxDepthChanged} min="1" max="9999" pattern='[0-9]{1,4}'/>
-          <Form.Text className="text-muted">
-            В сантиметрах
-          </Form.Text>
         </Form.Group>
       </Accordion.Body>
     </Accordion.Item>
@@ -1288,7 +1641,7 @@ export const InputHydroTelegram = ({postCode})=>{
   const telegramCard = <Card
     bg={'Primary'}
     text={'black'}
-    style={{ width: '18rem', position: 'fixed', width: '380px', top: '60px',left: '10px'}}
+    style={{ position: 'fixed', width: '380px', top: '60px',left: '10px'}}
     className="mb-2">
     <Card.Body>
       <Card.Title>Текст телеграммы</Card.Title>
@@ -1302,7 +1655,7 @@ export const InputHydroTelegram = ({postCode})=>{
       <Form.Label>Раздел 1</Form.Label>
       {waterLevelJsx('group11',waterLevel)}
       {wlDeviationJsx('group12',waterLevelDeviation)}
-      <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+      <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect} >
         <Accordion.Item eventKey="15">
           <Accordion.Header>Температура воды и воздуха (Группа 4)</Accordion.Header>
           <Accordion.Body onEnter={showGroup14} onExited={hideGroup14}>
@@ -1427,6 +1780,10 @@ export const InputHydroTelegram = ({postCode})=>{
     let localDB = response.response.message ? `${response.response.message}` : ''
     alert(`${csdnSection1} ${localDB}`)
     showResponse = false
+  }else{
+    console.log("Не удалось сохранить данные")
+    // alert("Не удалось сохранить данные")
+    // showResponse = false
   }
   return (
     <section>
