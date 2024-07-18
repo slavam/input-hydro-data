@@ -47,8 +47,8 @@ export const InputHydroTelegram = ({postCode})=>{
   const [wlDeviation21, setWLDeviation21]=useState(0)
   const [wlDeviation22, setWLDeviation22]=useState(0)
   const [waterTemperature, setWaterTemperature] = useState(null)
-  const [waterTemperature21, setWaterTemperature21] = useState(0)
-  const [waterTemperature22, setWaterTemperature22] = useState(0)
+  const [waterTemperature21, setWaterTemperature21] = useState(null)
+  const [waterTemperature22, setWaterTemperature22] = useState(null)
   const [airTemperature, setAirTemperature] = useState(null)
   const [airTemperature21, setAirTemperature21] = useState(null)
   const [airTemperature22, setAirTemperature22] = useState(null)
@@ -60,6 +60,19 @@ export const InputHydroTelegram = ({postCode})=>{
       <Form.Control id={id} type="number" value={wl} onChange={waterLevelChanged} min="-999" max="4999" pattern="^-?[0-9]{1,4}$"/>
     </Form.Group>)
   }
+
+  // matches.forEach((match) => {
+  //   ...     console.log("match found at " + match.index);
+  //   ... });
+  // matches = [...s.matchAll(/a/g)]
+  // [
+  //   [ 'a', index: 0, input: 'abracadabra', groups: undefined ],
+  //   [ 'a', index: 3, input: 'abracadabra', groups: undefined ],
+  //   [ 'a', index: 5, input: 'abracadabra', groups: undefined ],
+  //   [ 'a', index: 7, input: 'abracadabra', groups: undefined ],
+  //   [ 'a', index: 10, input: 'abracadabra', groups: undefined ]
+  // ]
+
   const startSection22=()=>{
     return(telegram.indexOf(' 922',telegram.indexOf(' 922')+1))
   }
@@ -89,7 +102,7 @@ export const InputHydroTelegram = ({postCode})=>{
         break
       case 'group212':
         setWaterLevel22(wl)
-        let startS22=startSection22() // = telegram.indexOf(' 922',telegram.indexOf(' 922')+1)
+        let startS22=startSection22()
         newText = telegram.slice(0,startS22+8)+g1+telegram.slice(startS22+12) 
         break
       default:
@@ -101,7 +114,6 @@ export const InputHydroTelegram = ({postCode})=>{
     return(<Form.Group className="mb-3" >
       <Form.Label>Изменение уровня воды в сантиметрах (Группа 2)</Form.Label>
       <Form.Control id={id} type="number" value={wld} onChange={waterLevelDeviationChanged} min="-999" max="999" pattern="^-?[0-9]{1,3}$"/>
-      {/* <Form.Text className="text-muted">В сантиметрах</Form.Text> */}
     </Form.Group>)
   }
   const waterLevelDeviationChanged = (e)=>{
@@ -122,7 +134,7 @@ export const InputHydroTelegram = ({postCode})=>{
         break
       case 'group222':
         setWLDeviation22(wld)
-        let startS22=startSection22() // = telegram.indexOf(' 922',telegram.indexOf(' 922')+1)
+        let startS22=startSection22()
         newText = telegram.slice(0,startS22+14)+g2+telegram.slice(startS22+18) 
         break
       default:
@@ -134,7 +146,6 @@ export const InputHydroTelegram = ({postCode})=>{
     return (<Form.Group className="mb-3" >
       <Form.Label>Температура воды с точностью до десятых</Form.Label>
       <Form.Control id={id} type="number" value={wt} onChange={waterTemperatureChanged} min="0.0" max="9.9" step="0.1" pattern='^[0-9]$|(^[0-9][.,][0-9]?$)'/>
-      {/* <Form.Text className="text-muted">С точностью до десятых</Form.Text> */}
     </Form.Group>)
   }
   const showGroup14=()=>{
@@ -178,7 +189,7 @@ export const InputHydroTelegram = ({postCode})=>{
         break
       case 'wTemp22':
         setWaterTemperature22(wt)
-        let startS22=startSection22() // = telegram.indexOf(' 922',telegram.indexOf(' 922')+1)
+        let startS22=startSection22()
         newText = telegram.slice(0,startS22+20)+`${+wt>=1 ? +wt*10 : '0'+(10*wt).toString()}`+telegram.slice(startS22+22)
         break
     }
@@ -186,7 +197,7 @@ export const InputHydroTelegram = ({postCode})=>{
   }
   const airTemperatureJsx=(id,aTemp)=>{
     return(<Form.Group className="mb-3" >
-      <Form.Control id={id} type="number" value={aTemp} onChange={airTemperatureChanged} min="-49" max="49" pattern="^-?[0-9]$|^-?[0-4][0-9]$"/>
+      <Form.Control id={id} type="number" value={aTemp} onChange={airTemperatureChanged} min="-49" max="49" pattern="^-?[0-9]$|^-?[0-9][0-9]$"/>
     </Form.Group>)
   }
   const airTemperatureChanged=(e)=>{
@@ -210,7 +221,7 @@ export const InputHydroTelegram = ({postCode})=>{
         break
       case 'aTemp22':
         setAirTemperature22(at)
-        let startS22=startSection22() //= telegram.indexOf(' 922')
+        let startS22=startSection22()
         newText = telegram.slice(0,startS22+22)+`${+at<0 ? 50-at : (+at>=0 && +at<10 ? (+at).toString().padStart(2,'0') : at)}`+telegram.slice(startS22+24)
         break
       default:
@@ -336,7 +347,6 @@ export const InputHydroTelegram = ({postCode})=>{
     setIi2(1)
     setTelegram(newG5(1))
   }
-  
   const showGroup153=()=>{
     ipChar[2] = 11
     ipAddon[2] = '01'
@@ -350,7 +360,6 @@ export const InputHydroTelegram = ({postCode})=>{
     setIi3(1)
     setTelegram(newG5(1))
   }
-  
   const showGroup154=()=>{
     ipChar[3] = 11
     ipAddon[3] = '01'
@@ -364,7 +373,6 @@ export const InputHydroTelegram = ({postCode})=>{
     setIi4(1)
     setTelegram(newG5(1))
   }
-  
   const showGroup155=()=>{
     ipChar[4] = 11
     ipAddon[4] = '01'
@@ -378,7 +386,6 @@ export const InputHydroTelegram = ({postCode})=>{
     setIi5(1)
     setTelegram(newG5(1))
   }
-  
 // group6
   const combineG6=()=>{
     let ret = ''
@@ -634,14 +641,11 @@ export const InputHydroTelegram = ({postCode})=>{
         break;
       case 's2g7':
         setIceThickness21(it)
-        let startS2 = telegram.indexOf(' 922')
-        let start27 = telegram.indexOf(' 7',startS2)
+        let start27 = telegram.indexOf(' 7',telegram.indexOf(' 922'))
         newText = telegram.slice(0,start27+2)+`${(+it).toString().padStart(3, "0")}`+telegram.slice(start27+5)
         break
       case 's22g7':
         setIceThickness22(it)
-        // let startS2 = telegram.indexOf(' 922',te)
-        // let startS22=startSection22() 
         let start227 = telegram.indexOf(' 7',startSection22())
         newText = telegram.slice(0,start227+2)+`${(+it).toString().padStart(3, "0")}`+telegram.slice(start227+5)
         break
@@ -670,14 +674,12 @@ export const InputHydroTelegram = ({postCode})=>{
         break;
       case 's2g7':
         setSnowThickness21(st)
-        let startS2 = telegram.indexOf(' 922')
-        let start27 = telegram.indexOf(' 7',startS2)
+        let start27 = telegram.indexOf(' 7',telegram.indexOf(' 922'))
         newText = telegram.slice(0,start27+5)+(+st).toString()+telegram.slice(start27+6)
         break
       case 's22g7':
         setSnowThickness22(st)
-        let startS22 = startSection22() //telegram.indexOf(' 922')
-        let start227 = telegram.indexOf(' 7',startS22)
+        let start227 = telegram.indexOf(' 7',startSection22())
         newText = telegram.slice(0,start227+5)+(+st).toString()+telegram.slice(start227+6)
         break
       default:
@@ -720,7 +722,6 @@ export const InputHydroTelegram = ({postCode})=>{
     return(<Form.Group className="mb-3" >
       <Form.Label>Количество осадков (цифры кода)</Form.Label>
       <Form.Control id={id} type="number" value={precipitation} onChange={precipitationChanged} min="0" max="999" pattern='[0-9]{1,3}'/>
-      {/* <Form.Text className="text-muted">Цифры кода</Form.Text> */}
     </Form.Group>
     )
   }
@@ -728,7 +729,6 @@ export const InputHydroTelegram = ({postCode})=>{
     return(<Form.Group className="mb-3" >
       <Form.Label>Продолжительность выпадения осадков (цифра кода)</Form.Label>
       <Form.Control id={id} type="number" value={durationPrecipitation} onChange={durationPrecipitationChanged} min="0" max="4"  pattern='^0?[0-4]$'/>
-      {/* <Form.Text className="text-muted">Цифра кода</Form.Text> */}
     </Form.Group>)
   }
   const precipitationChanged=e=>{
