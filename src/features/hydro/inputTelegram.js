@@ -497,6 +497,27 @@ export const InputHydroTelegram = ({postCode})=>{
     setActiveKeys([])
     setTelegram(`HHZZ ${hydroPostCode} ${currDay}${term}${contentIndex} 10000 20000=`)
   }
+  const section3submit=(j,period,avgWl,maxWl,minWl,avgWc,maxWc,minWc,maxLevelDate,maxLevelHour)=>{
+    let ret={}
+    ret["period"+j]=period
+    if(avgWl!==null)
+      ret['avgWl'+j]=avgWl
+    if(maxWl!==null)
+      ret['maxWl'+j]=maxWl
+    if(minWl!==null)
+      ret['minWl'+j]=minWl
+    if(avgWc!==null)
+      ret['avgWc'+j]=avgWc
+    if(maxWc!==null)
+      ret['maxWc'+j]=maxWc
+    if(minWc!==null)
+      ret['minWc'+j]=minWc
+    if(maxLevelDate!==null){
+      ret['mlDate'+j]=maxLevelDate
+      ret['mlHour+j']=maxLevelHour
+    }
+    return ret
+  }
   const section2submit=(j,obsDate,wl,wld,waterTemp,airTemp,ipChar2,ipAddon2,wbChar2,wbAddon2,iceThickness,snowThickness,precipitation,pDuration)=>{
     let ret = {}
     ret["obsDate2"+j]=obsDate
@@ -604,6 +625,10 @@ export const InputHydroTelegram = ({postCode})=>{
         airTemperature22,ipCharS2[1],ipAddonS2[1],wbCharS2[1],wbAddonS2[1],iceThickness22,snowThickness22,precipitation22,pDuration22)
       hydroData = {...hydroData, ...s22}
       // alert(JSON.stringify(hydroData).replace(/\\/g,""))
+    }
+    if(periods[0]!==null){
+      let s3 = section3submit=(0,periods[0],avgWl[0],maxWl[0],minWl[0],avgWc[0],maxWc[0],minWc[0],maxLevelDate,maxLevelHour)
+      hydroData = {...hydroData, ...s3}
     }
     setHydroData(hydroData)
     showResponse = true
