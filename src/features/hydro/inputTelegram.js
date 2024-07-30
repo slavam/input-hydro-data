@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form'
 import Accordion from 'react-bootstrap/Accordion'
 import Card from 'react-bootstrap/Card'
-import { icePhenomena, waterBodies } from '../../components/dictionaries'
+import { icePhenomena, waterBodies, periodTime } from '../../components/dictionaries'
 
 const ipCharS2 = new Array(5) //.fill(null)
 for(let i=0; i<ipCharS2.length; i++){ipCharS2[i]= new Array(5).fill(null)}
@@ -20,6 +20,13 @@ const ipChar = new Array(5).fill(null)
 const ipAddon = new Array(5).fill(null)
 const wbChar = new Array(5).fill(null)
 const wbAddon = new Array(5).fill(null)
+const periods = new Array(5).fill(null)
+const avgWl = new Array(5).fill(null)
+const maxWl = new Array(5).fill(null)
+const minWl = new Array(5).fill(null)
+const avgWc = new Array(5).fill(null)
+const maxWc = new Array(5).fill(null)
+const minWc = new Array(5).fill(null)
 let showResponse = false
 
 export const InputHydroTelegram = ({postCode})=>{
@@ -789,7 +796,9 @@ export const InputHydroTelegram = ({postCode})=>{
   const [wcDate, setWcDate] = useState(today.toISOString().slice(0,10))
   const [obsDate21, setObsDate21]=useState(today.toISOString().slice(0,10))
   const [obsDate22, setObsDate22]=useState(today.toISOString().slice(0,10))
+  const [maxLevelDate, setMaxLevelDate] = useState(today.toISOString().slice(0,10))
   const [wcHour, setWcHour] = useState(9)
+  const [maxLevelHour, setMaxLevelHour] = useState(9)
   const [wcWaterLevel, setWcWaterLevel] = useState(null)
   const [waterConsumption, setWaterConsumption] = useState(null)
   const [riverArea, setRiverArea] = useState(null)
@@ -843,8 +852,12 @@ export const InputHydroTelegram = ({postCode})=>{
       case 'section2date2':
         setObsDate22(od)
         let startDate22 = startSection22() //telegram.indexOf(' 922',telegram.indexOf(' 922')+1)
-        // newText = telegram.replace(/ 922../g, ` 922${od.slice(8,10)}`)
         newText = telegram.slice(0,startDate22+4)+od.slice(8,10)+telegram.slice(startDate22+6)
+        break
+      case 'max-level-date':
+        setMaxLevelDate(od)
+        let startS3G7 = telegram.indexOf(' 7',telegram.indexOf(' 933'))
+        newText = telegram.slice(0,startS3G7+2)+od.slice(8,10)+telegram.slice(startS3G7+4)
         break
       default:
         break;
@@ -855,8 +868,15 @@ export const InputHydroTelegram = ({postCode})=>{
     let wch = +e.target.value
     wch = wch>23? 23:wch
     wch = wch<0? 0:wch
-    setWcHour(wch)
-    let newText = telegram.slice(0,-3)+wch.toString().padStart(2,'0')+'='
+    let newText = telegram
+    if(e.target.id==='max-level-hour'){
+      setMaxLevelHour(wch)
+      let startS3G7 = telegram.indexOf(' 7',telegram.indexOf(' 933'))
+      newText = telegram.slice(0,startS3G7+4)+wch.toString().padStart(2,'0')+telegram.slice(startS3G7+6)
+    }else{
+      setWcHour(wch)
+      newText = telegram.slice(0,-3)+wch.toString().padStart(2,'0')+'='
+    }
     setTelegram(newText)
   }
   const waterConsumptionChanged=e=>{
@@ -1613,6 +1633,278 @@ export const InputHydroTelegram = ({postCode})=>{
       </Accordion.Body>
     </Accordion.Item>
   </Accordion>
+  //additionsection3
+  const showSection31=()=>{
+    let startS3 = telegram.indexOf(' 966')>0? telegram.indexOf(' 966') : telegram.length-1
+    periods[0] = '01'
+    let newText = telegram.slice(0,startS3)+` 93301`+telegram.slice(startS3)
+    setTelegram(newText)
+  }
+  const hideSection31=()=>{
+    periods[0]=null
+    let startS3 = telegram.indexOf(' 933')
+    let startS6 = telegram.indexOf(' 966')
+    let newText = telegram.slice(0, startS3)+(startS6>0? telegram.slice(startS6):'=')
+    setTelegram(newText)
+  }
+  const periodChange=e=>{
+    let p = +e.target.value>9? e.target.value : '0'+e.target.value
+    let i = +e.target.id[2]-1
+    periods[i] = p
+    let startS3 = telegram.indexOf(' 933')
+    let newText = telegram.slice(0,startS3+4)+p+telegram.slice(startS3+6) 
+    setTelegram(newText)
+  }
+  const s3periodJsx=(id,periodChange)=>{
+    return(<Form.Group className='mb-3' controlId='s31'>
+      <Form.Label>Выберите период времени</Form.Label>
+      <Form.Select id={id} onChange={periodChange} menuPortalTarget={document.body}>
+        {Object.keys(periodTime).map(pt => { return <option value={pt}>{periodTime[pt]}</option>})}
+      </Form.Select>
+    </Form.Group>
+  )}
+  const waterLevelS3Changed = (e)=>{
+    let wl = e.target.value
+    if(/^-?[0-9]{1,4}$/.test(wl)){
+      wl = +wl>4999 ? 4999 : wl
+      wl = +wl<-999 ? -999 : wl
+    }else
+      wl = 0
+    let g1 = +wl >= 0 ? wl.toString().padStart(4,'0') : (5000+Math.abs(+wl)).toString()      
+    let newText = telegram
+    let i = +e.target.id[3]-1
+    let avgMaxMin = e.target.id[2]
+    let startS3 = telegram.indexOf(' 933')
+    if(avgMaxMin==='1'){
+      avgWl[i]=wl
+      newText = telegram.slice(0,startS3+8)+g1+telegram.slice(startS3+12)
+    }else if(avgMaxMin==='2'){
+      maxWl[i]=wl
+      let shift = telegram[startS3+7]==='1'? 14:8
+      newText = telegram.slice(0,startS3+shift)+g1+telegram.slice(startS3+shift+4)
+    } else {
+      minWl[i]=wl
+      let shift = (telegram[startS3+7]==='1'? 14:8)+(telegram.indexOf(' 2',startS3)>0? 6:0)
+      newText = telegram.slice(0,startS3+shift)+g1+telegram.slice(startS3+shift+4)
+    }
+    setTelegram(newText)
+  }
+  const waterLevelS3Jsx = (id, wl)=>{
+    return (<Form.Group className="mb-3" >
+      <Form.Control id={id} type="number" value={wl} onChange={waterLevelS3Changed} min="-999" max="4999" pattern="^-?[0-9]{1,4}$"/>
+    </Form.Group>)
+  }
+  const showSection31g1=()=>{
+    let startS3 = telegram.indexOf(' 933')
+    avgWl[0]=0
+    let newText = telegram.slice(0,startS3+6)+' 10000'+telegram.slice(startS3+6)
+    setTelegram(newText)
+  }
+  const hideSection31g1=()=>{
+    let startS3 = telegram.indexOf(' 933')
+    avgWl[0]=null
+    let newText = telegram.slice(0,startS3+6)+telegram.slice(startS3+12)
+    setTelegram(newText)
+  }
+  const showSection31g2=()=>{
+    let startS3 = telegram.indexOf(' 933')
+    maxWl[0]=0
+    let shift = telegram[startS3+7]==='1'? 12:6
+    let newText = telegram.slice(0,startS3+shift)+' 20000'+telegram.slice(startS3+shift)
+    setTelegram(newText)
+  }
+  const hideSection31g2=()=>{
+    let startS3 = telegram.indexOf(' 933')
+    let startG2 = telegram.indexOf(' 2',startS3)
+    maxWl[0]=null
+    let newText = telegram.slice(0,startG2)+telegram.slice(startG2+6)
+    setTelegram(newText)
+  }
+  const showSection31g3=()=>{
+    let startS3 = telegram.indexOf(' 933')
+    minWl[0]=0
+    let shift = (telegram[startS3+7]==='1'? 12:6)+(telegram.indexOf(' 2',startS3)>0? 6:0)
+    let newText = telegram.slice(0,startS3+shift)+' 30000'+telegram.slice(startS3+shift)
+    setTelegram(newText)
+  }
+  const hideSection31g3=()=>{
+    let startS3 = telegram.indexOf(' 933')
+    let startG3 = telegram.indexOf(' 3',startS3)
+    minWl[0]=null
+    let newText = telegram.slice(0,startG3)+telegram.slice(startG3+6)
+    setTelegram(newText)
+  }
+
+  const waterConsumptionS3Changed=e=>{
+    let startS3 = telegram.indexOf(' 933')
+    let newText = telegram
+    let i = +e.target.id[3]-1
+    let avgMaxMin = e.target.id[2]
+    if(/^[0-9]+([.,][0-9]+)?$/.test(e.target.value)){
+      let wc = +e.target.value
+      wc = wc>999999.0? 999999.0 : wc
+      wc = wc<0.0? 0.0 : wc
+      let exp = wc.toExponential()
+      exp = Number(exp.slice(exp.lastIndexOf('e')+1))
+      let num = exp >=0? exp+1 : 0
+      let pointPos = e.target.value.lastIndexOf('.')<0? 0:e.target.value.lastIndexOf('.')
+      let val = wc<1.? e.target.value.slice(pointPos+1,pointPos+4).padEnd(3,'0') : Number(e.target.value.replace('.','')).toString().padEnd(3,'0').slice(0,3)
+      if(avgMaxMin==='1'){
+        avgWc[i]=parseFloat(wc)
+        let startG4 = telegram.indexOf(' 4',startS3)
+        newText = telegram.slice(0,startG4+2)+`${num}${val}`+telegram.slice(startG4+6)
+      }else if(avgMaxMin==='2'){
+        maxWc[i]=wc
+        let startG5 = telegram.indexOf(' 5',startS3)
+        newText = telegram.slice(0,startG5+2)+`${num}${val}`+telegram.slice(startG5+6)
+      } else {
+        minWc[i]=wc
+        let startG6 = telegram.indexOf(' 6',startS3)
+        newText = telegram.slice(0,startG6+2)+`${num}${val}`+telegram.slice(startG6+6)
+      }
+      // newText = telegram.slice(0,startSection6+14)+`${num}${val}`+telegram.slice(startSection6+18)
+      setTelegram(newText) //+`>>${e.target.value}<<`)
+    }else{
+      avgWc[i]=0
+      // newText = telegram.slice(0,startS3+14)+`0000`+telegram.slice(startS3+18)
+      setTelegram(newText)
+    }
+  }
+  const waterConsumptionS3Jsx = (id, wc)=>{
+    return <Form.Group className="mb-3" >
+      <Form.Control id={id} type="number" value={wc} onChange={waterConsumptionS3Changed} step="any" pattern="^[0-9]+([.,][0-9]+)?$"/>
+    </Form.Group>
+  }
+  const showSection31g4=()=>{
+    let startS3 = telegram.indexOf(' 933')
+    avgWc[0]=0
+    let startG4 = startS3+(telegram[startS3+7]==='1'? 12:6)+(telegram.indexOf(' 2',startS3)>0? 6:0)+(telegram.indexOf(' 3',startS3)>0? 6:0)
+    let newText = telegram.slice(0,startG4)+' 40000'+telegram.slice(startG4)
+    setTelegram(newText)
+  }
+  const hideSection31g4=()=>{
+    let startS3 = telegram.indexOf(' 933')
+    let startG4 = telegram.indexOf(' 4',startS3)
+    avgWc[0]=null
+    let newText = telegram.slice(0,startG4)+telegram.slice(startG4+6)
+    setTelegram(newText)
+  }
+  const showSection31g5=()=>{
+    let startS3 = telegram.indexOf(' 933')
+    maxWc[0]=0
+    let startG5 = startS3+(telegram[startS3+7]==='1'? 12:6)+
+      (telegram.indexOf(' 2',startS3)>0? 6:0)+
+      (telegram.indexOf(' 3',startS3)>0? 6:0)+
+      (telegram.indexOf(' 4',startS3)>0? 6:0)
+    let newText = telegram.slice(0,startG5)+' 50000'+telegram.slice(startG5)
+    setTelegram(newText)
+  }
+  const hideSection31g5=()=>{
+    let startS3 = telegram.indexOf(' 933')
+    let startG5 = telegram.indexOf(' 5',startS3)
+    maxWc[0]=null
+    let newText = telegram.slice(0,startG5)+telegram.slice(startG5+6)
+    setTelegram(newText)
+  }
+  const showSection31g6=()=>{
+    let startS3 = telegram.indexOf(' 933')
+    minWc[0]=0
+    let startG6 = startS3+(telegram[startS3+7]==='1'? 12:6)+
+      (telegram.indexOf(' 2',startS3)>0? 6:0)+
+      (telegram.indexOf(' 3',startS3)>0? 6:0)+
+      (telegram.indexOf(' 4',startS3)>0? 6:0)+
+      (telegram.indexOf(' 5',startS3)>0? 6:0)
+    let newText = telegram.slice(0,startG6)+' 60000'+telegram.slice(startG6)
+    setTelegram(newText)
+  }
+  const hideSection31g6=()=>{
+    let startS3 = telegram.indexOf(' 933')
+    let startG6 = telegram.indexOf(' 6',startS3)
+    minWc[0]=null
+    let newText = telegram.slice(0,startG6)+telegram.slice(startG6+6)
+    setTelegram(newText)
+  }
+  const showMaxLevelMoment=()=>{
+    let startG7 = telegram.indexOf(' 966')>0? telegram.indexOf(' 966') : telegram.length-1
+    let newText = telegram.slice(0,startG7)+` 7${currDay}09`+telegram.slice(startG7)
+    setTelegram(newText)
+  }
+  const hideMaxLevelMoment=()=>{
+    let startG7=telegram.indexOf(' 7',telegram.indexOf(' 933'))
+    let newText = telegram.slice(0,startG7)+telegram.slice(startG7+6)
+    setTelegram(newText)
+  }
+  const maxLevelHourChanged=e=>{
+    
+  }
+  const additionSection31 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+    <Accordion.Item eventKey='46'>
+      <Accordion.Header>Данные о средних и экстремальных значениях уровня, расхода или притока воды (Раздел 3)</Accordion.Header>
+      <Accordion.Body onEnter={showSection31} onExit={hideSection31}>
+        {s3periodJsx('ex1',periodChange)}
+        <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+          <Accordion.Item eventKey='47'>
+            <Accordion.Header>Средний уровень воды за период в сантиметрах (Группа 1)</Accordion.Header>
+            <Accordion.Body onEnter={showSection31g1} onExit={hideSection31g1}>
+              {waterLevelS3Jsx('wl11',avgWl[0])}
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+        <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+          <Accordion.Item eventKey='48'>
+            <Accordion.Header>Высший уровень воды за период в сантиметрах (Группа 2)</Accordion.Header>
+            <Accordion.Body onEnter={showSection31g2} onExit={hideSection31g2}>
+              {waterLevelS3Jsx('wl21',maxWl[0])}
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+        <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+          <Accordion.Item eventKey='49'>
+            <Accordion.Header>Низший уровень воды за период в сантиметрах (Группа 3)</Accordion.Header>
+            <Accordion.Body onEnter={showSection31g3} onExit={hideSection31g3}>
+              {waterLevelS3Jsx('wl31',minWl[0])}
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+        <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+          <Accordion.Item eventKey='50'>
+            <Accordion.Header>Средний расход воды за период (Группа 4)</Accordion.Header>
+            <Accordion.Body onEnter={showSection31g4} onExit={hideSection31g4}>
+              {waterConsumptionS3Jsx('wс11',avgWc[0])}
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+        <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+          <Accordion.Item eventKey='51'>
+            <Accordion.Header>Наибольший расход воды за период (Группа 5)</Accordion.Header>
+            <Accordion.Body onEnter={showSection31g5} onExit={hideSection31g5}>
+              {waterConsumptionS3Jsx('wс21',maxWc[0])}
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+        <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+          <Accordion.Item eventKey='52'>
+            <Accordion.Header>Наименьший расход воды за период (Группа 6)</Accordion.Header>
+            <Accordion.Body onEnter={showSection31g6} onExit={hideSection31g6}>
+              {waterConsumptionS3Jsx('wс31',minWc[0])}
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+        <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+          <Accordion.Item eventKey="53">
+            <Accordion.Header>Время прохождения наивысшего уровня воды (Группа 7)</Accordion.Header>
+            <Accordion.Body onEnter={showMaxLevelMoment} onExited={hideMaxLevelMoment}>
+              {dateObservationJsx('max-level-date',maxLevelDate)}
+              <Form.Group className="mb-3" >
+                <Form.Label>Час (время местное)</Form.Label>
+                <Form.Control id='max-level-hour' type="number" value={maxLevelHour} onChange={wcHourChanged} min='0' max='23' pattern='[012][0-9]' />
+              </Form.Group>
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+      </Accordion.Body>
+    </Accordion.Item>
+  </Accordion>
   const additionSection6 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
     <Accordion.Item eventKey="14">
       <Accordion.Header>Расход воды (Раздел 6)</Accordion.Header>
@@ -1762,6 +2054,7 @@ export const InputHydroTelegram = ({postCode})=>{
         </Accordion.Item>
       </Accordion>
       {additionSection2}
+      {additionSection31}
       {additionSection6}
       <Button variant="primary" type="submit">
         Сохранить
