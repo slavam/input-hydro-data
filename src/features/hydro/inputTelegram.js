@@ -183,7 +183,7 @@ export const InputHydroTelegram = ({postCode})=>{
       let s = e.target.value.length<1? '00':e.target.value
       wt = s.indexOf('.')>=0? s.slice(0,3):s[1]
     }
-    let newText = telegram
+    let newText
     switch (e.target.id) {
       case 'wTemp1':
         setWaterTemperature(wt)
@@ -199,6 +199,8 @@ export const InputHydroTelegram = ({postCode})=>{
         let startS22=startSection22()
         newText = telegram.slice(0,startS22+20)+`${+wt>=1 ? +wt*10 : '0'+(10*wt).toString()}`+telegram.slice(startS22+22)
         break
+      default:
+        newText = telegram
     }
     setTelegram(newText)
   }
@@ -236,16 +238,6 @@ export const InputHydroTelegram = ({postCode})=>{
     }
     setTelegram(newText)
   }
-  const [ip1,setIp1] = useState(11)
-  const [ii1,setIi1] = useState(1)
-  const [ip2,setIp2] = useState(11)
-  const [ii2,setIi2] = useState(1)
-  const [ip3,setIp3] = useState(11)
-  const [ii3,setIi3] = useState(1)
-  const [ip4,setIp4] = useState(11)
-  const [ii4,setIi4] = useState(1)
-  const [ip5,setIp5] = useState(11)
-  const [ii5,setIi5] = useState(1)
   const combineG5=()=>{
     let ret = ''
     for (let i = 0; i < ipChar.length; i++){
@@ -261,12 +253,10 @@ export const InputHydroTelegram = ({postCode})=>{
   const showGroup15=()=>{
     ipChar[0] = 11
     ipAddon[0] = '01'
-    setIp1(11)
-    setIi1(1)
-    let g152 = ipChar[1]===null?'':` 5${ip2}${ii2}`
-    let g153 = ipChar[2]===null?'':` 5${ip3}${ii3}`
-    let g154 = ipChar[3]===null?'':` 5${ip4}${ii4}`
-    let g155 = ipChar[4]===null?'':` 5${ip5}${ii5}`
+    let g152 = ipChar[1]===null?'':` 5${ipChar[1]}${ipAddon[1]}`
+    let g153 = ipChar[2]===null?'':` 5${ipChar[2]}${ipAddon[2]}`
+    let g154 = ipChar[3]===null?'':` 5${ipChar[3]}${ipAddon[3]}`
+    let g155 = ipChar[4]===null?'':` 5${ipChar[4]}${ipAddon[4]}`
     let g5 = ` 51101${g152}${g153}${g154}${g155}`
     let start15 = telegram[29]==='4'? 28+6 : 28
     let newText = telegram.slice(0,start15)+g5+telegram.slice(start15)
@@ -281,7 +271,7 @@ export const InputHydroTelegram = ({postCode})=>{
     return(<Form.Group className="mb-3" >
       <Form.Label>Выберите характеристику явления</Form.Label>
       <Form.Select id={id+'ip'} onChange={ipChange} menuPortalTarget={document.body}>
-        {Object.keys(icePhenomena).map(ip => {if(+ip>10) return <option value={ip}>{icePhenomena[ip]}</option>})}
+        {Object.keys(icePhenomena).map(ip => {return (+ip>10? <option value={ip}>{icePhenomena[ip]}</option> : null)})}
       </Form.Select>
       <Form.Label>Выберите характеристику или интенсивность явления</Form.Label>
       <Form.Select id={id+'ipi'} onChange={iiChange}>
@@ -291,106 +281,50 @@ export const InputHydroTelegram = ({postCode})=>{
   }
   const ip1CodeChanged = e=>{
     let ip = e.target.value
-    switch (e.target.id) {
-      case 'g151ip':
-        ipChar[0] = ip
-        setIp1(ip)
-        break;
-      case 'g152ip':
-        setIp2(ip)
-        ipChar[1] = ip
-        break;
-      case 'g153ip':
-        ipChar[2] = ip
-        setIp3(ip)
-        break;
-      case 'g154ip':
-        ipChar[3] = ip
-        setIp4(ip)
-        break;
-      case 'g155ip':
-        ipChar[4] = ip
-        setIp5(ip)
-        break;
-    }
+    let i = +e.target.id[3]-1
+    ipChar[i] = ip
     setTelegram(newG5(0))
   }
   const ii1CodeChanged = e=>{
     let ii = +e.target.value>9? e.target.value : '0'+e.target.value
-    switch (e.target.id) {
-      case 'g151ipi':
-        setIi1(ii)
-        ipAddon[0] = ii    
-        break;
-      case 'g152ipi':
-        setIi2(ii)
-        ipAddon[1] = ii    
-        break;
-      case 'g153ipi':
-        setIi3(ii)
-        ipAddon[2] = ii    
-        break;
-      case 'g154ipi':
-        setIi4(ii)
-        ipAddon[3] = ii    
-        break;
-      case 'g155ipi':
-        setIi5(ii)
-        ipAddon[4] = ii    
-        break;
-    }
+    let i = +e.target.id[3]-1
+    ipAddon[i] = ii
     setTelegram(newG5(0))
   }
   const showGroup152=()=>{
     ipChar[1] = 11
     ipAddon[1] = '01'
-    setIp2(11)
-    setIi2(1)
     setTelegram(newG5(-1))
   }
   const hideGroup152=()=>{
     ipChar[1] = ipAddon[1] = null
-    setIp2(11)
-    setIi2(1)
     setTelegram(newG5(1))
   }
   const showGroup153=()=>{
     ipChar[2] = 11
     ipAddon[2] = '01'
-    setIp3(11)
-    setIi3(1)
     setTelegram(newG5(-1))
   }
   const hideGroup153=()=>{
     ipChar[2] = ipAddon[2] = null
-    setIp3(11)
-    setIi3(1)
     setTelegram(newG5(1))
   }
   const showGroup154=()=>{
     ipChar[3] = 11
     ipAddon[3] = '01'
-    setIp4(11)
-    setIi4(1)
     setTelegram(newG5(-1))
   }
   const hideGroup154=()=>{
     ipChar[3] = ipAddon[3] = null
-    setIp4(11)
-    setIi4(1)
     setTelegram(newG5(1))
   }
   const showGroup155=()=>{
     ipChar[4] = 11
     ipAddon[4] = '01'
-    setIp5(11)
-    setIi5(1)
     setTelegram(newG5(-1))
   }
   const hideGroup155=()=>{
     ipChar[4] = ipAddon[4] = null
-    setIp5(11)
-    setIi5(1)
     setTelegram(newG5(1))
   }
 // group6
@@ -427,7 +361,7 @@ export const InputHydroTelegram = ({postCode})=>{
     return(<Form.Group className="mb-3" >
       <Form.Label>Выберите характеристику объекта</Form.Label>
       <Form.Select id={id+'wb'} onChange={wbChange} >
-        {Object.keys(waterBodies).map(wb => {if(+wb===0 || +wb>10) return <option value={wb}>{waterBodies[wb]}</option>})}
+        {Object.keys(waterBodies).map(wb => {return (+wb===0 || +wb>10)? <option value={wb}>{waterBodies[wb]}</option> : null})}
       </Form.Select>
       <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
       <Form.Select id={id+'wbi'} onChange={wbiChange}>
@@ -965,7 +899,7 @@ export const InputHydroTelegram = ({postCode})=>{
     let startSection21 = startSection6>=0? startSection6 : telegram.length-1
     let newText = telegram.slice(0,15)+'2'+telegram.slice(16)
     let obsDay = obsDate21.slice(8,10)
-    newText =newText.slice(0,startSection21)+` 922${obsDay} 10000 20000`+telegram.slice(startSection21)
+    newText =newText.slice(0,startSection21)+` 922${obsDay} 10000 20000`+newText.slice(startSection21)
     setTelegram(newText)
   }
   const hideSection21=()=>{
@@ -978,28 +912,32 @@ export const InputHydroTelegram = ({postCode})=>{
       setContentIndex(1)
       newText = telegram.slice(0,15)+'1'+telegram.slice(16)
     }
-    newText = newText.slice(0,startSection2)+telegram.slice(stopSection2)
+    newText = newText.slice(0,startSection2)+newText.slice(stopSection2)
     setTelegram(newText)
   }
   const showSection22=()=>{
     setWaterLevel22(0)
     setWLDeviation22(0.0)
+    setContentIndex(2)
+    let newText = telegram
+    newText = telegram.slice(0,15)+'2'+telegram.slice(16)
     let startSection6 = telegram.indexOf(' 966')
     let startS22 = startSection6>0? startSection6 : telegram.length-1
     let obsDay = obsDate22.slice(8,10)
-    let newText =telegram.slice(0,startS22)+` 922${obsDay} 10000 20000`+telegram.slice(startS22)
+    newText =newText.slice(0,startS22)+` 922${obsDay} 10000 20000`+newText.slice(startS22)
     setTelegram(newText)
   }
   const hideSection22=()=>{
     setWaterLevel22(null)
     setWLDeviation22(null)
+    let newText = telegram
     if(wcWaterLevel===null && waterLevel21===null && periods[0]===null){
       setContentIndex(1)
       newText = telegram.slice(0,15)+'1'+telegram.slice(16)
     }
     let startS22=startSection22()
     let stopSection22 = telegram.indexOf(' 966')>=0? telegram.indexOf(' 966') : telegram.length-1
-    let newText = telegram.slice(0,startS22)+telegram.slice(stopSection22)
+    newText = newText.slice(0,startS22)+newText.slice(stopSection22)
     setTelegram(newText)
   }
   const showGroup241=()=>{
@@ -1664,21 +1602,24 @@ export const InputHydroTelegram = ({postCode})=>{
   </Accordion>
   //additionsection3
   const showSection31=()=>{
+    let newText = telegram
     setContentIndex(2)
+    newText = telegram.slice(0,15)+'2'+telegram.slice(16)
     let startS3 = telegram.indexOf(' 966')>0? telegram.indexOf(' 966') : telegram.length-1
     periods[0] = '01'
-    let newText = telegram.slice(0,startS3)+` 93301`+telegram.slice(startS3)
+    newText = newText.slice(0,startS3)+` 93301`+newText.slice(startS3)
     setTelegram(newText)
   }
   const hideSection31=()=>{
     periods[0]=null
+    let newText = telegram
     if(wcWaterLevel===null && waterLevel21===null && waterLevel22===null){
       setContentIndex(1)
       newText = telegram.slice(0,15)+'1'+telegram.slice(16)
     }
     let startS3 = telegram.indexOf(' 933')
     let startS6 = telegram.indexOf(' 966')
-    let newText = telegram.slice(0, startS3)+(startS6>0? telegram.slice(startS6):'=')
+    newText = newText.slice(0, startS3)+(startS6>0? newText.slice(startS6):'=')
     setTelegram(newText)
   }
   const periodChange=e=>{
@@ -1769,20 +1710,20 @@ export const InputHydroTelegram = ({postCode})=>{
     setTelegram(newText)
   }
 
-  const waterConsumptionS3Changed=e=>{
-    let startS3 = telegram.indexOf(' 933')
-    let newText = telegram
-    let i = +e.target.id[3]-1
-    let avgMaxMin = e.target.id[2]
-    if(/^[0-9]+([.,][0-9]+)?$/.test(e.target.value)){
-      let wc = +e.target.value
-      wc = wc>999999.0? 999999.0 : wc
-      wc = wc<0.0? 0.0 : wc
-      let exp = wc.toExponential()
-      exp = Number(exp.slice(exp.lastIndexOf('e')+1))
-      let num = exp >=0? exp+1 : 0
-      let pointPos = e.target.value.lastIndexOf('.')<0? 0:e.target.value.lastIndexOf('.')
-      let val = wc<1.? e.target.value.slice(pointPos+1,pointPos+4).padEnd(3,'0') : Number(e.target.value.replace('.','')).toString().padEnd(3,'0').slice(0,3)
+  // const waterConsumptionS3Changed=e=>{
+  //   let startS3 = telegram.indexOf(' 933')
+  //   let newText = telegram
+  //   let i = +e.target.id[3]-1
+  //   let avgMaxMin = e.target.id[2]
+  //   if(/^[0-9]+([.,][0-9]+)?$/.test(e.target.value)){
+  //     let wc = +e.target.value
+  //     wc = wc>999999.0? 999999.0 : wc
+  //     wc = wc<0.0? 0.0 : wc
+  //     let exp = wc.toExponential()
+  //     exp = Number(exp.slice(exp.lastIndexOf('e')+1))
+  //     let num = exp >=0? exp+1 : 0
+  //     let pointPos = e.target.value.lastIndexOf('.')<0? 0:e.target.value.lastIndexOf('.')
+  //     let val = wc<1.? e.target.value.slice(pointPos+1,pointPos+4).padEnd(3,'0') : Number(e.target.value.replace('.','')).toString().padEnd(3,'0').slice(0,3)
       // if(avgMaxMin==='1'){
       //   avgWc[i]=parseFloat(wc)
       //   let startG4 = telegram.indexOf(' 4',startS3)
@@ -1798,13 +1739,13 @@ export const InputHydroTelegram = ({postCode})=>{
       // }
       // newText = telegram.slice(0,startSection6+14)+`${num}${val}`+telegram.slice(startSection6+18)
       // setTelegram(newText) //+`>>${e.target.value}<<`)
-    } //else{
+      //}else{
       // avgWc[i]=0
       // newText = telegram.slice(0,startS3+14)+`0000`+telegram.slice(startS3+18)
       // setTelegram(newText)
     // }
-    setTelegram(newText)
-  }
+    // setTelegram(newText)
+  // }
   // const waterConsumptionS3Jsx = (id, wc)=>{
   //   return <Form.Group className="mb-3" >
   //     <Form.Control id={id} type="number" value={wc} onChange={waterConsumptionS3Changed} step="any" pattern="^[0-9]+([.,][0-9]+)?$"/>
@@ -1869,9 +1810,8 @@ export const InputHydroTelegram = ({postCode})=>{
     let newText = telegram.slice(0,startG7)+telegram.slice(startG7+6)
     setTelegram(newText)
   }
-  const maxLevelHourChanged=e=>{
-    
-  }
+  // const maxLevelHourChanged=e=>{
+  // }
   const additionSection31 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
     <Accordion.Item eventKey='46'>
       <Accordion.Header>Данные о средних и экстремальных значениях уровня воды (Раздел 3)</Accordion.Header>
