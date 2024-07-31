@@ -24,9 +24,9 @@ const periods = new Array(5).fill(null)
 const avgWl = new Array(5).fill(null)
 const maxWl = new Array(5).fill(null)
 const minWl = new Array(5).fill(null)
-const avgWc = new Array(5).fill(null)
-const maxWc = new Array(5).fill(null)
-const minWc = new Array(5).fill(null)
+// const avgWc = new Array(5).fill(null)
+// const maxWc = new Array(5).fill(null)
+// const minWc = new Array(5).fill(null)
 let showResponse = false
 
 export const InputHydroTelegram = ({postCode})=>{
@@ -497,7 +497,7 @@ export const InputHydroTelegram = ({postCode})=>{
     setActiveKeys([])
     setTelegram(`HHZZ ${hydroPostCode} ${currDay}${term}${contentIndex} 10000 20000=`)
   }
-  const section3submit=(j,period,avgWl,maxWl,minWl,avgWc,maxWc,minWc,maxLevelDate,maxLevelHour)=>{
+  const section3submit=(j,period,avgWl,maxWl,minWl,maxLevelDate,maxLevelHour)=>{
     let ret={}
     ret["period"+j]=period
     if(avgWl!==null)
@@ -506,12 +506,12 @@ export const InputHydroTelegram = ({postCode})=>{
       ret['maxWl'+j]=maxWl
     if(minWl!==null)
       ret['minWl'+j]=minWl
-    if(avgWc!==null)
-      ret['avgWc'+j]=avgWc
-    if(maxWc!==null)
-      ret['maxWc'+j]=maxWc
-    if(minWc!==null)
-      ret['minWc'+j]=minWc
+    // if(avgWc!==null)
+    //   ret['avgWc'+j]=avgWc
+    // if(maxWc!==null)
+    //   ret['maxWc'+j]=maxWc
+    // if(minWc!==null)
+    //   ret['minWc'+j]=minWc
     if(maxLevelDate!==null){
       ret['mlDate'+j]=maxLevelDate
       ret['mlHour+j']=maxLevelHour
@@ -627,7 +627,7 @@ export const InputHydroTelegram = ({postCode})=>{
       // alert(JSON.stringify(hydroData).replace(/\\/g,""))
     }
     if(periods[0]!==null){
-      let s3 = section3submit=(0,periods[0],avgWl[0],maxWl[0],minWl[0],avgWc[0],maxWc[0],minWc[0],maxLevelDate,maxLevelHour)
+      let s3 = section3submit(0,periods[0],avgWl[0],maxWl[0],minWl[0],maxLevelDate,maxLevelHour)
       hydroData = {...hydroData, ...s3}
     }
     setHydroData(hydroData)
@@ -847,7 +847,7 @@ export const InputHydroTelegram = ({postCode})=>{
     setMaxDepth(null)
     let startSection6 = telegram.indexOf(' 966')
     let newText = telegram
-    if(waterLevel21===null){
+    if(waterLevel22===null && waterLevel21===null && periods[0]===null){
       setContentIndex(1)
       newText = telegram.slice(0,15)+'1'+telegram.slice(16)
     }
@@ -974,7 +974,7 @@ export const InputHydroTelegram = ({postCode})=>{
     let startSection2 = telegram.indexOf(' 922')
     let stopSection2 = telegram.indexOf(' 966')>=0? telegram.indexOf(' 966') : telegram.length-1
     let newText = telegram
-    if(wcWaterLevel===null){
+    if(wcWaterLevel===null && periods[0]===null && waterLevel22===null){
       setContentIndex(1)
       newText = telegram.slice(0,15)+'1'+telegram.slice(16)
     }
@@ -993,6 +993,10 @@ export const InputHydroTelegram = ({postCode})=>{
   const hideSection22=()=>{
     setWaterLevel22(null)
     setWLDeviation22(null)
+    if(wcWaterLevel===null && waterLevel21===null && periods[0]===null){
+      setContentIndex(1)
+      newText = telegram.slice(0,15)+'1'+telegram.slice(16)
+    }
     let startS22=startSection22()
     let stopSection22 = telegram.indexOf(' 966')>=0? telegram.indexOf(' 966') : telegram.length-1
     let newText = telegram.slice(0,startS22)+telegram.slice(stopSection22)
@@ -1660,6 +1664,7 @@ export const InputHydroTelegram = ({postCode})=>{
   </Accordion>
   //additionsection3
   const showSection31=()=>{
+    setContentIndex(2)
     let startS3 = telegram.indexOf(' 966')>0? telegram.indexOf(' 966') : telegram.length-1
     periods[0] = '01'
     let newText = telegram.slice(0,startS3)+` 93301`+telegram.slice(startS3)
@@ -1667,6 +1672,10 @@ export const InputHydroTelegram = ({postCode})=>{
   }
   const hideSection31=()=>{
     periods[0]=null
+    if(wcWaterLevel===null && waterLevel21===null && waterLevel22===null){
+      setContentIndex(1)
+      newText = telegram.slice(0,15)+'1'+telegram.slice(16)
+    }
     let startS3 = telegram.indexOf(' 933')
     let startS6 = telegram.indexOf(' 966')
     let newText = telegram.slice(0, startS3)+(startS6>0? telegram.slice(startS6):'=')
@@ -1774,81 +1783,82 @@ export const InputHydroTelegram = ({postCode})=>{
       let num = exp >=0? exp+1 : 0
       let pointPos = e.target.value.lastIndexOf('.')<0? 0:e.target.value.lastIndexOf('.')
       let val = wc<1.? e.target.value.slice(pointPos+1,pointPos+4).padEnd(3,'0') : Number(e.target.value.replace('.','')).toString().padEnd(3,'0').slice(0,3)
-      if(avgMaxMin==='1'){
-        avgWc[i]=parseFloat(wc)
-        let startG4 = telegram.indexOf(' 4',startS3)
-        newText = telegram.slice(0,startG4+2)+`${num}${val}`+telegram.slice(startG4+6)
-      }else if(avgMaxMin==='2'){
-        maxWc[i]=wc
-        let startG5 = telegram.indexOf(' 5',startS3)
-        newText = telegram.slice(0,startG5+2)+`${num}${val}`+telegram.slice(startG5+6)
-      } else {
-        minWc[i]=wc
-        let startG6 = telegram.indexOf(' 6',startS3)
-        newText = telegram.slice(0,startG6+2)+`${num}${val}`+telegram.slice(startG6+6)
-      }
+      // if(avgMaxMin==='1'){
+      //   avgWc[i]=parseFloat(wc)
+      //   let startG4 = telegram.indexOf(' 4',startS3)
+      //   newText = telegram.slice(0,startG4+2)+`${num}${val}`+telegram.slice(startG4+6)
+      // }else if(avgMaxMin==='2'){
+      //   maxWc[i]=wc
+      //   let startG5 = telegram.indexOf(' 5',startS3)
+      //   newText = telegram.slice(0,startG5+2)+`${num}${val}`+telegram.slice(startG5+6)
+      // } else {
+      //   minWc[i]=wc
+      //   let startG6 = telegram.indexOf(' 6',startS3)
+      //   newText = telegram.slice(0,startG6+2)+`${num}${val}`+telegram.slice(startG6+6)
+      // }
       // newText = telegram.slice(0,startSection6+14)+`${num}${val}`+telegram.slice(startSection6+18)
-      setTelegram(newText) //+`>>${e.target.value}<<`)
-    }else{
-      avgWc[i]=0
+      // setTelegram(newText) //+`>>${e.target.value}<<`)
+    } //else{
+      // avgWc[i]=0
       // newText = telegram.slice(0,startS3+14)+`0000`+telegram.slice(startS3+18)
-      setTelegram(newText)
-    }
-  }
-  const waterConsumptionS3Jsx = (id, wc)=>{
-    return <Form.Group className="mb-3" >
-      <Form.Control id={id} type="number" value={wc} onChange={waterConsumptionS3Changed} step="any" pattern="^[0-9]+([.,][0-9]+)?$"/>
-    </Form.Group>
-  }
-  const showSection31g4=()=>{
-    let startS3 = telegram.indexOf(' 933')
-    avgWc[0]=0
-    let startG4 = startS3+(telegram[startS3+7]==='1'? 12:6)+(telegram.indexOf(' 2',startS3)>0? 6:0)+(telegram.indexOf(' 3',startS3)>0? 6:0)
-    let newText = telegram.slice(0,startG4)+' 40000'+telegram.slice(startG4)
+      // setTelegram(newText)
+    // }
     setTelegram(newText)
   }
-  const hideSection31g4=()=>{
-    let startS3 = telegram.indexOf(' 933')
-    let startG4 = telegram.indexOf(' 4',startS3)
-    avgWc[0]=null
-    let newText = telegram.slice(0,startG4)+telegram.slice(startG4+6)
-    setTelegram(newText)
-  }
-  const showSection31g5=()=>{
-    let startS3 = telegram.indexOf(' 933')
-    maxWc[0]=0
-    let startG5 = startS3+(telegram[startS3+7]==='1'? 12:6)+
-      (telegram.indexOf(' 2',startS3)>0? 6:0)+
-      (telegram.indexOf(' 3',startS3)>0? 6:0)+
-      (telegram.indexOf(' 4',startS3)>0? 6:0)
-    let newText = telegram.slice(0,startG5)+' 50000'+telegram.slice(startG5)
-    setTelegram(newText)
-  }
-  const hideSection31g5=()=>{
-    let startS3 = telegram.indexOf(' 933')
-    let startG5 = telegram.indexOf(' 5',startS3)
-    maxWc[0]=null
-    let newText = telegram.slice(0,startG5)+telegram.slice(startG5+6)
-    setTelegram(newText)
-  }
-  const showSection31g6=()=>{
-    let startS3 = telegram.indexOf(' 933')
-    minWc[0]=0
-    let startG6 = startS3+(telegram[startS3+7]==='1'? 12:6)+
-      (telegram.indexOf(' 2',startS3)>0? 6:0)+
-      (telegram.indexOf(' 3',startS3)>0? 6:0)+
-      (telegram.indexOf(' 4',startS3)>0? 6:0)+
-      (telegram.indexOf(' 5',startS3)>0? 6:0)
-    let newText = telegram.slice(0,startG6)+' 60000'+telegram.slice(startG6)
-    setTelegram(newText)
-  }
-  const hideSection31g6=()=>{
-    let startS3 = telegram.indexOf(' 933')
-    let startG6 = telegram.indexOf(' 6',startS3)
-    minWc[0]=null
-    let newText = telegram.slice(0,startG6)+telegram.slice(startG6+6)
-    setTelegram(newText)
-  }
+  // const waterConsumptionS3Jsx = (id, wc)=>{
+  //   return <Form.Group className="mb-3" >
+  //     <Form.Control id={id} type="number" value={wc} onChange={waterConsumptionS3Changed} step="any" pattern="^[0-9]+([.,][0-9]+)?$"/>
+  //   </Form.Group>
+  // }
+  // const showSection31g4=()=>{
+  //   let startS3 = telegram.indexOf(' 933')
+  //   avgWc[0]=0
+  //   let startG4 = startS3+(telegram[startS3+7]==='1'? 12:6)+(telegram.indexOf(' 2',startS3)>0? 6:0)+(telegram.indexOf(' 3',startS3)>0? 6:0)
+  //   let newText = telegram.slice(0,startG4)+' 40000'+telegram.slice(startG4)
+  //   setTelegram(newText)
+  // }
+  // const hideSection31g4=()=>{
+  //   let startS3 = telegram.indexOf(' 933')
+  //   let startG4 = telegram.indexOf(' 4',startS3)
+  //   avgWc[0]=null
+  //   let newText = telegram.slice(0,startG4)+telegram.slice(startG4+6)
+  //   setTelegram(newText)
+  // }
+  // const showSection31g5=()=>{
+  //   let startS3 = telegram.indexOf(' 933')
+  //   maxWc[0]=0
+  //   let startG5 = startS3+(telegram[startS3+7]==='1'? 12:6)+
+  //     (telegram.indexOf(' 2',startS3)>0? 6:0)+
+  //     (telegram.indexOf(' 3',startS3)>0? 6:0)+
+  //     (telegram.indexOf(' 4',startS3)>0? 6:0)
+  //   let newText = telegram.slice(0,startG5)+' 50000'+telegram.slice(startG5)
+  //   setTelegram(newText)
+  // }
+  // const hideSection31g5=()=>{
+  //   let startS3 = telegram.indexOf(' 933')
+  //   let startG5 = telegram.indexOf(' 5',startS3)
+  //   maxWc[0]=null
+  //   let newText = telegram.slice(0,startG5)+telegram.slice(startG5+6)
+  //   setTelegram(newText)
+  // }
+  // const showSection31g6=()=>{
+  //   let startS3 = telegram.indexOf(' 933')
+  //   minWc[0]=0
+  //   let startG6 = startS3+(telegram[startS3+7]==='1'? 12:6)+
+  //     (telegram.indexOf(' 2',startS3)>0? 6:0)+
+  //     (telegram.indexOf(' 3',startS3)>0? 6:0)+
+  //     (telegram.indexOf(' 4',startS3)>0? 6:0)+
+  //     (telegram.indexOf(' 5',startS3)>0? 6:0)
+  //   let newText = telegram.slice(0,startG6)+' 60000'+telegram.slice(startG6)
+  //   setTelegram(newText)
+  // }
+  // const hideSection31g6=()=>{
+  //   let startS3 = telegram.indexOf(' 933')
+  //   let startG6 = telegram.indexOf(' 6',startS3)
+  //   minWc[0]=null
+  //   let newText = telegram.slice(0,startG6)+telegram.slice(startG6+6)
+  //   setTelegram(newText)
+  // }
   const showMaxLevelMoment=()=>{
     let startG7 = telegram.indexOf(' 966')>0? telegram.indexOf(' 966') : telegram.length-1
     let newText = telegram.slice(0,startG7)+` 7${currDay}09`+telegram.slice(startG7)
@@ -1864,7 +1874,7 @@ export const InputHydroTelegram = ({postCode})=>{
   }
   const additionSection31 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
     <Accordion.Item eventKey='46'>
-      <Accordion.Header>Данные о средних и экстремальных значениях уровня, расхода или притока воды (Раздел 3)</Accordion.Header>
+      <Accordion.Header>Данные о средних и экстремальных значениях уровня воды (Раздел 3)</Accordion.Header>
       <Accordion.Body onEnter={showSection31} onExit={hideSection31}>
         {s3periodJsx('ex1',periodChange)}
         <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
@@ -1880,6 +1890,18 @@ export const InputHydroTelegram = ({postCode})=>{
             <Accordion.Header>Высший уровень воды за период в сантиметрах (Группа 2)</Accordion.Header>
             <Accordion.Body onEnter={showSection31g2} onExit={hideSection31g2}>
               {waterLevelS3Jsx('wl21',maxWl[0])}
+              <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+                <Accordion.Item eventKey="53">
+                  <Accordion.Header>Время прохождения наивысшего уровня воды (Группа 7)</Accordion.Header>
+                  <Accordion.Body onEnter={showMaxLevelMoment} onExited={hideMaxLevelMoment}>
+                    {dateObservationJsx('max-level-date',maxLevelDate)}
+                    <Form.Group className="mb-3" >
+                      <Form.Label>Час (время местное)</Form.Label>
+                      <Form.Control id='max-level-hour' type="number" value={maxLevelHour} onChange={wcHourChanged} min='0' max='23' pattern='[012][0-9]' />
+                    </Form.Group>
+                  </Accordion.Body>
+                </Accordion.Item>
+              </Accordion>
             </Accordion.Body>
           </Accordion.Item>
         </Accordion>
@@ -1891,7 +1913,7 @@ export const InputHydroTelegram = ({postCode})=>{
             </Accordion.Body>
           </Accordion.Item>
         </Accordion>
-        <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+        {/* <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
           <Accordion.Item eventKey='50'>
             <Accordion.Header>Средний расход воды за период (Группа 4)</Accordion.Header>
             <Accordion.Body onEnter={showSection31g4} onExit={hideSection31g4}>
@@ -1914,19 +1936,8 @@ export const InputHydroTelegram = ({postCode})=>{
               {waterConsumptionS3Jsx('wс31',minWc[0])}
             </Accordion.Body>
           </Accordion.Item>
-        </Accordion>
-        <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
-          <Accordion.Item eventKey="53">
-            <Accordion.Header>Время прохождения наивысшего уровня воды (Группа 7)</Accordion.Header>
-            <Accordion.Body onEnter={showMaxLevelMoment} onExited={hideMaxLevelMoment}>
-              {dateObservationJsx('max-level-date',maxLevelDate)}
-              <Form.Group className="mb-3" >
-                <Form.Label>Час (время местное)</Form.Label>
-                <Form.Control id='max-level-hour' type="number" value={maxLevelHour} onChange={wcHourChanged} min='0' max='23' pattern='[012][0-9]' />
-              </Form.Group>
-            </Accordion.Body>
-          </Accordion.Item>
-        </Accordion>
+        </Accordion> */}
+        
       </Accordion.Body>
     </Accordion.Item>
   </Accordion>
