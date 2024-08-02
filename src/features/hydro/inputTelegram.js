@@ -28,24 +28,30 @@ const minWl = new Array(5).fill(null)
 // const maxWc = new Array(5).fill(null)
 // const minWc = new Array(5).fill(null)
 let showResponse = false
+let today = new Date()
+let d = today.getUTCDate()
+let currDay = d>9 ? d : ('0'+d)
+const url = window.location.href
+const postCode = (url.indexOf('postCode')>-1)?url.slice(-5):'99999'
+// const [telegram, setTelegram] = useState(`HHZZ ${postCode} ${currDay}081 10000 20000=`)
 
-export const InputHydroTelegram = ({postCode})=>{
+export const InputHydroTelegram = ()=>{
   
   const [hydroData, setHydroData] = useState(null)
   const {
     data: response = {},
     isSuccess,
   } = useSaveHydroDataQuery(hydroData)
-  const hydroPostCode = postCode //'99999' //process.env.REACT_APP_CODE_83028
+  // const hydroPostCode = postCode //===null? '99999':postCode //'99999' //process.env.REACT_APP_CODE_83028
   
   const [term, setTerm] = useState('08')
-  const [contentIndex, setContentIndex] = useState('1')
-  let today = new Date()
+  // const [contentIndex, setContentIndex] = useState('1')
+  // let today = new Date()
   let currYear = today.getFullYear()
   let currMonth = today.getMonth()
   let lastDay = 32 - new Date(currYear, currMonth, 32).getDate()
-  let d = today.getUTCDate()
-  let currDay = d>9 ? d : ('0'+d)
+  // let d = today.getUTCDate()
+  // let currDay = d>9 ? d : ('0'+d)
   
   const [waterLevel, setWaterLevel] = useState(0)
   const [waterLevel21, setWaterLevel21] = useState(null)
@@ -59,7 +65,7 @@ export const InputHydroTelegram = ({postCode})=>{
   const [airTemperature, setAirTemperature] = useState(null)
   const [airTemperature21, setAirTemperature21] = useState(null)
   const [airTemperature22, setAirTemperature22] = useState(null)
-  const [telegram, setTelegram] = useState(`HHZZ ${hydroPostCode} ${currDay}${term}${contentIndex} 10000 20000=`)
+  const [telegram, setTelegram] = useState(`HHZZ ${postCode} ${currDay}081 10000 20000=`)
   
   const waterLevelJsx = (id, wl)=>{
     return (<Form.Group className="mb-3" >
@@ -425,19 +431,26 @@ export const InputHydroTelegram = ({postCode})=>{
   const [activeKeys, setActiveKeys] = useState(["0"]);
   const handleSelect = (eventKey) => setActiveKeys(eventKey);
   const myReset = ()=>{
+    // setTelegram('')
     setWaterLevel(0)
     setWaterLevelDeviation(0)
-    setContentIndex(1)
+    // setContentIndex(1)
     setActiveKeys([])
-    setTelegram(`HHZZ ${hydroPostCode} ${currDay}${term}${contentIndex} 10000 20000=`)
+    setTelegram(`HHZZ ${postCode} ${currDay}081 10000 20000=`)
+    // setTelegram(`HHZZ ${hydroPostCode} ${currDay}081 10000 20000=`) //${term}${contentIndex} 10000 20000=`)
   }
   const section3submit=(j,period,avgWl,maxWl,minWl,maxLevelDate,maxLevelHour)=>{
     let ret={}
     ret["period"+j]=period
     if(avgWl!==null)
       ret['avgWl'+j]=avgWl
-    if(maxWl!==null)
+    if(maxWl!==null){
       ret['maxWl'+j]=maxWl
+      if(maxLevelDate!==null){
+        ret['mlDate'+j]=maxLevelDate
+        ret['mlHour'+j]= (+maxLevelHour>9)? maxLevelHour : ('0'+maxLevelHour)
+      }
+    }
     if(minWl!==null)
       ret['minWl'+j]=minWl
     // if(avgWc!==null)
@@ -446,10 +459,11 @@ export const InputHydroTelegram = ({postCode})=>{
     //   ret['maxWc'+j]=maxWc
     // if(minWc!==null)
     //   ret['minWc'+j]=minWc
-    if(maxLevelDate!==null){
-      ret['mlDate'+j]=maxLevelDate
-      ret['mlHour+j']=maxLevelHour
-    }
+    // if(maxLevelDate!==null){
+    // if (maxWl!==null){
+    //   ret['mlDate'+j]=maxLevelDate
+    //   ret['mlHour+j']=maxLevelHour
+    // }
     return ret
   }
   const section2submit=(j,obsDate,wl,wld,waterTemp,airTemp,ipChar2,ipAddon2,wbChar2,wbAddon2,iceThickness,snowThickness,precipitation,pDuration)=>{
@@ -496,7 +510,7 @@ export const InputHydroTelegram = ({postCode})=>{
   const onSubmit = () => {
     let hydroData = {
       telegram,
-      hydroPostCode,
+      hydroPostCode: postCode,
       waterLevel,
       waterLevelDeviation
     }
@@ -755,7 +769,7 @@ export const InputHydroTelegram = ({postCode})=>{
   const [wcDate, setWcDate] = useState(today.toISOString().slice(0,10))
   const [obsDate21, setObsDate21]=useState(today.toISOString().slice(0,10))
   const [obsDate22, setObsDate22]=useState(today.toISOString().slice(0,10))
-  const [maxLevelDate, setMaxLevelDate] = useState(today.toISOString().slice(0,10))
+  const [maxLevelDate, setMaxLevelDate] = useState(null) //today.toISOString().slice(0,10))
   const [wcHour, setWcHour] = useState(9)
   const [maxLevelHour, setMaxLevelHour] = useState(9)
   const [wcWaterLevel, setWcWaterLevel] = useState(null)
@@ -763,7 +777,6 @@ export const InputHydroTelegram = ({postCode})=>{
   const [riverArea, setRiverArea] = useState(null)
   const [maxDepth, setMaxDepth] = useState(null)
   const showSection6=()=>{
-    setContentIndex(2)
     setWcWaterLevel(0)
     setWaterConsumption(0.0)
     setRiverArea(1)
@@ -782,7 +795,6 @@ export const InputHydroTelegram = ({postCode})=>{
     let startSection6 = telegram.indexOf(' 966')
     let newText = telegram
     if(waterLevel22===null && waterLevel21===null && periods[0]===null){
-      setContentIndex(1)
       newText = telegram.slice(0,15)+'1'+telegram.slice(16)
     }
     newText = newText.slice(0,startSection6)+'='
@@ -870,7 +882,6 @@ export const InputHydroTelegram = ({postCode})=>{
       let exp = ra.toExponential()
       exp = Number(exp.slice(exp.lastIndexOf('e')+1))
       let num = exp >=0? exp+1 : 0
-      // let pointPos = e.target.value.lastIndexOf('.')
       let pointPos = e.target.value.lastIndexOf('.')<0? 0:e.target.value.lastIndexOf('.')
       let val = ra<1.? e.target.value.slice(pointPos+1,pointPos+4).padEnd(3,'0') : Number(e.target.value.replace('.','')).toString().padEnd(3,'0').slice(0,3)
       newText = telegram.slice(0,startSection6+20)+`${num}${val}`+telegram.slice(startSection6+24)
@@ -892,7 +903,6 @@ export const InputHydroTelegram = ({postCode})=>{
   }
   // section2
   const showSection21=()=>{
-    setContentIndex(2)
     setWaterLevel21(0)
     setWLDeviation21(0.0)
     let startSection6 = telegram.indexOf(' 966')
@@ -909,7 +919,6 @@ export const InputHydroTelegram = ({postCode})=>{
     let stopSection2 = telegram.indexOf(' 966')>=0? telegram.indexOf(' 966') : telegram.length-1
     let newText = telegram
     if(wcWaterLevel===null && periods[0]===null && waterLevel22===null){
-      setContentIndex(1)
       newText = telegram.slice(0,15)+'1'+telegram.slice(16)
     }
     newText = newText.slice(0,startSection2)+newText.slice(stopSection2)
@@ -918,7 +927,6 @@ export const InputHydroTelegram = ({postCode})=>{
   const showSection22=()=>{
     setWaterLevel22(0)
     setWLDeviation22(0.0)
-    setContentIndex(2)
     let newText = telegram
     newText = telegram.slice(0,15)+'2'+telegram.slice(16)
     let startSection6 = telegram.indexOf(' 966')
@@ -932,7 +940,6 @@ export const InputHydroTelegram = ({postCode})=>{
     setWLDeviation22(null)
     let newText = telegram
     if(wcWaterLevel===null && waterLevel21===null && periods[0]===null){
-      setContentIndex(1)
       newText = telegram.slice(0,15)+'1'+telegram.slice(16)
     }
     let startS22=startSection22()
@@ -1008,7 +1015,6 @@ export const InputHydroTelegram = ({postCode})=>{
         startS2=telegram.indexOf(' 922')
         break;
       case 1:
-        // startS2=telegram.indexOf(' 922',telegram.indexOf(' 922')+1)
         startS2=startSection22() 
         break;
       default:
@@ -1116,7 +1122,6 @@ export const InputHydroTelegram = ({postCode})=>{
         startS2=telegram.indexOf(' 922')
         break;
       case 1:
-        // startS2=telegram.indexOf(' 922',telegram.indexOf(' 922')+1)
         startS2=startSection22()
         break;
       default:
@@ -1255,7 +1260,6 @@ export const InputHydroTelegram = ({postCode})=>{
   const [iceThickness22, setIceThickness22] = useState(null)
   const [snowThickness22, setSnowThickness22] = useState(null)
   const getStartS22G7=()=>{
-    // let startSection22 = telegram.indexOf(' 922',telegram.indexOf(' 922')+1)
     let startS22=startSection22() //
     let startS2G4 = telegram.indexOf(' 4',startS22)
     let startS2G5 = telegram.indexOf(' 5',startS22)
@@ -1603,7 +1607,7 @@ export const InputHydroTelegram = ({postCode})=>{
   //additionsection3
   const showSection31=()=>{
     let newText = telegram
-    setContentIndex(2)
+    // setContentIndex(2)
     newText = telegram.slice(0,15)+'2'+telegram.slice(16)
     let startS3 = telegram.indexOf(' 966')>0? telegram.indexOf(' 966') : telegram.length-1
     periods[0] = '01'
@@ -1614,13 +1618,14 @@ export const InputHydroTelegram = ({postCode})=>{
     periods[0]=null
     let newText = telegram
     if(wcWaterLevel===null && waterLevel21===null && waterLevel22===null){
-      setContentIndex(1)
+      // setContentIndex(1)
       newText = telegram.slice(0,15)+'1'+telegram.slice(16)
     }
     let startS3 = telegram.indexOf(' 933')
     let startS6 = telegram.indexOf(' 966')
     newText = newText.slice(0, startS3)+(startS6>0? newText.slice(startS6):'=')
     setTelegram(newText)
+    // alert(newText+'<<<<hs3<<<<'+`${startS3}<==>${startS6}`)
   }
   const periodChange=e=>{
     let p = +e.target.value>9? e.target.value : '0'+e.target.value
@@ -1694,6 +1699,7 @@ export const InputHydroTelegram = ({postCode})=>{
     maxWl[0]=null
     let newText = telegram.slice(0,startG2)+telegram.slice(startG2+6)
     setTelegram(newText)
+    // alert(newText+'===hg2====')
   }
   const showSection31g3=()=>{
     let startS3 = telegram.indexOf(' 933')
@@ -1801,17 +1807,23 @@ export const InputHydroTelegram = ({postCode})=>{
   //   setTelegram(newText)
   // }
   const showMaxLevelMoment=()=>{
+    setMaxLevelDate(today.toISOString().slice(0,10))
+    setMaxLevelHour(9)
     let startG7 = telegram.indexOf(' 966')>0? telegram.indexOf(' 966') : telegram.length-1
     let newText = telegram.slice(0,startG7)+` 7${currDay}09`+telegram.slice(startG7)
     setTelegram(newText)
   }
   const hideMaxLevelMoment=()=>{
+    setMaxLevelDate(null)
+    setMaxLevelHour(null)
     let startG7=telegram.indexOf(' 7',telegram.indexOf(' 933'))
-    let newText = telegram.slice(0,startG7)+telegram.slice(startG7+6)
+    let newText = telegram
+    if(startG7>-1){
+      newText = telegram.slice(0,startG7)+telegram.slice(startG7+6)
+      // alert(newText+'++++hg7+++++')
+    }
     setTelegram(newText)
   }
-  // const maxLevelHourChanged=e=>{
-  // }
   const additionSection31 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
     <Accordion.Item eventKey='46'>
       <Accordion.Header>Данные о средних и экстремальных значениях уровня воды (Раздел 3)</Accordion.Header>
@@ -1831,7 +1843,7 @@ export const InputHydroTelegram = ({postCode})=>{
             <Accordion.Body onEnter={showSection31g2} onExit={hideSection31g2}>
               {waterLevelS3Jsx('wl21',maxWl[0])}
               <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
-                <Accordion.Item eventKey="53">
+                <Accordion.Item eventKey="49">
                   <Accordion.Header>Время прохождения наивысшего уровня воды (Группа 7)</Accordion.Header>
                   <Accordion.Body onEnter={showMaxLevelMoment} onExited={hideMaxLevelMoment}>
                     {dateObservationJsx('max-level-date',maxLevelDate)}
@@ -1846,7 +1858,7 @@ export const InputHydroTelegram = ({postCode})=>{
           </Accordion.Item>
         </Accordion>
         <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
-          <Accordion.Item eventKey='49'>
+          <Accordion.Item eventKey='50'>
             <Accordion.Header>Низший уровень воды за период в сантиметрах (Группа 3)</Accordion.Header>
             <Accordion.Body onEnter={showSection31g3} onExit={hideSection31g3}>
               {waterLevelS3Jsx('wl31',minWl[0])}
@@ -2047,10 +2059,12 @@ export const InputHydroTelegram = ({postCode})=>{
     let csdnSection1 = response.response.response.failed_count==='0'? 'В ЦСДН сохранены данные.':'Ошибка при сохранении данных.'
     // let csdnSection6 = !!(response.response.response_water_consumption && (response.response.response_water_consumption.failed_count==='0'))?'В ЦСДН сохранены данные раздела 6':'Ошибка при сохранении данных раздела 6'
     let localDB = response.response.message ? `${response.response.message}` : ''
+    // setTelegram(`HHZZ ${postCode} ${currDay}081 10000 20000=`)
     alert(`${csdnSection1} ${localDB}`)
+    
     showResponse = false
-  }else{
-    console.log("Не удалось сохранить данные")
+  // }else{
+    // console.log("Не удалось сохранить данные")
     // alert("Не удалось сохранить данные")
     // showResponse = false
   }

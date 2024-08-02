@@ -5,8 +5,8 @@ import Navbar from 'react-bootstrap/Navbar'
 import logo from './components/images/logo2015_2.png'
 
 function App() {
-  const url = window.location.href
-  const postCode = (url.indexOf('postCode')>-1)?url.slice(-5):'99999'
+  // const url = window.location.href
+  // const postCode = (url.indexOf('postCode')>-1)?url.slice(-5):'99999'
   return (
     <div >
       <Navbar bg="primary" data-bs-theme="dark" expand="lg">
@@ -22,7 +22,7 @@ function App() {
           </Navbar.Brand>
         </Container>
       </Navbar>
-      <InputHydroTelegram postCode={postCode} />
+      <InputHydroTelegram  />
     </div>
   );
 }
