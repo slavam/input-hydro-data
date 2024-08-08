@@ -254,7 +254,7 @@ export const InputHydroTelegram = ()=>{
   const newG5 = k=>{
     let start151 = telegram.indexOf(' 5')
     let allG5 = combineG5()
-    return telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length+k*6)
+    return start151>0? telegram.slice(0,start151)+allG5+telegram.slice(start151+allG5.length+k*6) : telegram
   }
   const showGroup15=()=>{
     ipChar[0] = 11
@@ -270,8 +270,11 @@ export const InputHydroTelegram = ()=>{
   }
   const hideGroup15=()=>{
     ipChar[0] = ipAddon[0] = null
-    let newText = telegram.replace(/ 5..../g,'')
-    setTelegram(newText)
+    if(telegram.indexOf(' 5')>0){
+      let newText = telegram.replace(/ 5..../g,'')
+      setTelegram(newText)
+    }
+    filterKeys(2,6)
   }
   const group5Jsx=(id,ipChange,iiChange)=>{
     return(<Form.Group className="mb-3" >
@@ -305,6 +308,7 @@ export const InputHydroTelegram = ()=>{
   const hideGroup152=()=>{
     ipChar[1] = ipAddon[1] = null
     setTelegram(newG5(1))
+    filterKeys(3,6)
   }
   const showGroup153=()=>{
     ipChar[2] = 11
@@ -314,6 +318,7 @@ export const InputHydroTelegram = ()=>{
   const hideGroup153=()=>{
     ipChar[2] = ipAddon[2] = null
     setTelegram(newG5(1))
+    filterKeys(4,6)
   }
   const showGroup154=()=>{
     ipChar[3] = 11
@@ -323,6 +328,7 @@ export const InputHydroTelegram = ()=>{
   const hideGroup154=()=>{
     ipChar[3] = ipAddon[3] = null
     setTelegram(newG5(1))
+    filterKeys(5,6)
   }
   const showGroup155=()=>{
     ipChar[4] = 11
@@ -344,7 +350,7 @@ export const InputHydroTelegram = ()=>{
   const changeG6=(k)=>{
     let allG6 = combineG6()
     let start16 = telegram.indexOf(' 6')
-    return telegram.slice(0,start16)+allG6+telegram.slice(start16+allG6.length+k*6)
+    return start16>0? telegram.slice(0,start16)+allG6+telegram.slice(start16+allG6.length+k*6) : telegram
   }
   const showGroup16=()=>{
     wbChar[0] = '00'
@@ -360,8 +366,11 @@ export const InputHydroTelegram = ()=>{
   }
   const hideGroup16=()=>{
     wbChar[0] = wbAddon[0] = null
-    let newText = telegram.replace(/ 6..../g,'')
-    setTelegram(newText)
+    if(telegram.indexOf(' 6')>0){
+      let newText = telegram.replace(/ 6..../g,'')
+      setTelegram(newText)
+    }
+    filterKeys(7,11)
   }
   const group6Jsx = (id,wbChange,wbiChange)=>{
     return(<Form.Group className="mb-3" >
@@ -394,6 +403,7 @@ export const InputHydroTelegram = ()=>{
   const hideGroup162=()=>{
     wbChar[1] = wbAddon[1] = null
     setTelegram(changeG6(1))
+    filterKeys(8,11)
   }
   const showGroup163=()=>{
     wbChar[2]=wbAddon[2] = '00'
@@ -402,6 +412,7 @@ export const InputHydroTelegram = ()=>{
   const hideGroup163=()=>{
     wbChar[2]=wbAddon[2] = null
     setTelegram(changeG6(1)) //'hide'))
+    filterKeys(9,11)
   }
   const showGroup164=()=>{
     wbChar[3]=wbAddon[3]='00'
@@ -410,6 +421,7 @@ export const InputHydroTelegram = ()=>{
   const hideGroup164=()=>{
     wbChar[3]=ipAddon[3]= null
     setTelegram(changeG6(1)) //'hide'))
+    filterKeys(10,11)
   }
   const showGroup165=()=>{
     wbChar[4]=wbAddon[4] = '00'
@@ -905,24 +917,27 @@ export const InputHydroTelegram = ()=>{
   const showSection21=()=>{
     setWaterLevel21(0)
     setWLDeviation21(0.0)
-    let startSection6 = telegram.indexOf(' 966')
-    let startSection21 = startSection6>=0? startSection6 : telegram.length-1
+    let startS3 = telegram.indexOf(' 933')
+    let startS6 = telegram.indexOf(' 966')
+    let startS2 = startS3>0? startS3: (startS6>0? startS6 : telegram.length-1)
     let newText = telegram.slice(0,15)+'2'+telegram.slice(16)
     let obsDay = obsDate21.slice(8,10)
-    newText =newText.slice(0,startSection21)+` 922${obsDay} 10000 20000`+newText.slice(startSection21)
+    newText =newText.slice(0,startS2)+` 922${obsDay} 10000 20000`+newText.slice(startS2)
     setTelegram(newText)
   }
   const hideSection21=()=>{
     setWaterLevel21(null)
     setWLDeviation21(null)
-    let startSection2 = telegram.indexOf(' 922')
-    let stopSection2 = telegram.indexOf(' 966')>=0? telegram.indexOf(' 966') : telegram.length-1
+    let startS2 = telegram.indexOf(' 922')
+    let startS3 = telegram.indexOf(' 933')
+    let stopS2 = startS3>0? startS3: (telegram.indexOf(' 966')>=0? telegram.indexOf(' 966') : telegram.length-1)
     let newText = telegram
     if(wcWaterLevel===null && periods[0]===null && waterLevel22===null){
       newText = telegram.slice(0,15)+'1'+telegram.slice(16)
     }
-    newText = newText.slice(0,startSection2)+newText.slice(stopSection2)
+    newText = newText.slice(0,startS2)+newText.slice(stopS2)
     setTelegram(newText)
+    filterKeys(16,28)
   }
   const showSection22=()=>{
     setWaterLevel22(0)
@@ -946,6 +961,7 @@ export const InputHydroTelegram = ()=>{
     let stopSection22 = telegram.indexOf(' 966')>=0? telegram.indexOf(' 966') : telegram.length-1
     newText = newText.slice(0,startS22)+newText.slice(stopSection22)
     setTelegram(newText)
+    filterKeys(31,43)
   }
   const showGroup241=()=>{
     setWaterTemperature21(0)
@@ -959,7 +975,7 @@ export const InputHydroTelegram = ()=>{
     setWaterTemperature21(null)
     setAirTemperature21(null)
     let startSection2 = telegram.indexOf(' 922')
-    let newText = telegram.slice(0,startSection2+18)+telegram.slice(startSection2+24)
+    let newText = startSection2>0? telegram.slice(0,startSection2+18)+telegram.slice(startSection2+24):telegram
     setTelegram(newText)
   }
   const showAirTemperature21=()=>{
@@ -1022,7 +1038,7 @@ export const InputHydroTelegram = ()=>{
     }
     let startS2G5 = startS2+(telegram[startS2+19]==='4'? 18+6 : 18)
     let allG5 = combineS2G5(j)
-    return telegram.slice(0,startS2G5)+allG5+telegram.slice(startS2G5+allG5.length+k*6)
+    return startS2>0? telegram.slice(0,startS2G5)+allG5+telegram.slice(startS2G5+allG5.length+k*6): telegram
   }
   const showGroupS2G5=(j,i)=>{
     ipCharS2[j][i] = 11
@@ -1066,30 +1082,38 @@ export const InputHydroTelegram = ()=>{
   }
   const hideGroupS21G51=()=>{
     hideGroupS2G5(0,0)
+    filterKeys(19,23)
   }
   const hideGroupS21G52=()=>{
     hideGroupS2G5(0,1)
+    filterKeys(20,23)
   }
   const hideGroupS21G53=()=>{
     hideGroupS2G5(0,2)
+    filterKeys(21,23)
   }
   const hideGroupS21G54=()=>{
     hideGroupS2G5(0,3)
+    filterKeys(22,23)
   }
   const hideGroupS21G55=()=>{
     hideGroupS2G5(0,4)
   }
   const hideGroupS22G51=()=>{
     hideGroupS2G5(1,0)
+    filterKeys(34,38)
   }
   const hideGroupS22G52=()=>{
     hideGroupS2G5(1,1)
+    filterKeys(35,38)
   }
   const hideGroupS22G53=()=>{
     hideGroupS2G5(1,2)
+    filterKeys(36,38)
   }
   const hideGroupS22G54=()=>{
     hideGroupS2G5(1,3)
+    filterKeys(37,38)
   }
   const hideGroupS22G55=()=>{
     hideGroupS2G5(1,4)
@@ -1129,7 +1153,7 @@ export const InputHydroTelegram = ()=>{
     }
     let startS2G6 = telegram.indexOf(" 6", startS2)
     let allG6 = combineS2G6(j)
-    return telegram.slice(0,startS2G6)+allG6+telegram.slice(startS2G6+allG6.length+k*6)
+    return startS2>0? telegram.slice(0,startS2G6)+allG6+telegram.slice(startS2G6+allG6.length+k*6): telegram
   }
   const wb2CodeChanged = e=>{
     let wb = +e.target.value<10? '0'+e.target.value : e.target.value
@@ -1186,30 +1210,38 @@ export const InputHydroTelegram = ()=>{
   }
   const hideGroupS21G61=()=>{
     hideGroupS2G6(0,0)
+    filterKeys(24,28)
   }
   const hideGroupS21G62=()=>{
     hideGroupS2G6(0,1)
+    filterKeys(25,28)
   }
   const hideGroupS21G63=()=>{
     hideGroupS2G6(0,2)
+    filterKeys(26,28)
   }
   const hideGroupS21G64=()=>{
     hideGroupS2G6(0,3)
+    filterKeys(27,28)
   }
   const hideGroupS21G65=()=>{
     hideGroupS2G6(0,4)
   }
   const hideGroupS22G61=()=>{
     hideGroupS2G6(1,0)
+    filterKeys(39,43)
   }
   const hideGroupS22G62=()=>{
     hideGroupS2G6(1,1)
+    filterKeys(40,43)
   }
   const hideGroupS22G63=()=>{
     hideGroupS2G6(1,2)
+    filterKeys(41,43)
   }
   const hideGroupS22G64=()=>{
     hideGroupS2G6(1,3)
+    filterKeys(42,43)
   }
   const hideGroupS22G65=()=>{
     hideGroupS2G6(1,4)
@@ -1260,7 +1292,7 @@ export const InputHydroTelegram = ()=>{
   const [iceThickness22, setIceThickness22] = useState(null)
   const [snowThickness22, setSnowThickness22] = useState(null)
   const getStartS22G7=()=>{
-    let startS22=startSection22() //
+    let startS22=startSection22()
     let startS2G4 = telegram.indexOf(' 4',startS22)
     let startS2G5 = telegram.indexOf(' 5',startS22)
     let startS2G6 = telegram.indexOf(' 6',startS22)
@@ -1386,7 +1418,10 @@ export const InputHydroTelegram = ()=>{
       </Accordion.Body>
     </Accordion.Item>
   </Accordion>
-
+  const filterKeys = (from,to)=>{
+    let res=activeKeys.filter(k=> +k<=from || +k>to)
+    setActiveKeys(res)
+  }
   const additionSection22 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
     <Accordion.Item eventKey="31">
       <Accordion.Header>Данные за прошедшие сутки (Раздел 2 экземпляр 2)</Accordion.Header>
@@ -1420,17 +1455,17 @@ export const InputHydroTelegram = ()=>{
                   <Accordion.Header>Экземпляр 2</Accordion.Header>
                   <Accordion.Body onEnter={showGroupS22G52} onExited={hideGroupS22G52}>
                     {group5Jsx('g2252',ip2CodeChanged,ii2CodeChanged)}
-                    <Accordion>
+                    <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                       <Accordion.Item eventKey="36">
                         <Accordion.Header>Экземпляр 3</Accordion.Header>
                         <Accordion.Body onEnter={showGroupS22G53} onExited={hideGroupS22G53}>
                           {group5Jsx('g2253',ip2CodeChanged,ii2CodeChanged)}
-                          <Accordion>
+                          <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                             <Accordion.Item eventKey="37">
                               <Accordion.Header>Экземпляр 4</Accordion.Header>
                               <Accordion.Body onEnter={showGroupS22G54} onExited={hideGroupS22G54}>
                                 {group5Jsx('g2254',ip2CodeChanged,ii2CodeChanged)}
-                                <Accordion>
+                                <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                                   <Accordion.Item eventKey="38">
                                     <Accordion.Header>Экземпляр 5</Accordion.Header>
                                     <Accordion.Body onEnter={showGroupS22G55} onExited={hideGroupS22G55}>
@@ -1455,22 +1490,22 @@ export const InputHydroTelegram = ()=>{
             <Accordion.Header>Состояние водного объекта (Группа 6)</Accordion.Header>
             <Accordion.Body onEnter={showGroupS22G61} onExited={hideGroupS22G61}>
               {group6Jsx('s22g61',wb2CodeChanged,wbi2CodeChanged)}
-              <Accordion>
+              <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                 <Accordion.Item eventKey="40">
                   <Accordion.Header>Экземпляр 2</Accordion.Header>
                   <Accordion.Body onEnter={showGroupS22G62} onExited={hideGroupS22G62}>
                     {group6Jsx('s22g62',wb2CodeChanged,wbi2CodeChanged)}
-                    <Accordion>
+                    <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                       <Accordion.Item eventKey="41">
                         <Accordion.Header>Экземпляр 3</Accordion.Header>
                         <Accordion.Body onEnter={showGroupS22G63} onExited={hideGroupS22G63}>
                           {group6Jsx('s22g63',wb2CodeChanged,wbi2CodeChanged)}
-                          <Accordion>
+                          <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                             <Accordion.Item eventKey="42">
                               <Accordion.Header>Экземпляр 4</Accordion.Header>
                               <Accordion.Body onEnter={showGroupS22G64} onExited={hideGroupS22G64}>
                                 {group6Jsx('s22g64',wb2CodeChanged,wbi2CodeChanged)}
-                                <Accordion>
+                                <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                                   <Accordion.Item eventKey="43">
                                     <Accordion.Header>Экземпляр 5</Accordion.Header>
                                     <Accordion.Body onEnter={showGroupS22G65} onExited={hideGroupS22G65}>
@@ -1528,17 +1563,17 @@ export const InputHydroTelegram = ()=>{
                   <Accordion.Header>Экземпляр 2</Accordion.Header>
                   <Accordion.Body onEnter={showGroupS21G52} onExited={hideGroupS21G52}>
                     {group5Jsx('g2152',ip2CodeChanged,ii2CodeChanged)}
-                    <Accordion>
+                    <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                       <Accordion.Item eventKey="21">
                         <Accordion.Header>Экземпляр 3</Accordion.Header>
                         <Accordion.Body onEnter={showGroupS21G53} onExited={hideGroupS21G53}>
                           {group5Jsx('g2153',ip2CodeChanged,ii2CodeChanged)}
-                          <Accordion>
+                          <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                             <Accordion.Item eventKey="22">
                               <Accordion.Header>Экземпляр 4</Accordion.Header>
                               <Accordion.Body onEnter={showGroupS21G54} onExited={hideGroupS21G54}>
                                 {group5Jsx('g2154',ip2CodeChanged,ii2CodeChanged)}
-                                <Accordion>
+                                <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                                   <Accordion.Item eventKey="23">
                                     <Accordion.Header>Экземпляр 5</Accordion.Header>
                                     <Accordion.Body onEnter={showGroupS21G55} onExited={hideGroupS21G55}>
@@ -1563,22 +1598,22 @@ export const InputHydroTelegram = ()=>{
             <Accordion.Header>Состояние водного объекта (Группа 6)</Accordion.Header>
             <Accordion.Body onEnter={showGroupS21G61} onExited={hideGroupS21G61}>
               {group6Jsx('s21g61',wb2CodeChanged,wbi2CodeChanged)}
-              <Accordion>
+              <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                 <Accordion.Item eventKey="25">
                   <Accordion.Header>Экземпляр 2</Accordion.Header>
                   <Accordion.Body onEnter={showGroupS21G62} onExited={hideGroupS21G62}>
                     {group6Jsx('s21g62',wb2CodeChanged,wbi2CodeChanged)}
-                    <Accordion>
+                    <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                       <Accordion.Item eventKey="26">
                         <Accordion.Header>Экземпляр 3</Accordion.Header>
                         <Accordion.Body onEnter={showGroupS21G63} onExited={hideGroupS21G63}>
                           {group6Jsx('s21g63',wb2CodeChanged,wbi2CodeChanged)}
-                          <Accordion>
+                          <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                             <Accordion.Item eventKey="27">
                               <Accordion.Header>Экземпляр 4</Accordion.Header>
                               <Accordion.Body onEnter={showGroupS21G64} onExited={hideGroupS21G64}>
                                 {group6Jsx('s21g64',wb2CodeChanged,wbi2CodeChanged)}
-                                <Accordion>
+                                <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                                   <Accordion.Item eventKey="28">
                                     <Accordion.Header>Экземпляр 5</Accordion.Header>
                                     <Accordion.Body onEnter={showGroupS21G65} onExited={hideGroupS21G65}>
@@ -1607,7 +1642,6 @@ export const InputHydroTelegram = ()=>{
   //additionsection3
   const showSection31=()=>{
     let newText = telegram
-    // setContentIndex(2)
     newText = telegram.slice(0,15)+'2'+telegram.slice(16)
     let startS3 = telegram.indexOf(' 966')>0? telegram.indexOf(' 966') : telegram.length-1
     periods[0] = '01'
@@ -1618,14 +1652,15 @@ export const InputHydroTelegram = ()=>{
     periods[0]=null
     let newText = telegram
     if(wcWaterLevel===null && waterLevel21===null && waterLevel22===null){
-      // setContentIndex(1)
       newText = telegram.slice(0,15)+'1'+telegram.slice(16)
     }
     let startS3 = telegram.indexOf(' 933')
     let startS6 = telegram.indexOf(' 966')
-    newText = newText.slice(0, startS3)+(startS6>0? newText.slice(startS6):'=')
-    setTelegram(newText)
-    // alert(newText+'<<<<hs3<<<<'+`${startS3}<==>${startS6}`)
+    if(startS3>0){
+      newText = newText.slice(0, startS3)+(startS6>0? newText.slice(startS6):'=')
+      setTelegram(newText)
+    }
+    filterKeys(46,50)
   }
   const periodChange=e=>{
     let p = +e.target.value>9? e.target.value : '0'+e.target.value
@@ -1683,7 +1718,7 @@ export const InputHydroTelegram = ()=>{
   const hideSection31g1=()=>{
     let startS3 = telegram.indexOf(' 933')
     avgWl[0]=null
-    let newText = telegram.slice(0,startS3+6)+telegram.slice(startS3+12)
+    let newText = startS3>0? telegram.slice(0,startS3+6)+telegram.slice(startS3+12): telegram
     setTelegram(newText)
   }
   const showSection31g2=()=>{
@@ -1697,8 +1732,9 @@ export const InputHydroTelegram = ()=>{
     let startS3 = telegram.indexOf(' 933')
     let startG2 = telegram.indexOf(' 2',startS3)
     maxWl[0]=null
-    let newText = telegram.slice(0,startG2)+telegram.slice(startG2+6)
+    let newText = startS3>0? telegram.slice(0,startG2)+telegram.slice(startG2+6): telegram
     setTelegram(newText)
+    filterKeys(48,49)
     // alert(newText+'===hg2====')
   }
   const showSection31g3=()=>{
@@ -1712,7 +1748,7 @@ export const InputHydroTelegram = ()=>{
     let startS3 = telegram.indexOf(' 933')
     let startG3 = telegram.indexOf(' 3',startS3)
     minWl[0]=null
-    let newText = telegram.slice(0,startG3)+telegram.slice(startG3+6)
+    let newText = startS3>0? telegram.slice(0,startG3)+telegram.slice(startG3+6): telegram
     setTelegram(newText)
   }
 
@@ -1817,11 +1853,11 @@ export const InputHydroTelegram = ()=>{
     setMaxLevelDate(null)
     setMaxLevelHour(null)
     let startG7=telegram.indexOf(' 7',telegram.indexOf(' 933'))
-    let newText = telegram
-    if(startG7>-1){
-      newText = telegram.slice(0,startG7)+telegram.slice(startG7+6)
+    let newText = startG7>0? telegram.slice(0,startG7)+telegram.slice(startG7+6): telegram
+    // if(startG7>-1){
+    //   newText = telegram.slice(0,startG7)+telegram.slice(startG7+6)
       // alert(newText+'++++hg7+++++')
-    }
+    // }
     setTelegram(newText)
   }
   const additionSection31 = <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
@@ -1918,18 +1954,20 @@ export const InputHydroTelegram = ()=>{
       </Accordion.Body>
     </Accordion.Item>
   </Accordion>
-  const telegramCard = <Card
-    bg={'Primary'}
+  const telegramCard = <div class="fixed-top">
+  <Card
+    bg='info'
     text={'black'}
     style={{ position: 'fixed', width: '380px', top: '60px',left: '10px'}}
     className="mb-2">
     <Card.Body>
-      <Card.Title>Текст телеграммы</Card.Title>
+      {/* <Card.Title>Текст телеграммы</Card.Title> */}
       <Card.Text>
         {telegram}
       </Card.Text>
     </Card.Body>
   </Card>
+  </div>
   const myForm =
     <Form onSubmit={handleSubmit(onSubmit)} onReset={reset}> 
       <Form.Label>Раздел 1</Form.Label>
@@ -1961,17 +1999,17 @@ export const InputHydroTelegram = ()=>{
                 <Accordion.Header>Экземпляр 2</Accordion.Header>
                 <Accordion.Body onEnter={showGroup152} onExited={hideGroup152}>
                   {group5Jsx('g152',ip1CodeChanged,ii1CodeChanged)}
-                  <Accordion>
+                  <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                     <Accordion.Item eventKey="4">
                       <Accordion.Header>Экземпляр 3</Accordion.Header>
                       <Accordion.Body onEnter={showGroup153} onExited={hideGroup153}>
                         {group5Jsx('g153',ip1CodeChanged,ii1CodeChanged)}
-                        <Accordion>
+                        <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                           <Accordion.Item eventKey="5">
                             <Accordion.Header>Экземпляр 4</Accordion.Header>
                             <Accordion.Body onEnter={showGroup154} onExited={hideGroup154}>
                               {group5Jsx('g154',ip1CodeChanged,ii1CodeChanged)}
-                              <Accordion>
+                              <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                                 <Accordion.Item eventKey="6">
                                   <Accordion.Header>Экземпляр 5</Accordion.Header>
                                   <Accordion.Body onEnter={showGroup155} onExited={hideGroup155}>
@@ -1996,22 +2034,22 @@ export const InputHydroTelegram = ()=>{
           <Accordion.Header>Состояние водного объекта (Группа 6)</Accordion.Header>
           <Accordion.Body onEnter={showGroup16} onExited={hideGroup16}>
             {group6Jsx('g161',wb1CodeChanged,wbi1CodeChanged)}
-            <Accordion>
+            <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
               <Accordion.Item eventKey="8">
                 <Accordion.Header>Экземпляр 2</Accordion.Header>
                 <Accordion.Body onEnter={showGroup162} onExited={hideGroup162}>
                   {group6Jsx('g162',wb1CodeChanged,wbi1CodeChanged)}
-                  <Accordion>
+                  <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                     <Accordion.Item eventKey="9">
                       <Accordion.Header>Экземпляр 3</Accordion.Header>
                       <Accordion.Body onEnter={showGroup163} onExited={hideGroup163}>
                         {group6Jsx('g163',wb1CodeChanged,wbi1CodeChanged)}
-                        <Accordion>
+                        <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                           <Accordion.Item eventKey="10">
                             <Accordion.Header>Экземпляр 4</Accordion.Header>
                             <Accordion.Body onEnter={showGroup164} onExited={hideGroup164}>
                               {group6Jsx('g164',wb1CodeChanged,wbi1CodeChanged)}
-                              <Accordion>
+                              <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
                                 <Accordion.Item eventKey="11">
                                   <Accordion.Header>Экземпляр 5</Accordion.Header>
                                   <Accordion.Body onEnter={showGroup165} onExited={hideGroup165}>
@@ -2051,7 +2089,7 @@ export const InputHydroTelegram = ()=>{
 
   let content
   content = <div>
-    {/* {telegramCard} */}
+    {telegramCard}
     <p>{telegram}</p>
     {myForm}
   </div>
