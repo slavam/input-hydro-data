@@ -7,13 +7,13 @@ import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 
 function App() {
-  // const url = window.location.href
-  // const postCode = (url.indexOf('postCode')>-1)?url.slice(-5):'99999'
+  const url = window.location.href
+  const postCode = (url.indexOf('postCode')>-1)?url.slice(-5):'99999'
   const [show, setShow] = useState(false)
   const about = show? <Card className='text-center' bg='success' >
     <Card.Body>
       <Card.Title>УГМС ДНР</Card.Title>
-      <Card.Text>Дата сборки 2024-08-08</Card.Text>
+      <Card.Text>Дата сборки 2024-08-09</Card.Text>
       <Button onClick={()=>setShow(false)} variant='info'>Закрыть</Button>
     </Card.Body>
   </Card> : null
@@ -34,7 +34,7 @@ function App() {
         </Container>
       </Navbar>
       {about}
-      <InputHydroTelegram  />
+      <InputHydroTelegram  postCode={postCode}/>
     </div>
   );
 }

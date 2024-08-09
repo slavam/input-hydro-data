@@ -31,11 +31,11 @@ let showResponse = false
 let today = new Date()
 let d = today.getUTCDate()
 let currDay = d>9 ? d : ('0'+d)
-const url = window.location.href
-const postCode = (url.indexOf('postCode')>-1)?url.slice(-5):'99999'
+// const url = window.location.href
+// const postCode = (url.indexOf('postCode')>-1)?url.slice(-5):'99999'
 // const [telegram, setTelegram] = useState(`HHZZ ${postCode} ${currDay}081 10000 20000=`)
 
-export const InputHydroTelegram = ()=>{
+export const InputHydroTelegram = ({postCode})=>{
   
   const [hydroData, setHydroData] = useState(null)
   const {
