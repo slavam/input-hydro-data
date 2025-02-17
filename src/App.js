@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { InputHydroTelegram } from './features/hydro/inputTelegram'
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar'
@@ -7,13 +7,16 @@ import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 
 function App() {
+  useEffect(() => {
+    document.title = 'Гидротелеграммы'
+  }, [])
   const url = window.location.href
   const postCode = (url.indexOf('postCode')>-1)?url.slice(-5):'99999'
   const [show, setShow] = useState(false)
   const about = show? <Card className='text-center' bg='success' >
     <Card.Body>
       <Card.Title>УГМС ДНР</Card.Title>
-      <Card.Text>Дата сборки 2024-08-09</Card.Text>
+      <Card.Text>Дата сборки 2025-02-17</Card.Text>
       <Button onClick={()=>setShow(false)} variant='info'>Закрыть</Button>
     </Card.Body>
   </Card> : null
