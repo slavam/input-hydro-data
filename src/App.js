@@ -11,7 +11,10 @@ function App() {
     document.title = 'Гидротелеграммы'
   }, [])
   const url = window.location.href
-  const postCode = (url.indexOf('postCode')>-1)?url.slice(-5):'99999'
+  const positionPC = url.indexOf('postCode')
+  const postCode = (positionPC>-1)?url.slice(positionPC+9,positionPC+14):'99999'
+  const positionOD = url.indexOf('observDate')
+  const observDate = (positionOD>-1)?url.slice(positionOD+11,positionOD+21): (new Date()).toISOString().slice(0,10)
   const [show, setShow] = useState(false)
   const about = show? <Card className='text-center' bg='success' >
     <Card.Body>
@@ -32,12 +35,12 @@ function App() {
               alt="UGMS logo"
               onClick={()=>setShow(true)}
             />{'  '}
-            Гидрометцентр ДНР 
+            Гидрометцентр ДНР {observDate}
           </Navbar.Brand>
         </Container>
       </Navbar>
       {about}
-      <InputHydroTelegram  postCode={postCode}/>
+      <InputHydroTelegram  postCode={postCode} observDate={observDate} />
     </div>
   );
 }

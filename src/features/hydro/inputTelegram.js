@@ -28,15 +28,16 @@ const minWl = new Array(5).fill(null)
 // const maxWc = new Array(5).fill(null)
 // const minWc = new Array(5).fill(null)
 let showResponse = false
-let today = new Date()
-let d = today.getUTCDate()
-let currDay = d>9 ? d : ('0'+d)
+// let today = new Date()
+
+// let currDay = d>9 ? d : ('0'+d)
 // const url = window.location.href
 // const postCode = (url.indexOf('postCode')>-1)?url.slice(-5):'99999'
 // const [telegram, setTelegram] = useState(`HHZZ ${postCode} ${currDay}081 10000 20000=`)
 
-export const InputHydroTelegram = ({postCode})=>{
-  
+export const InputHydroTelegram = ({postCode, observDate})=>{
+  let d = +observDate.slice(-2) //today.getUTCDate()
+  let currDay = observDate.slice(-2)
   const [hydroData, setHydroData] = useState(null)
   const {
     data: response = {},
@@ -44,11 +45,11 @@ export const InputHydroTelegram = ({postCode})=>{
   } = useSaveHydroDataQuery(hydroData)
   // const hydroPostCode = postCode //===null? '99999':postCode //'99999' //process.env.REACT_APP_CODE_83028
   
-  const [term, setTerm] = useState('08')
+  // const [term, setTerm] = useState('08')
   // const [contentIndex, setContentIndex] = useState('1')
   // let today = new Date()
-  let currYear = today.getFullYear()
-  let currMonth = today.getMonth()
+  let currYear = +observDate.slice(0,4) //today.getFullYear()
+  let currMonth = +observDate.slice(5,7)-1 //today.getMonth()
   let lastDay = 32 - new Date(currYear, currMonth, 32).getDate()
   // let d = today.getUTCDate()
   // let currDay = d>9 ? d : ('0'+d)
@@ -217,7 +218,7 @@ export const InputHydroTelegram = ({postCode})=>{
   }
   const airTemperatureChanged=(e)=>{
     let at = e.target.value
-    if(/^-?[0-9]$|^-?[0-9]{2}$/.test(at)){
+    if(/^-?[1-9]$|^-?[0-9]{2}$|^-?[1-9][0-9]?$/.test(at)){
       at = +at>49 ? 49 : at
       at = +at<-49 ? -49 : at
     }else{
@@ -778,9 +779,9 @@ export const InputHydroTelegram = ({postCode})=>{
   // section 966 water consumption
   let wcMonth = (currMonth+1).toString().padStart(2,'0')
   let wcDay = currDay
-  const [wcDate, setWcDate] = useState(today.toISOString().slice(0,10))
-  const [obsDate21, setObsDate21]=useState(today.toISOString().slice(0,10))
-  const [obsDate22, setObsDate22]=useState(today.toISOString().slice(0,10))
+  const [wcDate, setWcDate] = useState(observDate) //today.toISOString().slice(0,10))
+  const [obsDate21, setObsDate21]=useState(observDate) //today.toISOString().slice(0,10))
+  const [obsDate22, setObsDate22]=useState(observDate) //today.toISOString().slice(0,10))
   const [maxLevelDate, setMaxLevelDate] = useState(null) //today.toISOString().slice(0,10))
   const [wcHour, setWcHour] = useState(9)
   const [maxLevelHour, setMaxLevelHour] = useState(9)
@@ -1843,7 +1844,7 @@ export const InputHydroTelegram = ({postCode})=>{
   //   setTelegram(newText)
   // }
   const showMaxLevelMoment=()=>{
-    setMaxLevelDate(today.toISOString().slice(0,10))
+    setMaxLevelDate(observDate) //today.toISOString().slice(0,10))
     setMaxLevelHour(9)
     let startG7 = telegram.indexOf(' 966')>0? telegram.indexOf(' 966') : telegram.length-1
     let newText = telegram.slice(0,startG7)+` 7${currDay}09`+telegram.slice(startG7)
