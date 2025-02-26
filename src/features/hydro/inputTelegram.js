@@ -213,7 +213,9 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
   }
   const airTemperatureJsx=(id,aTemp)=>{
     return(<Form.Group className="mb-3" >
-      <Form.Control id={id} type="number" value={aTemp} onChange={airTemperatureChanged} min="-49" max="49" pattern="^-?[0-9]$|^-?[0-9][0-9]$"/>
+      {/* <Form.Control id={id} type="number" value={aTemp} onChange={airTemperatureChanged} min="-49" max="49" pattern="^-?[0-9]$|^-?[0-9][0-9]$"/> */}
+      <label for="customRange3" class="form-label">Значение {aTemp} °С</label>
+      <input type="range" class="form-range" min="-25" max="25" step="1" id={id} onChange={airTemperatureChanged} value={aTemp} ></input>
     </Form.Group>)
   }
   const airTemperatureChanged=(e)=>{
@@ -591,6 +593,7 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
       let s3 = section3submit(0,periods[0],avgWl[0],maxWl[0],minWl[0],maxLevelDate,maxLevelHour)
       hydroData = {...hydroData, ...s3}
     }
+    console.log(hydroData)
     setHydroData(hydroData)
     showResponse = true
     myReset()
@@ -714,7 +717,10 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
   const precipitationJsx = (id,precipitation)=>{
     return(<Form.Group className="mb-3" >
       <Form.Label>Количество осадков (цифры кода)</Form.Label>
-      <Form.Control id={id} type="number" value={precipitation} onChange={precipitationChanged} min="0" max="999" pattern='[0-9]{1,3}'/>
+      <Form.Control id={id} type="text" value={precipitation} onChange={precipitationChanged}/>
+      {/* <Form.Control id={id} type="number" value={precipitation} onChange={precipitationChanged} min="0" max="999" pattern='[0-9]{1,3}'/>
+      <label for="customRange3" class="form-label">Код {precipitation}</label>
+      <input type="range" class="form-range" min="000" max="999" step="1" id={id} onChange={precipitationChanged} value={precipitation} ></input> */}
     </Form.Group>
     )
   }
@@ -724,29 +730,45 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
       <Form.Control id={id} type="number" value={durationPrecipitation} onChange={durationPrecipitationChanged} min="0" max="4"  pattern='^0?[0-4]$'/>
     </Form.Group>)
   }
+  // const precipitationChanged=e=>{
+  //   let p=e.target.value
+  //   let newText = telegram
+  //   if(/^[0-9]?$|^[0-9]{1,3}$/.test(p)){
+  //     setPrecipitation(p)
+  //     if(p==='')
+  //       p = 0
+  //     let start10 = getStartG10()
+  //     newText = telegram.slice(0,start10+2)+(+p).toString().padStart(3,'0')+telegram.slice(start10+5)    
+  //   }
+  //   setTelegram(newText)
+  // }
   const precipitationChanged=e=>{
     let p=e.target.value
-    if(!/^[0-9]{1,3}$/.test(p))
-      p=0
     let newText = telegram
-    switch (e.target.id) {
-      case 's1g0':
-        setPrecipitation(p)
-        let start10 = getStartG10()
-        newText = telegram.slice(0,start10+2)+(+p).toString().padStart(3,'0')+telegram.slice(start10+5)    
-        break;
-      case 's2g0':
-        setPrecipitation21(p)
-        let start20 = getStartG20()
-        newText = telegram.slice(0,start20+2)+(+p).toString().padStart(3,'0')+telegram.slice(start20+5)    
-        break
-      case 's22g0':
-        setPrecipitation22(p)
-        let start220 = getStartS22G0()
-        newText = telegram.slice(0,start220+2)+(+p).toString().padStart(3,'0')+telegram.slice(start220+5)    
-        break
-      default:
-        break;
+    // if(!/^[0-9]{1,3}$/.test(p))
+    if(/^[0-9]?$|^[0-9]{1,3}$/.test(p)){
+      switch (e.target.id) {
+        case 's1g0':
+          setPrecipitation(p)
+          if(p==='')p=0
+          let start10 = getStartG10()
+          newText = telegram.slice(0,start10+2)+(+p).toString().padStart(3,'0')+telegram.slice(start10+5)    
+          break;
+        case 's2g0':
+          setPrecipitation21(p)
+          if(p==='')p=0
+          let start20 = getStartG20()
+          newText = telegram.slice(0,start20+2)+(+p).toString().padStart(3,'0')+telegram.slice(start20+5)    
+          break
+        case 's22g0':
+          setPrecipitation22(p)
+          if(p==='')p=0
+          let start220 = getStartS22G0()
+          newText = telegram.slice(0,start220+2)+(+p).toString().padStart(3,'0')+telegram.slice(start220+5)    
+          break
+        default:
+          break;
+      }
     }
     setTelegram(newText)
   }

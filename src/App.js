@@ -19,7 +19,7 @@ function App() {
   const about = show? <Card className='text-center' bg='success' >
     <Card.Body>
       <Card.Title>УГМС ДНР</Card.Title>
-      <Card.Text>Дата сборки 2025-02-25</Card.Text>
+      <Card.Text>Дата сборки 2025-02-26</Card.Text>
       <Button onClick={()=>setShow(false)} variant='info'>Закрыть</Button>
     </Card.Body>
   </Card> : null
@@ -35,7 +35,7 @@ function App() {
               alt="UGMS logo"
               onClick={()=>setShow(true)}
             />{'  '}
-            Гидрометцентр ДНР {observDate}
+            Гидрометцентр ДНР
           </Navbar.Brand>
         </Container>
       </Navbar>
