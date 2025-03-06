@@ -127,33 +127,50 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
   const wlDeviationJsx=(id,wld)=>{
     return(<Form.Group className="mb-3" >
       <Form.Label>Изменение уровня воды в сантиметрах (Группа 2)</Form.Label>
-      <Form.Control id={id} type="number" value={wld} onChange={waterLevelDeviationChanged} min="-999" max="999" pattern="^-?[0-9]{1,3}$"/>
+      {/* <Form.Control id={id} type="number" value={wld} onChange={waterLevelDeviationChanged} min="-999" max="999" pattern="^-?[0-9]{1,3}$"/> */}
+      <Form.Control id={id} type="text" value={wld} onChange={waterLevelDeviationChanged}/>
     </Form.Group>)
   }
   const waterLevelDeviationChanged = (e)=>{
     let wld = e.target.value 
-    if(!/^-?[0-9]{1,3}$/.test(e.target.value))
-      wld = '0'
-    let g2 = +wld === 0 ? '0000' : (+wld>0 ? (wld.toString().padStart(3,'0')+'1') : (Math.abs(+wld).toString().padStart(3,'0')+'2'))
     let newText = telegram
-    switch (e.target.id) {
-      case "group12":
-        setWaterLevelDeviation(wld)
-        newText = telegram.slice(0,24)+`${g2}`+telegram.slice(28)   
-        break;
-      case 'group221':
-        setWLDeviation21(wld)
-        let startSection21 = telegram.indexOf(' 922')
-        newText = telegram.slice(0,startSection21+14)+g2+telegram.slice(startSection21+18) 
-        break
-      case 'group222':
-        setWLDeviation22(wld)
-        let startS22=startSection22()
-        newText = telegram.slice(0,startS22+14)+g2+telegram.slice(startS22+18) 
-        break
-      default:
-        break;
-    }
+    if(e.target.value === '-')
+      switch (e.target.id) {
+        case "group12":
+          setWaterLevelDeviation(wld)
+          break;
+        case 'group221':
+          setWLDeviation21(wld)
+          break
+        case 'group222':
+          setWLDeviation22(wld)
+          break
+        default:
+          break;
+      }
+    else
+      if(/^-?[0-9]?[0-9]?[0-9]?$/.test(e.target.value)) {
+        let g2 = +wld === 0 ? '0000' : (+wld>0 ? (wld.toString().padStart(3,'0')+'1') : (Math.abs(+wld).toString().padStart(3,'0')+'2'))
+        
+        switch (e.target.id) {
+          case "group12":
+            setWaterLevelDeviation(wld)
+            newText = telegram.slice(0,24)+`${g2}`+telegram.slice(28)   
+            break;
+          case 'group221':
+            setWLDeviation21(wld)
+            let startSection21 = telegram.indexOf(' 922')
+            newText = telegram.slice(0,startSection21+14)+g2+telegram.slice(startSection21+18) 
+            break
+          case 'group222':
+            setWLDeviation22(wld)
+            let startS22=startSection22()
+            newText = telegram.slice(0,startS22+14)+g2+telegram.slice(startS22+18) 
+            break
+          default:
+            break;
+        }
+      }
     setTelegram(newText)
   }
   const waterTemperatureJsx=(id,wt)=>{
