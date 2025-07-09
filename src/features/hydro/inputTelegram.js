@@ -24,35 +24,21 @@ const periods = new Array(5).fill(null)
 const avgWl = new Array(5).fill(null)
 const maxWl = new Array(5).fill(null)
 const minWl = new Array(5).fill(null)
-// const avgWc = new Array(5).fill(null)
-// const maxWc = new Array(5).fill(null)
-// const minWc = new Array(5).fill(null)
 let showResponse = false
-// let today = new Date()
-
-// let currDay = d>9 ? d : ('0'+d)
-// const url = window.location.href
-// const postCode = (url.indexOf('postCode')>-1)?url.slice(-5):'99999'
-// const [telegram, setTelegram] = useState(`HHZZ ${postCode} ${currDay}081 10000 20000=`)
 
 export const InputHydroTelegram = ({postCode, observDate})=>{
-  let d = +observDate.slice(-2) //today.getUTCDate()
+  let d = +observDate.slice(-2)
   let currDay = observDate.slice(-2)
   const [hydroData, setHydroData] = useState(null)
+  const [period, setPeriod] = useState('01')
   const {
     data: response = {},
     isSuccess,
   } = useSaveHydroDataQuery(hydroData)
-  // const hydroPostCode = postCode //===null? '99999':postCode //'99999' //process.env.REACT_APP_CODE_83028
   
-  // const [term, setTerm] = useState('08')
-  // const [contentIndex, setContentIndex] = useState('1')
-  // let today = new Date()
-  let currYear = +observDate.slice(0,4) //today.getFullYear()
-  let currMonth = +observDate.slice(5,7)-1 //today.getMonth()
+  let currYear = +observDate.slice(0,4)
+  let currMonth = +observDate.slice(5,7)-1
   let lastDay = 32 - new Date(currYear, currMonth, 32).getDate()
-  // let d = today.getUTCDate()
-  // let currDay = d>9 ? d : ('0'+d)
   
   const [waterLevel, setWaterLevel] = useState(0)
   const [waterLevel21, setWaterLevel21] = useState(null)
@@ -69,23 +55,22 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
   const [telegram, setTelegram] = useState(`HHZZ ${postCode} ${currDay}081 10000 20000=`)
   
   const waterLevelJsx = (id, wl)=>{
-    return (<Form.Group className="mb-3" >
-      <Form.Label>Уровень воды над нулем поста в сантиметрах (Группа 1)</Form.Label>
-      <Form.Control id={id} type="number" value={wl} onChange={waterLevelChanged} min="-999" max="4999" pattern="^-?[0-9]{1,4}$"/>
-    </Form.Group>)
+    return(
+      <Form.Group className="mb-3" controlId="group11">
+        <Form.Label>Уровень воды над нулем поста в сантиметрах (Группа 1)</Form.Label>
+        <Form.Control
+          type="number"
+          value={wl} onChange={waterLevelChanged} min="-999" max="4999"
+          {...register(`${id}`, {
+            onChange: waterLevelChanged,
+            pattern: {
+              value: /^-[0-9]{1,3}$|^[0-9]{1,4}$/,
+            }
+          })}
+        />
+        {errors[`${id}`] && <p className="errorMsg">{errors[`${id}`].message}</p>}
+      </Form.Group>)
   }
-
-  // matches.forEach((match) => {
-  //   ...     console.log("match found at " + match.index);
-  //   ... });
-  // matches = [...s.matchAll(/a/g)]
-  // [
-  //   [ 'a', index: 0, input: 'abracadabra', groups: undefined ],
-  //   [ 'a', index: 3, input: 'abracadabra', groups: undefined ],
-  //   [ 'a', index: 5, input: 'abracadabra', groups: undefined ],
-  //   [ 'a', index: 7, input: 'abracadabra', groups: undefined ],
-  //   [ 'a', index: 10, input: 'abracadabra', groups: undefined ]
-  // ]
 
   const startSection22=()=>{
     return(telegram.indexOf(' 922',telegram.indexOf(' 922')+1))
@@ -93,8 +78,8 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
   const waterLevelChanged = (e)=>{
     let wl = e.target.value
     if(/^-?[0-9]{1,4}$/.test(wl)){
-      wl = +wl>4999 ? 4999 : wl
-      wl = +wl<-999 ? -999 : wl
+      wl = +wl>4999 ? 4999 : +wl
+      wl = +wl<-999 ? -999 : +wl
     }else
       wl = 0
     let g1 = +wl >= 0 ? wl.toString().padStart(4,'0') : (5000+Math.abs(+wl)).toString()      
@@ -127,7 +112,6 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
   const wlDeviationJsx=(id,wld)=>{
     return(<Form.Group className="mb-3" >
       <Form.Label>Изменение уровня воды в сантиметрах (Группа 2)</Form.Label>
-      {/* <Form.Control id={id} type="number" value={wld} onChange={waterLevelDeviationChanged} min="-999" max="999" pattern="^-?[0-9]{1,3}$"/> */}
       <Form.Control id={id} type="text" value={wld} onChange={waterLevelDeviationChanged}/>
     </Form.Group>)
   }
@@ -454,11 +438,11 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
   
   const {
     register,
-    control,
+    // control,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({})
+  } = useForm({}) //mode: "onChange"})
 
   const [activeKeys, setActiveKeys] = useState(["0"]);
   const handleSelect = (eventKey) => setActiveKeys(eventKey);
@@ -485,17 +469,7 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
     }
     if(minWl!==null)
       ret['minWl'+j]=minWl
-    // if(avgWc!==null)
-    //   ret['avgWc'+j]=avgWc
-    // if(maxWc!==null)
-    //   ret['maxWc'+j]=maxWc
-    // if(minWc!==null)
-    //   ret['minWc'+j]=minWc
-    // if(maxLevelDate!==null){
-    // if (maxWl!==null){
-    //   ret['mlDate'+j]=maxLevelDate
-    //   ret['mlHour+j']=maxLevelHour
-    // }
+    
     return ret
   }
   const section2submit=(j,obsDate,wl,wld,waterTemp,airTemp,ipChar2,ipAddon2,wbChar2,wbAddon2,iceThickness,snowThickness,precipitation,pDuration)=>{
@@ -546,6 +520,11 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
       waterLevel,
       waterLevelDeviation
     }
+    if([10,20,lastDay].indexOf(+currDay)>=0)
+      if(telegram.indexOf(' 5')<0 && telegram.indexOf(' 6')<0){
+        alert(`Отсутсвуют группа 5 и/или группа 6`)
+        return
+      }
     if(waterTemperature!==null)
       hydroData["waterTemperature"] = waterTemperature
     if(airTemperature!==null)
@@ -607,7 +586,8 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
       // alert(JSON.stringify(hydroData).replace(/\\/g,""))
     }
     if(periods[0]!==null){
-      let s3 = section3submit(0,periods[0],avgWl[0],maxWl[0],minWl[0],maxLevelDate,maxLevelHour)
+      // let s3 = section3submit(0,periods[0],avgWl[0],maxWl[0],minWl[0],maxLevelDate,maxLevelHour)
+      let s3 = section3submit(0,period,avgWl[0],maxWl[0],minWl[0],maxLevelDate,maxLevelHour)
       hydroData = {...hydroData, ...s3}
     }
     console.log(hydroData)
@@ -1681,11 +1661,14 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
   </Accordion>
   //additionsection3
   const showSection31=()=>{
+    // myPeriods = [<options value="1" selected='true'>One</options>, <options value="2" >Two</options>]
     let newText = telegram
     newText = telegram.slice(0,15)+'2'+telegram.slice(16)
     let startS3 = telegram.indexOf(' 966')>0? telegram.indexOf(' 966') : telegram.length-1
-    periods[0] = '01'
-    newText = newText.slice(0,startS3)+` 93301`+newText.slice(startS3)
+    periods[0] = period //'01'
+    // setPeriod('01')
+    // newText = newText.slice(0,startS3)+` 93301`+newText.slice(startS3)
+    newText = newText.slice(0,startS3)+` 933${period}`+newText.slice(startS3)
     setTelegram(newText)
   }
   const hideSection31=()=>{
@@ -1699,11 +1682,13 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
     if(startS3>0){
       newText = newText.slice(0, startS3)+(startS6>0? newText.slice(startS6):'=')
       setTelegram(newText)
+      // setPeriod('01')
     }
     filterKeys(46,50)
   }
   const periodChange=e=>{
     let p = +e.target.value>9? e.target.value : '0'+e.target.value
+    setPeriod(p)
     let i = +e.target.id[2]-1
     periods[i] = p
     let startS3 = telegram.indexOf(' 933')
@@ -1713,7 +1698,7 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
   const s3periodJsx=(id,periodChange)=>{
     return(<Form.Group className='mb-3' controlId='s31'>
       <Form.Label>Выберите период времени</Form.Label>
-      <Form.Select id={id} onChange={periodChange} menuPortalTarget={document.body}>
+      <Form.Select id={id} onChange={periodChange} menuPortalTarget={document.body} >
         {Object.keys(periodTime).map(pt => { return <option value={pt}>{periodTime[pt]}</option>})}
       </Form.Select>
     </Form.Group>
@@ -2008,6 +1993,8 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
     </Card.Body>
   </Card>
   </div>
+  // if(activeKeys && activeKeys.indexOf('7')<0) 
+  // setActiveKeys('7')
   const myForm =
     <Form onSubmit={handleSubmit(onSubmit)} onReset={reset}> 
       <Form.Label>Раздел 1</Form.Label>
@@ -2069,7 +2056,7 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
-      <Accordion alwaysOpen activeKey={activeKeys}  onSelect={handleSelect}>
+      <Accordion alwaysOpen activeKey={activeKeys} onSelect={handleSelect} >
         <Accordion.Item eventKey="7">
           <Accordion.Header>Состояние водного объекта (Группа 6)</Accordion.Header>
           <Accordion.Body onEnter={showGroup16} onExited={hideGroup16}>
