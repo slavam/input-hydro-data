@@ -56,17 +56,11 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
   
   const waterLevelJsx = (id, wl)=>{
     return(
-      <Form.Group className="mb-3" controlId="group11">
+      <Form.Group className="mb-3" controlId={id}>
         <Form.Label>Уровень воды над нулем поста в сантиметрах (Группа 1)</Form.Label>
         <Form.Control
           type="number"
           value={wl} onChange={waterLevelChanged} min="-999" max="4999"
-          {...register(`${id}`, {
-            onChange: waterLevelChanged,
-            pattern: {
-              value: /^-[0-9]{1,3}$|^[0-9]{1,4}$/,
-            }
-          })}
         />
         {errors[`${id}`] && <p className="errorMsg">{errors[`${id}`].message}</p>}
       </Form.Group>)
@@ -77,7 +71,7 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
   }
   const waterLevelChanged = (e)=>{
     let wl = e.target.value
-    if(/^-?[0-9]{1,4}$/.test(wl)){
+    if(/^-[0-9]{1,3}$|^[0-9]{1,4}$/.test(wl)){
       wl = +wl>4999 ? 4999 : +wl
       wl = +wl<-999 ? -999 : +wl
     }else
@@ -215,8 +209,8 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
   const airTemperatureJsx=(id,aTemp)=>{
     return(<Form.Group className="mb-3" >
       {/* <Form.Control id={id} type="number" value={aTemp} onChange={airTemperatureChanged} min="-49" max="49" pattern="^-?[0-9]$|^-?[0-9][0-9]$"/> */}
-      <label for="customRange3" class="form-label">Значение {aTemp} °С</label>
-      <input type="range" class="form-range" min="-25" max="25" step="1" id={id} onChange={airTemperatureChanged} value={aTemp} ></input>
+      <label htmlFor={id} className="form-label">Значение {aTemp} °С</label>
+      <input type="range" className="form-range" min="-25" max="25" step="1" id={id} onChange={airTemperatureChanged} value={aTemp} ></input>
     </Form.Group>)
   }
   const airTemperatureChanged=(e)=>{
@@ -283,12 +277,12 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
   const group5Jsx=(id,ipChange,iiChange)=>{
     return(<Form.Group className="mb-3" >
       <Form.Label>Выберите характеристику явления</Form.Label>
-      <Form.Select id={id+'ip'} onChange={ipChange} menuPortalTarget={document.body}>
-        {Object.keys(icePhenomena).map(ip => {return (+ip>10? <option value={ip}>{icePhenomena[ip]}</option> : null)})}
+      <Form.Select id={id+'ip'} onChange={ipChange} menuportaltarget={document.body}>
+        {Object.keys(icePhenomena).map(ip => {return (+ip>10? <option key={ip} value={ip}>{icePhenomena[ip]}</option> : null)})}
       </Form.Select>
       <Form.Label>Выберите характеристику или интенсивность явления</Form.Label>
       <Form.Select id={id+'ipi'} onChange={iiChange}>
-        {Object.keys(icePhenomena).map(ip => <option value={ip}>{icePhenomena[ip]}</option>)}
+        {Object.keys(icePhenomena).map(ip => <option key={ip} value={ip}>{icePhenomena[ip]}</option>)}
       </Form.Select>
     </Form.Group>)
   }
@@ -380,11 +374,11 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
     return(<Form.Group className="mb-3" >
       <Form.Label>Выберите характеристику объекта</Form.Label>
       <Form.Select id={id+'wb'} onChange={wbChange} >
-        {Object.keys(waterBodies).map(wb => {return (+wb===0 || +wb>10)? <option value={wb}>{waterBodies[wb]}</option> : null})}
+        {Object.keys(waterBodies).map(wb => {return (+wb===0 || +wb>10)? <option key={wb} value={wb}>{waterBodies[wb]}</option> : null})}
       </Form.Select>
       <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
       <Form.Select id={id+'wbi'} onChange={wbiChange}>
-        {Object.keys(waterBodies).map(wb => <option value={wb}>{waterBodies[wb]}</option>)}
+        {Object.keys(waterBodies).map(wb => <option key={wb} value={wb}>{waterBodies[wb]}</option>)}
       </Form.Select>
     </Form.Group>)
   }
@@ -1696,10 +1690,10 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
     setTelegram(newText)
   }
   const s3periodJsx=(id,periodChange)=>{
-    return(<Form.Group className='mb-3' controlId='s31'>
+    return(<Form.Group className='mb-3'>
       <Form.Label>Выберите период времени</Form.Label>
-      <Form.Select id={id} onChange={periodChange} menuPortalTarget={document.body} >
-        {Object.keys(periodTime).map(pt => { return <option value={pt}>{periodTime[pt]}</option>})}
+      <Form.Select id={id} onChange={periodChange} menuportaltarget={document.body} >
+        {Object.keys(periodTime).map(pt => { return <option key={pt} value={pt}>{periodTime[pt]}</option>})}
       </Form.Select>
     </Form.Group>
   )}
@@ -1979,7 +1973,7 @@ export const InputHydroTelegram = ({postCode, observDate})=>{
       </Accordion.Body>
     </Accordion.Item>
   </Accordion>
-  const telegramCard = <div class="fixed-top">
+  const telegramCard = <div className="fixed-top">
   <Card
     bg='info'
     text={'black'}
