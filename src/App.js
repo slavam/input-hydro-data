@@ -12,15 +12,15 @@ function App() {
   }, [])
   const url = window.location.href
   const positionPC = url.indexOf('postCode')
-  const postCode = (positionPC>-1)?url.slice(positionPC+9,positionPC+14):'99999'
+  const postCode = (positionPC > -1) ? url.slice(positionPC + 9, positionPC + 14) : '99999'
   const positionOD = url.indexOf('observDate')
-  const observDate = (positionOD>-1)?url.slice(positionOD+11,positionOD+21): (new Date()).toISOString().slice(0,10)
+  const observDate = (positionOD > -1) ? url.slice(positionOD + 11, positionOD + 21) : (new Date()).toISOString().slice(0, 10)
   const [show, setShow] = useState(false)
-  const about = show? <Card className='text-center' bg='success' >
+  const about = show ? <Card className='text-center' bg='success' >
     <Card.Body>
       <Card.Title>УГМС ДНР</Card.Title>
-      <Card.Text>Дата сборки 2025-07-15</Card.Text>
-      <Button onClick={()=>setShow(false)} variant='info'>Закрыть</Button>
+      <Card.Text>Дата сборки 2025-12-24</Card.Text>
+      <Button onClick={() => setShow(false)} variant='info'>Закрыть</Button>
     </Card.Body>
   </Card> : null
   return (
@@ -29,18 +29,18 @@ function App() {
         <Container>
           <Navbar.Brand href="#home">
             <img
-              src = {logo}
+              src={logo}
               width="50"
               height="50"
               alt="UGMS logo"
-              onClick={()=>setShow(true)}
+              onClick={() => setShow(true)}
             />{'  '}
             Гидрометцентр ДНР
           </Navbar.Brand>
         </Container>
       </Navbar>
       {about}
-      <InputHydroTelegram  postCode={postCode} observDate={observDate} />
+      <InputHydroTelegram postCode={postCode} observDate={observDate} />
     </div>
   );
 }
