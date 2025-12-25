@@ -5,13 +5,14 @@ export const apiSlice = createApi({
   reducerPath: 'api',
   // baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3000', mode: "cors" }),
   // baseQuery: fetchBaseQuery({ baseUrl: 'http://31.133.32.14:8640'}),
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://10.54.1.30:8640'}),
-  tagTypes: ['Station','Hydropost','Synoptic','Measurement','Bulletins','Observations','Telegram','Teploenergo',
-    'SoapObservations','SoapRadiation','WmoStation','FireDanger','NewHydroTelegram'],
+  baseQuery: fetchBaseQuery({ baseUrl: 'http://10.54.1.30:8640' }),
+  tagTypes: ['Station', 'Hydropost', 'Synoptic', 'Measurement', 'Bulletins', 'Observations', 'Telegram', 'Teploenergo',
+    'SoapObservations', 'SoapRadiation', 'WmoStation', 'FireDanger', 'NewHydroTelegram'],
   endpoints: (builder) => ({
     getFireDanger: builder.query({
-      query: (reportDate)=>{
-        return `${hmcDnrIp}/fire_dangers/daily_fire_danger?format=json&report_date=${reportDate}`},
+      query: (reportDate) => {
+        return `${hmcDnrIp}/fire_dangers/daily_fire_danger?format=json&report_date=${reportDate}`
+      },
       providesTags: ['FireDanger']
     }),
     getWmoStations: builder.query({
@@ -22,11 +23,11 @@ export const apiSlice = createApi({
       ],
     }),
     getSoapMeteoStations: builder.query({
-      query: ()=> 'http://localhost:3000/stations/meteostations?format=json',
+      query: () => 'http://localhost:3000/stations/meteostations?format=json',
       providesTags: ['SoapMeteoStations'],
     }),
     getHydroposts: builder.query({
-      query: ()=>'/stations.json',
+      query: () => '/stations.json',
       // query: ()=> 'http://10.54.1.11/stations/meteostations?format=json&mode=no-cors',
       providesTags: (result = [], error, arg) => [
         'Hydropost',
@@ -35,73 +36,74 @@ export const apiSlice = createApi({
     }),
     getMeasurements: builder.query({
       query: () => '/measurement.json',
-      providesTags: (result = [], error, arg)=>[
+      providesTags: (result = [], error, arg) => [
         'Measurement',
-        ...result.map(({id})=>({type: 'Measurement',id})),
+        ...result.map(({ id }) => ({ type: 'Measurement', id })),
       ],
     }),
     getSoapRadiation: builder.query({
-      query: (qParams)=>{
+      query: (qParams) => {
         return `http://localhost:3000/observations/observations?sources=1300&hashes=-1881179977&limit=${qParams.limit}&stations=${qParams.stations}&after=${qParams.notbefore}&before=${qParams.notafter}`
       },
       providesTags: ['SoapRadiation']
     }),
     getSoapObservations: builder.query({
-      query: (qParams)=> {
-        let hashes = qParams.measurement ? `&hashes=${qParams.measurement}`:'';
-        let sources = +qParams.sources===0 ? '' : `&sources=${qParams.sources}`
-        let term = qParams.syn_hours==='' ? '' : `&syn_hours=${qParams.syn_hours}`
+      query: (qParams) => {
+        let hashes = qParams.measurement ? `&hashes=${qParams.measurement}` : '';
+        let sources = +qParams.sources === 0 ? '' : `&sources=${qParams.sources}`
+        let term = qParams.syn_hours === '' ? '' : `&syn_hours=${qParams.syn_hours}`
         return `http://localhost:3000/observations/observations?limit=${qParams.limit}&stations=${qParams.stations}&after=${qParams.notbefore}&before=${qParams.notafter}${sources}${hashes}${term}`
       },
       providesTags: ['SoapObservations']
     }),
     getObservations: builder.query({
-      query: (qParams)=> {
-        let hashes = qParams.measurement ? `&hashes=${qParams.measurement}`:'';
-        let point = qParams.point==='' ? '' : `&point=${qParams.point}`
+      query: (qParams) => {
+        let hashes = qParams.measurement ? `&hashes=${qParams.measurement}` : '';
+        let point = qParams.point === '' ? '' : `&point=${qParams.point}`
         return `/get?stations=${qParams.stations}&notbefore=${qParams.notbefore}&notafter=${qParams.notafter}${hashes}${point}&limit=100`
       },
       providesTags: ['Observations']
     }),
     getMessageData: builder.query({
-      query: (queryMessage)=>  {
-        return `${queryMessage}`}, 
-        providesTags: (result = [], error, arg)=>[
-          'Telegram',
-          ...result.map(({id})=>({type: 'Telegram',id})),
-        ],
+      query: (queryMessage) => {
+        return `${queryMessage}`
+      },
+      providesTags: (result = [], error, arg) => [
+        'Telegram',
+        ...result.map(({ id }) => ({ type: 'Telegram', id })),
+      ],
     }),
     getAvgMonthTemp: builder.query({
-      query: (dates)=>{
+      query: (dates) => {
         const stations = '34519,34524,34622,34721,34615,34712'
         return `/get?stations=${stations}&hashes=795976906&notbefore=${dates[0]}&notafter=${dates[1]}`
       },
       providesTags: ['Teploenergo']
     }),
     getDailySynopticData: builder.query({
-      query: (qParams)=>
-      `/get?stations=34519,34524,34622,34721,34615,34712&codes=${qParams[1].substring(1,6)}&hashes=${qParams[1].substring(7,100)}&notbefore=${+qParams[0]}&notafter=${+qParams[0]+24*60*60}`,
+      query: (qParams) =>
+        `/get?stations=34519,34524,34622,34721,34615,34712&codes=${qParams[1].substring(1, 6)}&hashes=${qParams[1].substring(7, 100)}&notbefore=${+qParams[0]}&notafter=${+qParams[0] + 24 * 60 * 60}`,
       providesTags: (result = [], error, arg) => [
         'SynopticData',
         ...result.map(({ id }) => ({ type: 'SynopticData', id })),
       ],
     }),
     getDailyTemperatures: builder.query({
-      query: (reportDate) => 
-        `/get?stations=34519,34524,34622,34721,34615,34712&codes=12101&hashes=795976906&notbefore=${reportDate}&notafter=${reportDate+24*60*60}`,
-        providesTags: (result = [], error, arg) => [
-          'Temperature',
-          ...result.map(({ id }) => ({ type: 'Temperature', id })),
-        ],
+      query: (reportDate) =>
+        `/get?stations=34519,34524,34622,34721,34615,34712&codes=12101&hashes=795976906&notbefore=${reportDate}&notafter=${reportDate + 24 * 60 * 60}`,
+      providesTags: (result = [], error, arg) => [
+        'Temperature',
+        ...result.map(({ id }) => ({ type: 'Temperature', id })),
+      ],
     }),
     getBulletins: builder.query({
       // baseQuery: fetchBaseQuery({ baseUrl: 'http://10.105.24.41:8080'}),
       // query: (qParams)=> `http://10.105.24.41:8080/bulletins/list?format=json&page=${qParams[0]}&bulletin_type=${qParams[1]}`,
-      query: (qParams)=> `http://localhost:3000/bulletins/list?format=json&page=${qParams[0]}&bulletin_type=${qParams[1]}`, //&user_id=${qParams[2]}`,
+      query: (qParams) => `http://localhost:3000/bulletins/list?format=json&page=${qParams[0]}&bulletin_type=${qParams[1]}`, //&user_id=${qParams[2]}`,
       providesTags: ['Bulletins'],
     }),
     getSynopticObservations: builder.query({
-      query: (currentPage) => '/synoptic_observations.json?page='+currentPage+'&page_size=15',
+      query: (currentPage) => '/synoptic_observations.json?page=' + currentPage + '&page_size=15',
       providesTags: ['Synoptic'],
     }),
     getSynopticObservation: builder.query({
@@ -116,33 +118,33 @@ export const apiSlice = createApi({
       invalidatesTags: ["Synoptic"]
     }),
     getGustsWind: builder.query({
-      query:(currentPage)=>'/other_observations.json?factor=wind&page_size=15&page='+currentPage,
+      query: (currentPage) => '/other_observations.json?factor=wind&page_size=15&page=' + currentPage,
       providesTags: ['Wind']
     }),
     getTemp8: builder.query({
-      query:(currentPage)=>'/other_observations.json?factor=temp&page_size=15&page='+currentPage,
+      query: (currentPage) => '/other_observations.json?factor=temp&page_size=15&page=' + currentPage,
       providesTags: ['Wind', 'Temp8']
-    }),getPrecipitation: builder.query({
-      query:(currentPage)=>'/other_observations.json?factor=perc&page_size=15&page='+currentPage,
+    }), getPrecipitation: builder.query({
+      query: (currentPage) => '/other_observations.json?factor=perc&page_size=15&page=' + currentPage,
       providesTags: ['Wind', 'Precipitation']
     }),
     deleteWind: builder.mutation({
-      query: (id)=>({
+      query: (id) => ({
         url: `/other_observations/${id}.json`,
         method: "DELETE"
       }),
       invalidatesTags: ['Wind']
     }),
     saveHydroData: builder.query({
-      query: hydroData=>{
+      query: hydroData => {
         let s = ''
-        if(hydroData){
+        if (hydroData) {
           let url = window.location.href
-          let ipAddress = ((url.indexOf('localhost')>-1) || (url.indexOf('//10.54.')>-1))? '10.54.1.11:8083':'31.133.32.14:8083'
-          Object.keys(hydroData).forEach(key=>{s+=(`${key}=${hydroData[key]}&`)})
-          return `http://${ipAddress}/conservations/save_hydro_data?mode=no-cors&${s.slice(0,-1)}`
+          let ipAddress = ((url.indexOf('localhost') > -1) || (url.indexOf('//10.54.') > -1)) ? '10.54.1.11:8083' : '31.133.32.14:8083'
+          Object.keys(hydroData).forEach(key => { s += (`${key}=${hydroData[key]}&`) })
+          return `http://${ipAddress}/conservations/save_hydro_data?mode=no-cors&${s.slice(0, -1)}`
           // return `http://10.54.1.11/conservations/save_hydro_data?mode=opaque&${s.slice(0,-1)}`
-          // return `http://localhost:3001/conservations/save_hydro_data?mode=opaque&${s.slice(0,-1)}`
+          // return `http://localhost:3001/conservations/save_hydro_data?mode=opaque&${s.slice(0, -1)}`
         }
       },
     }),
@@ -155,7 +157,7 @@ export const apiSlice = createApi({
     //   invalidatesTags: ['NewHydroTelegram']
     // }),
     createStorm: builder.mutation({
-      query: bulletin =>({
+      query: bulletin => ({
         method: "POST",
         url: 'http://localhost:3000/bulletins?format=json',
         body: bulletin

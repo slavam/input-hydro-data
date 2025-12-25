@@ -16,8 +16,12 @@ const wbCharS2 = new Array(5) //.fill(null)
 for (let i = 0; i < ipCharS2.length; i++) { wbCharS2[i] = new Array(5).fill(null) }
 const wbAddonS2 = new Array(5) //.fill(null)
 for (let i = 0; i < ipAddonS2.length; i++) { wbAddonS2[i] = new Array(5).fill(null) }
-let ipChar = new Array(5).fill(null)
-let ipAddon = new Array(5).fill(null)
+// let ipChar = new Array(5).fill(null)
+// let ipAddon = new Array(5).fill(null)
+// let ipChar = Array.from({ length: 5 }, () => null);
+// let ipAddon = Array.from({ length: 5 }, () => null);
+let ipChar = JSON.parse(JSON.stringify(Array.from({ length: 5 }, () => null)));
+let ipAddon = JSON.parse(JSON.stringify(Array.from({ length: 5 }, () => null)));
 const wbChar = new Array(5).fill(null)
 const wbAddon = new Array(5).fill(null)
 const periods = new Array(5).fill(null)
@@ -268,7 +272,9 @@ export const InputHydroTelegram = ({ postCode, observDate }) => {
     setTelegram(newText)
   }
   const hideGroup15 = () => {
-    ipChar[0] = ipAddon[0] = null
+    // ipChar[0] = ipAddon[0] = null
+    ipChar = Array.from({ length: 5 }, (_, i) => i === 0 ? null : ipChar[i]);
+    ipAddon = Array.from({ length: 5 }, (_, i) => i === 0 ? null : ipAddon[i]);
     if (telegram.indexOf(' 5') > 0) {
       let newText = telegram.replace(/ 5..../g, '')
       setTelegram(newText)
@@ -314,7 +320,9 @@ export const InputHydroTelegram = ({ postCode, observDate }) => {
     setTelegram(newG5(-1))
   }
   const hideGroup152 = () => {
-    ipChar[1] = ipAddon[1] = null
+    // ipChar[1] = ipAddon[1] = null
+    ipChar = Array.from({ length: 5 }, (_, i) => i === 1 ? null : ipChar[i]);
+    ipAddon = Array.from({ length: 5 }, (_, i) => i === 1 ? null : ipAddon[i]);
     setTelegram(newG5(1))
     filterKeys(3, 6)
   }
@@ -324,7 +332,9 @@ export const InputHydroTelegram = ({ postCode, observDate }) => {
     setTelegram(newG5(-1))
   }
   const hideGroup153 = () => {
-    ipChar[2] = ipAddon[2] = null
+    // ipChar[2] = ipAddon[2] = null
+    ipChar = Array.from({ length: 5 }, (_, i) => i === 2 ? null : ipChar[i]);
+    ipAddon = Array.from({ length: 5 }, (_, i) => i === 2 ? null : ipAddon[i]);
     setTelegram(newG5(1))
     filterKeys(4, 6)
   }
@@ -334,7 +344,9 @@ export const InputHydroTelegram = ({ postCode, observDate }) => {
     setTelegram(newG5(-1))
   }
   const hideGroup154 = () => {
-    ipChar[3] = ipAddon[3] = null
+    // ipChar[3] = ipAddon[3] = null
+    ipChar = Array.from({ length: 5 }, (_, i) => i === 3 ? null : ipChar[i]);
+    ipAddon = Array.from({ length: 5 }, (_, i) => i === 3 ? null : ipAddon[i]);
     setTelegram(newG5(1))
     filterKeys(5, 6)
   }
@@ -344,7 +356,9 @@ export const InputHydroTelegram = ({ postCode, observDate }) => {
     setTelegram(newG5(-1))
   }
   const hideGroup155 = () => {
-    ipChar[4] = ipAddon[4] = null
+    // ipChar[4] = ipAddon[4] = null
+    ipChar = Array.from({ length: 5 }, (_, i) => i === 4 ? null : ipChar[i]);
+    ipAddon = Array.from({ length: 5 }, (_, i) => i === 4 ? null : ipAddon[i]);
     setTelegram(newG5(1))
   }
   // group6
