@@ -8,13 +8,13 @@ import Accordion from 'react-bootstrap/Accordion'
 import Card from 'react-bootstrap/Card'
 import { icePhenomena, waterBodies, periodTime } from '../../components/dictionaries'
 
-const ipCharS2 = new Array(5) //.fill(null)
+const ipCharS2 = new Array(5)
 for (let i = 0; i < ipCharS2.length; i++) { ipCharS2[i] = new Array(5).fill(null) }
-const ipAddonS2 = new Array(5) //.fill(null)
+const ipAddonS2 = new Array(5)
 for (let i = 0; i < ipAddonS2.length; i++) { ipAddonS2[i] = new Array(5).fill(null) }
-const wbCharS2 = new Array(5) //.fill(null)
+const wbCharS2 = new Array(5)
 for (let i = 0; i < ipCharS2.length; i++) { wbCharS2[i] = new Array(5).fill(null) }
-const wbAddonS2 = new Array(5) //.fill(null)
+const wbAddonS2 = new Array(5)
 for (let i = 0; i < ipAddonS2.length; i++) { wbAddonS2[i] = new Array(5).fill(null) }
 // let ipChar = new Array(5).fill(null)
 // let ipAddon = new Array(5).fill(null)
@@ -22,14 +22,17 @@ for (let i = 0; i < ipAddonS2.length; i++) { wbAddonS2[i] = new Array(5).fill(nu
 // let ipAddon = Array.from({ length: 5 }, () => null);
 let ipChar = JSON.parse(JSON.stringify(Array.from({ length: 5 }, () => null)));
 let ipAddon = JSON.parse(JSON.stringify(Array.from({ length: 5 }, () => null)));
-const wbChar = new Array(5).fill(null)
-const wbAddon = new Array(5).fill(null)
+let wbChar = JSON.parse(JSON.stringify(Array.from({ length: 5 }, () => null)));
+let wbAddon = JSON.parse(JSON.stringify(Array.from({ length: 5 }, () => null)));
+// const wbChar = new Array(5).fill(null)
+// const wbAddon = new Array(5).fill(null)
 const periods = new Array(5).fill(null)
 const avgWl = new Array(5).fill(null)
 const maxWl = new Array(5).fill(null)
 const minWl = new Array(5).fill(null)
 let showResponse = false
 const icePhenomenaWithIntens = [12, 13, 14, 16, 19, 39, 48, 49, 50, 64]
+const waterBodiesWithIntens = [11, 22, 23, 24]
 
 export const InputHydroTelegram = ({ postCode, observDate }) => {
   let d = +observDate.slice(-2)
@@ -272,7 +275,6 @@ export const InputHydroTelegram = ({ postCode, observDate }) => {
     setTelegram(newText)
   }
   const hideGroup15 = () => {
-    // ipChar[0] = ipAddon[0] = null
     ipChar = Array.from({ length: 5 }, (_, i) => i === 0 ? null : ipChar[i]);
     ipAddon = Array.from({ length: 5 }, (_, i) => i === 0 ? null : ipAddon[i]);
     if (telegram.indexOf(' 5') > 0) {
@@ -387,7 +389,8 @@ export const InputHydroTelegram = ({ postCode, observDate }) => {
     setTelegram(newText)
   }
   const hideGroup16 = () => {
-    wbChar[0] = wbAddon[0] = null
+    wbChar = Array.from({ length: 5 }, (_, i) => i === 0 ? null : wbChar[i]);
+    wbAddon = Array.from({ length: 5 }, (_, i) => i === 0 ? null : wbAddon[i]);
     if (telegram.indexOf(' 6') > 0) {
       let newText = telegram.replace(/ 6..../g, '')
       setTelegram(newText)
@@ -395,14 +398,17 @@ export const InputHydroTelegram = ({ postCode, observDate }) => {
     filterKeys(7, 11)
   }
   const group6Jsx = (id, wbChange, wbiChange) => {
+    let isIntens = waterBodiesWithIntens.indexOf(+wbChar[+id[3] - 1]) >= 0
+    let label = isIntens ? 'Выберите характеристику состояния объекта или интенсивность явления' : 'Выберите характеристику состояния объекта'
+    let options = isIntens ? Object.keys(waterBodies).map(wb => <option key={wb} value={wb}>{waterBodies[wb]}</option>) : Object.keys(waterBodies).map(wb => { return ((+wb === 0 || +wb > 10) ? <option key={wb} value={wb}>{waterBodies[wb]}</option> : null) })
     return (<Form.Group className="mb-3" >
-      <Form.Label>Выберите характеристику объекта</Form.Label>
-      <Form.Select id={id + 'wb'} onChange={wbChange} >
+      <Form.Label>Выберите характеристику состояния объекта</Form.Label>
+      <Form.Select id={id + 'wb'} onChange={wbChange} value={+wbChar[+id[3] - 1]}>
         {Object.keys(waterBodies).map(wb => { return (+wb === 0 || +wb > 10) ? <option key={wb} value={wb}>{waterBodies[wb]}</option> : null })}
       </Form.Select>
-      <Form.Label>Выберите характеристику объекта или интенсивность явления</Form.Label>
-      <Form.Select id={id + 'wbi'} onChange={wbiChange}>
-        {Object.keys(waterBodies).map(wb => <option key={wb} value={wb}>{waterBodies[wb]}</option>)}
+      <Form.Label>{label}</Form.Label>
+      <Form.Select id={id + 'wbi'} onChange={wbiChange} value={+wbAddon[+id[3] - 1]}>
+        {options}
       </Form.Select>
     </Form.Group>)
   }
@@ -410,6 +416,10 @@ export const InputHydroTelegram = ({ postCode, observDate }) => {
     let wb = +e.target.value > 9 ? e.target.value : '0' + e.target.value
     let i = +e.target.id[3] - 1 // 'g161wb'
     wbChar[i] = wb
+    if (waterBodiesWithIntens.indexOf(+wb) >= 0)
+      wbAddon[i] = '01'
+    else
+      wbAddon[i] = '00' //'11'
     setTelegram(changeG6(0))
   }
   const wbi1CodeChanged = e => {
@@ -423,7 +433,9 @@ export const InputHydroTelegram = ({ postCode, observDate }) => {
     setTelegram(changeG6(-1))
   }
   const hideGroup162 = () => {
-    wbChar[1] = wbAddon[1] = null
+    // wbChar[1] = wbAddon[1] = null
+    wbChar = Array.from({ length: 5 }, (_, i) => i === 1 ? null : wbChar[i]);
+    wbAddon = Array.from({ length: 5 }, (_, i) => i === 1 ? null : wbAddon[i]);
     setTelegram(changeG6(1))
     filterKeys(8, 11)
   }
@@ -432,7 +444,9 @@ export const InputHydroTelegram = ({ postCode, observDate }) => {
     setTelegram(changeG6(-1)) //'show'))
   }
   const hideGroup163 = () => {
-    wbChar[2] = wbAddon[2] = null
+    // wbChar[2] = wbAddon[2] = null
+    wbChar = Array.from({ length: 5 }, (_, i) => i === 2 ? null : wbChar[i]);
+    wbAddon = Array.from({ length: 5 }, (_, i) => i === 2 ? null : wbAddon[i]);
     setTelegram(changeG6(1)) //'hide'))
     filterKeys(9, 11)
   }
@@ -441,7 +455,9 @@ export const InputHydroTelegram = ({ postCode, observDate }) => {
     setTelegram(changeG6(-1)) //'show'))
   }
   const hideGroup164 = () => {
-    wbChar[3] = ipAddon[3] = null
+    // wbChar[3] = ipAddon[3] = null
+    wbChar = Array.from({ length: 5 }, (_, i) => i === 3 ? null : wbChar[i]);
+    wbAddon = Array.from({ length: 5 }, (_, i) => i === 3 ? null : wbAddon[i]);
     setTelegram(changeG6(1)) //'hide'))
     filterKeys(10, 11)
   }
@@ -450,7 +466,9 @@ export const InputHydroTelegram = ({ postCode, observDate }) => {
     setTelegram(changeG6(-1)) //'show'))
   }
   const hideGroup165 = () => {
-    wbChar[4] = ipAddon[4] = null
+    // wbChar[4] = ipAddon[4] = null
+    wbChar = Array.from({ length: 5 }, (_, i) => i === 4 ? null : wbChar[i]);
+    wbAddon = Array.from({ length: 5 }, (_, i) => i === 4 ? null : wbAddon[i]);
     setTelegram(changeG6(1)) //'hide'))
   }
 
@@ -549,31 +567,23 @@ export const InputHydroTelegram = ({ postCode, observDate }) => {
       hydroData["waterTemperature"] = waterTemperature
     if (airTemperature !== null)
       hydroData["airTemperature"] = airTemperature
-    console.log(ipChar, ipAddon)
     if (ipChar[0] !== null) {
       hydroData = { ...hydroData, 'ip': ipChar, 'ii': ipAddon }
+    }
+    // console.log(wbChar, wbAddon)
+    if (wbChar[0] !== null) {
+      hydroData = { ...hydroData, 'wb': wbChar, 'wbi': wbAddon }
       // for (let i = 0; i < 5; i++) {
-      //   if (ipChar[i] !== null) {
-      //     hydroData = { ...hydroData, [`ip${i}`]: ipChar[i] }
-      //     if (ipAddon[i] > 10) { // character
-      //       // if (ipAddon[i] !== ipChar[i])
-      //       hydroData = { ...hydroData, [`ip${i * 2 + 1}`]: ipAddon[i] }
-      //     } else //intense
-      //       hydroData = { ...hydroData, [`ii${i * 2 + 1}`]: ipAddon[i] }
+      //   if (wbChar[i] !== null) {
+      //     hydroData = { ...hydroData, [`wb${i * 2}`]: wbChar[i] }
+      //     // hydroData = { ...hydroData, 'wb': wbChar, 'wi': wbAddon }
+      //     if (wbAddon[i] > 10) {
+      //       if (wbAddon[i] !== wbChar[i])
+      //         hydroData = { ...hydroData, [`wb${i * 2 + 1}`]: wbAddon[i] }
+      //     } else
+      //       hydroData = { ...hydroData, [`wi${i * 2 + 1}`]: wbAddon[i] }
       //   }
       // }
-    }
-    if (wbChar[0] !== null) {
-      for (let i = 0; i < 5; i++) {
-        if (wbChar[i] !== null) {
-          hydroData = { ...hydroData, [`wb${i * 2}`]: wbChar[i] }
-          if (wbAddon[i] > 10) {
-            if (wbAddon[i] !== wbChar[i])
-              hydroData = { ...hydroData, [`wb${i * 2 + 1}`]: wbAddon[i] }
-          } else
-            hydroData = { ...hydroData, [`wi${i * 2 + 1}`]: wbAddon[i] }
-        }
-      }
     }
     if (iceThickness !== null)
       hydroData["iceThickness"] = iceThickness

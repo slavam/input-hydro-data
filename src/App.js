@@ -19,7 +19,7 @@ function App() {
   const about = show ? <Card className='text-center' bg='success' >
     <Card.Body>
       <Card.Title>УГМС ДНР</Card.Title>
-      <Card.Text>Дата сборки 2025-12-25</Card.Text>
+      <Card.Text>Дата сборки 2026-01-13</Card.Text>
       <Button onClick={() => setShow(false)} variant='info'>Закрыть</Button>
     </Card.Body>
   </Card> : null
